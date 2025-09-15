@@ -1,0 +1,1 @@
+import{_ as a,c as e,o as t,t as n,f as c}from"./app-CmanO5vD.js";const r={props:["value"]},l={class:"font-medium text-gray-700"},_={key:0},i={key:1};function d(o,p,s,f,u,m){return t(),e("label",l,[s.value?(t(),e("span",_,n(s.value),1)):(t(),e("span",i,[c(o.$slots,"default")]))])}const k=a(r,[["render",d]]);export{k as T};

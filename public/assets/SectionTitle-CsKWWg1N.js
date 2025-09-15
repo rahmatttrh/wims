@@ -1,0 +1,1 @@
+import{_ as o,c,o as n,b as e,f as s}from"./app-CmanO5vD.js";const a={},r={class:"px-4 md:px-0 md:col-span-1"},l={class:"text-lg font-bold text-gray-900"},_={class:"mt-1 text-gray-600"};function d(t,i){return n(),c("div",r,[e("h3",l,[s(t.$slots,"title")]),e("p",_,[s(t.$slots,"description")])])}const f=o(a,[["render",d]]);export{f as T};

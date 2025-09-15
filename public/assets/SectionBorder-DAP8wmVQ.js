@@ -1,0 +1,1 @@
+import{_ as o,c as r,o as c,b as s}from"./app-CmanO5vD.js";const t={},n={class:"hidden sm:block"};function a(d,e){return c(),r("div",n,[...e[0]||(e[0]=[s("div",{class:"py-8"},[s("div",{class:"border-t border-gray-200"})],-1)])])}const _=o(t,[["render",a]]);export{_ as T};
