@@ -71,6 +71,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('roles/{role}/permissions', [Controllers\RoleController::class, 'permissions'])->name('roles.permissions');
 });
 
+// Route::get('reports', [Controllers\ReportController::class, 'index'])->name('reports.index');
+
 // Routes to run storage & migration commands
 Route::view('/notification', 'notification')->name('notification');
 Route::prefix('commands')->middleware(['throttle:6,10', 'purchased'])->group(function () {
@@ -85,3 +87,4 @@ Route::prefix('commands')->middleware(['throttle:6,10', 'purchased'])->group(fun
         return redirect('notification')->with('message', Artisan::output());
     });
 });
+

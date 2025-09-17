@@ -1,6 +1,67 @@
-<template>
+<!-- <template>
   <admin-layout :title="$t('Total Records')">
+    <BCLayout :title="$t('Total Records')">
+      <div class="px-4 md:px-0">
+        <tec-section-title class="-mx-4 md:mx-0 mb-6">
+          <template #title>{{ $t('Total Records') }}</template>
+          <template #description>{{ $t('Please review the total records below') }}</template>
+        </tec-section-title>
+
+        <section class="mb-4 mx-auto">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="p-4 rounded-md shadow-sm bg-white" v-for="key in Object.keys(data)" :key="key">
+              <div class="flex items-start justify-between">
+                <h2 class="mb-2 text-xl font-semibold leading-none text-gray-900 truncate">{{ data[key] }}</h2>
+              </div>
+              <p class="leading-none text-gray-600">{{ $t(key.charAt(0).toUpperCase() + key.slice(1)) }}</p>
+            </div>
+          </div>
+        </section>
+
+        <tec-section-title class="-mx-4 md:mx-0 pt-6 mb-6">
+          <template #title>{{ $t('Report Links') }}</template>
+          <template #description>{{ $t('Please click to view the report') }}</template>
+        </tec-section-title>
+
+        <section class="mb-4 mx-auto">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link :href="route('reports.checkin')" class="p-4 rounded-md shadow-sm bg-gray-700">
+              <p class="leading-none text-gray-100">{{ $t('x_report', { x: $t('Checkin') }) }}</p>
+            </Link>
+            <Link :href="route('reports.checkout')" class="p-4 rounded-md shadow-sm bg-gray-700">
+              <p class="leading-none text-gray-100">{{ $t('x_report', { x: $t('Checkout') }) }}</p>
+            </Link>
+            <Link :href="route('reports.transfer')" class="p-4 rounded-md shadow-sm bg-gray-700">
+              <p class="leading-none text-gray-100">{{ $t('x_report', { x: $t('Transfer') }) }}</p>
+            </Link>
+            <Link :href="route('reports.adjustment')" class="p-4 rounded-md shadow-sm bg-gray-700">
+              <p class="leading-none text-gray-100">{{ $t('x_report', { x: $t('Adjustment') }) }}</p>
+            </Link>
+          </div>
+        </section>
+      </div>
+  </BCLayout>
+  </admin-layout>
+
+</template>
+<script>
+import AdminLayout from '@/Layouts/AdminLayout.vue';
+import TecSectionTitle from '@/Jetstream/SectionTitle.vue';
+import BCLayout from '@/Layouts/BCLayout.vue';
+export default {
+  props: ['data'],
+  components: {
+    AdminLayout,
+    TecSectionTitle,
+    BCLayout,
+  },
+};
+</script> -->
+
+<template>
+  <component :is="layout" :title="$t('Total Records')">
     <div class="px-4 md:px-0">
+
       <tec-section-title class="-mx-4 md:mx-0 mb-6">
         <template #title>{{ $t('Total Records') }}</template>
         <template #description>{{ $t('Please review the total records below') }}</template>
@@ -39,18 +100,40 @@
         </div>
       </section>
     </div>
-  </admin-layout>
+  </component>
 </template>
-
 <script>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import BCLayout from '@/Layouts/BCLayout.vue';
 import TecSectionTitle from '@/Jetstream/SectionTitle.vue';
 
 export default {
   props: ['data'],
-  components: {
-    AdminLayout,
-    TecSectionTitle,
+  components: { AdminLayout, BCLayout, TecSectionTitle },
+  // computed: {
+  //   layout() {
+  //     const role = this.$page.props.auth.user?.role
+  //     return role === 'Super Admin' ? AdminLayout : BCLayout
+  //   },
+  // },
+  computed: {
+  layout() {
+    const user = this.$page.props.auth.user
+    // kalau kirim eager load roles
+    const role = user?.roles?.[0]?.name 
+    // atau kalau pakai accessor role_names
+    // const role = user?.role_names?.[0]
+
+    if (role === 'Super Admin') {
+      return AdminLayout
+    } else if (role === 'Bea Cukai') {
+      return BCLayout
+    }
+    return AdminLayout // fallback
   },
+},
+
 };
+
 </script>
+

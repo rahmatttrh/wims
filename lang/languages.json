@@ -1,10 +1,15 @@
 {
   "instruction": "App dropdown uses the below available array.",
   "available": [
-    { "value": "en", "label": "English", "flag": "US" },
-    { "value": "bg", "label": "Bulgarian", "flag": "BG" },
-    { "value": "fr", "label": "French", "flag": "FR" },
-    { "value": "es", "label": "Spanish", "flag": "ES" },
-    { "value": "pt", "label": "Portuguese", "flag": "PT" }
+    {
+      "value": "en",
+      "label": "English",
+      "flag": "US"
+    },
+    {
+      "value": "id",
+      "label": "Indonesian",
+      "flag": "ID"
+    }
   ]
 }

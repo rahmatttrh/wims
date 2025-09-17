@@ -3,6 +3,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "watch": "mix watch",
+    "hot": "mix watch --hot",
     "pwa-assets": "pwa-assets-generator",
     "build-only": "vite build && vite build --ssr",
     "build": "rm -rf ./public/assets && vite build",

@@ -2,7 +2,7 @@
   <admin-layout :title="$t('Checkins')">
     <div class="px-4 md:px-0">
       <tec-section-title class="-mx-4 md:mx-0 mb-6">
-        <template #title>{{ $t('Checkins') }}</template>
+        <template #title>{{ $t('Inbound') }}</template>
         <template #description>{{ $t('Please review the data in the table below') }}</template>
       </tec-section-title>
 
@@ -43,6 +43,16 @@
           </span>
           <span class="hidden lg:inline">{{ $t('create_x', { x: $t('Checkin') }) }}</span>
         </tec-button>
+
+        
+        <!-- <tec-button :href="route('checkins.create')">
+          <span>
+            <icons name="plus" class="w-5 h-5" />
+          </span>
+          <span class="hidden lg:inline">{{ $t('create_x', { x: $t('Checkin') }) }}</span>
+        </tec-button> -->
+
+
         <!-- <tec-dropdown align="right" width="48" v-if="$can(['create-checkins', 'import-checkins', 'export-checkins'])">
           <template #trigger>
             <button

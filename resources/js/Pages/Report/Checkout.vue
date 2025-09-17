@@ -133,6 +133,7 @@ import Pagination from '@/Shared/Pagination.vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import CheckoutDetails from '@/Pages/Checkout/Details.vue';
 import TecSectionTitle from '@/Jetstream/SectionTitle.vue';
+import BCLayout from '@/Layouts/BCLayout.vue';
 
 export default {
   components: {
@@ -141,6 +142,7 @@ export default {
     ReportForm,
     Pagination,
     AdminLayout,
+    BCLayout,
     CheckoutDetails,
     TecSectionTitle,
   },

@@ -1,10 +1,15 @@
 <template>
-  <div class="flex items-start max-h-8 max-w-xs overflow-hidden">
+  <!-- <div class="card">
+    <div class="card-body"> -->
+      <div class="flex items-start max-h-8 max-w-xs overflow-hidden ">
     <div class="flex">
       <tec-application-mark class="h-8 w-8 mr-3" />
-      <h1 class="text-2xl font-bold">{{ $page.props.settings.name || 'Jet Start' }}</h1>
+      <h1 class="text-2xl font-bold ">{{ $page.props.settings.name || 'Jet Start' }} </h1>
     </div>
+  <!-- </div>
+    </div> -->
   </div>
+  
 </template>
 
 <script>

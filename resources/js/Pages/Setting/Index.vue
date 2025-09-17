@@ -247,7 +247,7 @@
       </div>
     </div>
 
-    <div v-if="app_version" class="mt-8 flex items-center justify-center gap-6 text-sm">
+    <!-- <div v-if="app_version" class="mt-8 flex items-center justify-center gap-6 text-sm">
       <div>
         App: v<span class="font-bold">{{ app_version }}</span>
       </div>
@@ -260,7 +260,7 @@
       <div>
         <a href="/documentation.pdf" class="font-bold ml-4">Docs</a>
       </div>
-    </div>
+    </div> -->
   </admin-layout>
 </template>
 

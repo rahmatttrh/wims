@@ -1,15 +1,21 @@
 <template>
   <tec-authentication-card>
     <Head :title="$t('Login')" />
-    <template #logo>
-      <tec-authentication-card-logo class="text-gray-800" />
-    </template>
+    <!-- <template #logo>
+      
+          <tec-authentication-card-logo class="text-gray-800" />
+        
+      
+    </template> -->
+    
 
     <tec-validation-errors class="mb-4" />
 
     <div v-if="status" class="mb-4 font-medium text-green-600">
       {{ status }}
     </div>
+    <tec-authentication-card-logo class="text-gray-800 mb-4" />
+    <hr class="mb-4">
 
     <form @submit.prevent="submit">
       <div>
@@ -37,7 +43,7 @@
       </div>
 
       <div class="w-full mt-4">
-        <loading-button type="submit" class="block w-full" :loading="form.processing" :disabled="form.processing">
+        <loading-button type="submit" class="block w-full " :loading="form.processing" :disabled="form.processing">
           {{ $t('Login') }}
         </loading-button>
 

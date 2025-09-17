@@ -5,6 +5,16 @@ import { VitePWA } from 'vite-plugin-pwa';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
+  server: {
+    host: '0.0.0.0',   // listen semua interface, bukan cuma localhost
+    port: 5173,        // bisa ubah kalau bentrok
+    strictPort: true,  // biar gak auto ganti port
+    hmr: {
+      host: '103.167.113.60', // ganti dengan IP lokal/server kamu
+      protocol: 'ws',
+      port: 5173
+    }
+  },
   base: '/',
   resolve: {
     alias: {
