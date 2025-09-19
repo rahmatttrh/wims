@@ -58,7 +58,8 @@ export default {
 };
 </script> -->
 
-<template>
+<!-- Add v.1 -->
+<!-- <template>
   <component :is="layout" :title="$t('Total Records')">
     <div class="px-4 md:px-0">
 
@@ -135,5 +136,75 @@ export default {
 
 };
 
-</script>
+</script> -->
 
+<!-- Add v.2 -->
+<template>
+  <component :is="layout" :title="$t('Total Records')">
+    <div class="px-4 md:px-0">
+
+      <tec-section-title class="-mx-4 md:mx-0 mb-6">
+        <template #title>{{ $t('Total Records') }}</template>
+        <template #description>{{ $t('Please review the total records below') }}</template>
+      </tec-section-title>
+
+      <section class="mb-4 mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div
+            v-for="key in Object.keys(data)"
+            :key="key"
+            class="p-4 rounded-md shadow-sm bg-white"
+          >
+            <h2 class="mb-2 text-xl font-semibold text-gray-900 truncate">{{ data[key] }}</h2>
+            <p class="text-gray-600">{{ $t(key.charAt(0).toUpperCase() + key.slice(1)) }}</p>
+          </div>
+        </div>
+      </section>
+
+      <tec-section-title class="-mx-4 md:mx-0 pt-6 mb-6">
+        <template #title>{{ $t('Report Links') }}</template>
+        <template #description>{{ $t('Please click to view the report') }}</template>
+      </tec-section-title>
+
+      <section class="mb-4 mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link :href="route('reports.checkin')" class="p-4 rounded-md shadow-sm bg-gray-700 text-gray-100">
+            {{ $t('x_report', { x: $t('Checkin') }) }}
+          </Link>
+          <Link :href="route('reports.checkout')" class="p-4 rounded-md shadow-sm bg-gray-700 text-gray-100">
+            {{ $t('x_report', { x: $t('Checkout') }) }}
+          </Link>
+          <Link :href="route('reports.transfer')" class="p-4 rounded-md shadow-sm bg-gray-700 text-gray-100">
+            {{ $t('x_report', { x: $t('Transfer') }) }}
+          </Link>
+          <Link :href="route('reports.adjustment')" class="p-4 rounded-md shadow-sm bg-gray-700 text-gray-100">
+            {{ $t('x_report', { x: $t('Adjustment') }) }}
+          </Link>
+        </div>
+      </section>
+
+    </div>
+  </component>
+</template>
+<script>
+import AdminLayout from '@/Layouts/AdminLayout.vue'
+import BCLayout from '@/Layouts/BCLayout.vue'
+import TecSectionTitle from '@/Jetstream/SectionTitle.vue'
+
+export default {
+  props: ['data'],
+  components: { AdminLayout, BCLayout, TecSectionTitle },
+
+  computed: {
+    layout() {
+      const roles = this.$page.props.auth.user?.roles || []
+      if (roles.includes('Super Admin')) {
+        return AdminLayout
+      } else if (roles.includes('Bea Cukai')) {
+        return BCLayout
+      }
+      return AdminLayout // fallback
+    },
+  },
+}
+</script>

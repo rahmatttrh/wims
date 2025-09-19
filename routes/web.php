@@ -49,23 +49,29 @@ Route::middleware('auth:sanctum')->group(function () {
     ]);
 
     // Notifications
-    Route::get('notifications/checkin/{checkin}', [Controllers\NotificationController::class, 'checkin'])->name('notifications.checkin');
-    Route::get('notifications/checkout/{checkout}', [Controllers\NotificationController::class, 'checkout'])->name('notifications.checkout');
+    Route::get('notifications/inbound/{checkin}', [Controllers\NotificationController::class, 'checkin'])->name('notifications.checkin');
+    Route::get('notifications/outbound/{checkout}', [Controllers\NotificationController::class, 'checkout'])->name('notifications.checkout');
     Route::get('notifications/transfer/{transfer}', [Controllers\NotificationController::class, 'transfer'])->name('notifications.transfer');
     Route::get('notifications/adjustment/{adjustment}', [Controllers\NotificationController::class, 'adjustment'])->name('notifications.adjustment');
     // Notifications Preview
     Route::get('preview/low_stock', [Controllers\NotificationController::class, 'stock'])->name('notifications.stock.preview');
-    Route::get('preview/checkin/{checkin}', [Controllers\NotificationController::class, 'checkin'])->name('notifications.checkin.preview');
-    Route::get('preview/checkout/{checkout}', [Controllers\NotificationController::class, 'checkout'])->name('notifications.checkout.preview');
+    Route::get('preview/inbound/{checkin}', [Controllers\NotificationController::class, 'checkin'])->name('notifications.checkin.preview');
+    Route::get('preview/outbound/{checkout}', [Controllers\NotificationController::class, 'checkout'])->name('notifications.checkout.preview');
     Route::get('preview/transfer/{transfer}', [Controllers\NotificationController::class, 'transfer'])->name('notifications.transfer.preview');
     Route::get('preview/adjustment/{adjustment}', [Controllers\NotificationController::class, 'adjustment'])->name('notifications.adjustment.preview');
 
     // Reports
     Route::get('reports', [Controllers\ReportController::class, 'index'])->name('reports.index');
-    Route::match(['GET', 'POST'], 'reports/checkin', [Controllers\ReportController::class, 'checkin'])->name('reports.checkin');
-    Route::match(['GET', 'POST'], 'reports/checkout', [Controllers\ReportController::class, 'checkout'])->name('reports.checkout');
+    Route::match(['GET', 'POST'], 'reports/inbound', [Controllers\ReportController::class, 'checkin'])->name('reports.checkin');
+    Route::match(['GET', 'POST'], 'reports/outbound', [Controllers\ReportController::class, 'checkout'])->name('reports.checkout');
     Route::match(['GET', 'POST'], 'reports/transfer', [Controllers\ReportController::class, 'transfer'])->name('reports.transfer');
     Route::match(['GET', 'POST'], 'reports/adjustment', [Controllers\ReportController::class, 'adjustment'])->name('reports.adjustment');
+    // Route::get('reports/checkin/export', [Controllers\ReportController::class, 'exportCheckin'])->name('reports.checkin.export');
+    Route::get('reports/checkin/export/xlsx', [Controllers\ReportController::class, 'exportCheckinXLSX'])->name('reports.checkin.export.xlsx');
+    Route::get('reports/checkout/export/xlsx', [Controllers\ReportController::class, 'exportCheckoutXLSX'])->name('reports.checkout.export.xlsx');
+    Route::get('reports/transfer/export/xlsx', [Controllers\ReportController::class, 'exportTransferXLSX'])->name('reports.transfer.export.xlsx');
+    Route::get('reports/adjustment/export/xlsx', [Controllers\ReportController::class, 'exportAdjustmentXLSX'])->name('reports.adjustment.export.xlsx');
+
 
     // Role Permissions
     Route::post('roles/{role}/permissions', [Controllers\RoleController::class, 'permissions'])->name('roles.permissions');
@@ -88,3 +94,4 @@ Route::prefix('commands')->middleware(['throttle:6,10', 'purchased'])->group(fun
     });
 });
 
+// 

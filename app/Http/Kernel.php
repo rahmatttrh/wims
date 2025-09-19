@@ -68,5 +68,8 @@ class Kernel extends HttpKernel
         'remember'         => \Reinink\RememberQueryStrings::class,
         'install'          => \Tecdiary\Installer\Http\Middleware\CanInstall::class,
         'purchased'        => \App\Http\Middleware\Purchased::class,
+
+        // Add
+        'role'             => \App\Http\Middleware\RoleMiddleware::class,
     ];
 }

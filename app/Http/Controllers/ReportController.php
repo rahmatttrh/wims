@@ -16,6 +16,12 @@ use App\Models\Warehouse;
 use App\Models\Adjustment;
 use Illuminate\Http\Request;
 use App\Http\Resources\Collection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Exports\CheckinExport;
+use App\Exports\CheckoutExport;
+use App\Exports\TransferExport;
+use App\Exports\AdjustmentExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -98,4 +104,37 @@ class ReportController extends Controller
             ),
         ]);
     }
+
+    public function exportCheckinXLSX(Request $request)
+    {
+        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
+
+        $filename = 'Inbound-report-' . now()->format('Y-m-d') . '.xlsx';
+        return Excel::download(new CheckinExport($filters), $filename);
+    }
+
+    public function exportCheckoutXLSX(Request $request)
+    {
+        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
+
+        $filename = 'Outbound-report-' . now()->format('Y-m-d') . '.xlsx';
+        return Excel::download(new CheckoutExport($filters), $filename);
+    }
+
+    public function exportTransferXLSX(Request $request)
+    {
+        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'from_warehouse_id', 'user_id', 'to_warehouse_id', 'draft', 'trashed', 'category_id');
+
+        $filename = 'Transfer-report-' . now()->format('Y-m-d') . '.xlsx';
+        return Excel::download(new TransferExport($filters), $filename);
+    }
+
+    public function exportAdjustmentXLSX(Request $request)
+    {
+        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
+
+        $filename = 'Adjustment-report-' . now()->format('Y-m-d') . '.xlsx';
+        return Excel::download(new AdjustmentExport($filters), $filename);
+    }
+
 }

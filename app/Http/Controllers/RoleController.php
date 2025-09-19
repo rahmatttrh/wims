@@ -36,17 +36,18 @@ class RoleController extends Controller
     {
         if ($role->name == 'Super Admin') {
             return redirect()->route('roles.index')->with('error', __('Super Admin role can not be modified.'));
-        } elseif ($role->name == 'Admin Gudang') {
-            return redirect()->route('roles.index')->with('error', __('Admin Gudang role can not be modified.'));
-        } elseif ($role->name == 'Bea Cukai') {
-            return redirect()->route('roles.index')->with('error', __('Bea Cukai role can not be modified.'));
-        } elseif ($role->name == 'Manager') {
-            return redirect()->route('roles.index')->with('error', __('Manager role can not be modified.'));
-        } elseif ($role->name == 'Direktur') {
-            return redirect()->route('roles.index')->with('error', __('Direktur role can not be modified.'));
-        } else {
-            return redirect()->route('roles.index')->with('error', __('Guest role can not be modified.'));
-        }
+        } 
+        // elseif ($role->name == 'Admin Gudang') {
+        //     return redirect()->route('roles.index')->with('error', __('Admin Gudang role can not be modified.'));
+        // } elseif ($role->name == 'Bea Cukai') {
+        //     return redirect()->route('roles.index')->with('error', __('Bea Cukai role can not be modified.'));
+        // } elseif ($role->name == 'Manager') {
+        //     return redirect()->route('roles.index')->with('error', __('Manager role can not be modified.'));
+        // } elseif ($role->name == 'Direktur') {
+        //     return redirect()->route('roles.index')->with('error', __('Direktur role can not be modified.'));
+        // } else {
+        //     return redirect()->route('roles.index')->with('error', __('Guest role can not be modified.'));
+        // }
 
         return Inertia::render('Role/Form', ['edit' => $role]);
     }
@@ -65,17 +66,18 @@ class RoleController extends Controller
     {
         if ($role->name == 'Super Admin') {
             return redirect()->route('roles.index')->with('error', __('Super Admin role can not be modified.'));
-        } elseif ($role->name == 'Admin Gudang') {
-            return redirect()->route('roles.index')->with('error', __('Admin Gudang role can not be modified.'));
-        } elseif ($role->name == 'Bea Cukai') {
-            return redirect()->route('roles.index')->with('error', __('Bea Cukai role can not be modified.'));
-        } elseif ($role->name == 'Manager') {
-            return redirect()->route('roles.index')->with('error', __('Manager role can not be modified.'));
-        } elseif ($role->name == 'Direktur') {
-            return redirect()->route('roles.index')->with('error', __('Direktur role can not be modified.'));
-        } else {
-            return redirect()->route('roles.index')->with('error', __('Guest role can not be modified.'));
-        }
+        } 
+        // elseif ($role->name == 'Admin Gudang') {
+        //     return redirect()->route('roles.index')->with('error', __('Admin Gudang role can not be modified.'));
+        // } elseif ($role->name == 'Bea Cukai') {
+        //     return redirect()->route('roles.index')->with('error', __('Bea Cukai role can not be modified.'));
+        // } elseif ($role->name == 'Manager') {
+        //     return redirect()->route('roles.index')->with('error', __('Manager role can not be modified.'));
+        // } elseif ($role->name == 'Direktur') {
+        //     return redirect()->route('roles.index')->with('error', __('Direktur role can not be modified.'));
+        // } else {
+        //     return redirect()->route('roles.index')->with('error', __('Guest role can not be modified.'));
+        // }
 
         $role->update($request->validated());
 
@@ -126,4 +128,5 @@ class RoleController extends Controller
 
         return back()->with('message', __('Role permissions has successfully saved.'));
     }
+
 }

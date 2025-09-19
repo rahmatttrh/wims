@@ -16,7 +16,8 @@ class Role extends BaseRole
     use Paginatable;
     use SoftDeletes;
 
-    // protected $hidden = ['pivot', 'permissions'];
+    // Uncomment
+    protected $hidden = ['pivot', 'permissions'];
 
     public function del()
     {

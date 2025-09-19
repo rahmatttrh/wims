@@ -22,6 +22,15 @@ class HandleInertiaRequests extends Middleware
                 'error'   => session('error'),
                 'message' => session('message'),
             ],
+
+            // Add v.1
+
+            // Add v.2
+            'auth' => [
+                'user' => $request->user()
+                    ? $request->user()->load('roles') // kalau pakai spatie
+                    : null,
+            ],
         ]);
     }
 

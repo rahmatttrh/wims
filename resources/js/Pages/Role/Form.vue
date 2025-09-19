@@ -94,7 +94,7 @@
       />
 
       <!-- Role Permissions Form -->
-      <div class="mt-8" v-if="edit">
+      <!-- <div class="mt-8" v-if="edit">
         <tec-form-section @submitted="submit">
           <template #title>{{ $t('Role Permissions') }}</template>
           <template #description>{{ $t('Update the role permissions in the form below') }}</template>
@@ -636,7 +636,7 @@
             </div>
           </template>
         </tec-form-section>
-      </div>
+      </div> -->
     </div>
   </admin-layout>
 </template>

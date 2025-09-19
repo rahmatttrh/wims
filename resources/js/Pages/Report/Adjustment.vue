@@ -6,12 +6,57 @@
           <template #title>{{ $t('x_report', { x: $t('Adjustment') }) }}</template>
           <template #description>{{ $t('Please review the report below') }}</template>
         </tec-section-title>
-        <tec-button type="button" @click="toggleForm()">
+        <!-- <tec-button type="button" @click="toggleForm()">
           <span>
             <icons name="toggle" class="w-5 h-5 lg:mr-2" />
           </span>
           <span class="hidden lg:inline">{{ $t('toggle_x', { x: $t('Form') }) }}</span>
-        </tec-button>
+        </tec-button> -->
+        
+        <div class="flex space-x-2">
+          <!-- Toggle Form -->
+          <tec-button type="button" @click="toggleForm()">
+            <span>
+              <icons name="toggle" class="w-5 h-5 lg:mr-2" />
+            </span>
+            <span class="hidden lg:inline">{{ $t('toggle_x', { x: $t('Form') }) }}</span>
+          </tec-button>
+
+          <!-- Export Dropdown (tanpa permission) -->
+          <div class="relative">
+            <button
+              @click="showExport = !showExport"
+              class="flex items-center px-4 py-4 bg-gray-800 rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:outline-hidden"
+            >
+              <icons name="download" class="w-5 h-5 lg:mr-2"></icons>
+              <span>{{ $t('Export') }}</span>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div
+              v-show="showExport"
+              class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50"
+            >
+              <button
+                type="button"
+                @click="exportAdjustmentCSV(); showExport = false"
+                class="block w-full px-4 py-2 text-left hover:bg-gray-100"
+              >
+                Export CSV
+              </button>
+              <button
+                type="button"
+                @click="exportAdjustmentXLSX(); showExport = false"
+                class="block w-full px-4 py-2 text-left hover:bg-gray-100"
+              >
+                Export XLSX
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+
       </div>
 
       <transition name="slidedown">
@@ -152,11 +197,20 @@ export default {
 
   data() {
     return {
-      adjustment: null,
+      transfer: null,
       details: false,
       showForm: false,
       loading: false,
+      showExport: false,
     };
+  },
+
+  // Add
+  mounted() {
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  beforeUnmount() {
+    document.removeEventListener("click", this.handleClickOutside);
   },
 
   methods: {
@@ -183,6 +237,50 @@ export default {
     },
     print() {
       window.print();
+    },
+
+    handleClickOutside(event) {
+        const dropdown = this.$el.querySelector(".relative");
+        if (dropdown && !dropdown.contains(event.target)) {
+          this.showExport = false;
+        }
+    },
+    exportAdjustmentCSV() {
+      // Header
+      const headers = ["No", "Reference", "Tanggal", "Warehouse", "User", "Draft"];
+
+      // Data rows
+      const rows = this.adjustments.data.map((item, index) => [
+        index + 1,
+        item.reference || "",
+        this.$date(item.date) || "",
+        item.warehouse?.name || "",
+        item.user?.name || "",
+        item.draft == 1 ? "Yes" : "No"
+      ]);
+
+      // Pakai ";" biar Excel di Indonesia baca sebagai kolom
+      const delimiter = ";";
+
+      // Gabungkan header + data
+      const csvContent = [headers, ...rows]
+        .map(row => row.map(cell => `"${cell}"`).join(delimiter)) // kasih quote untuk aman
+        .join("\n");
+
+      // Tambahkan BOM untuk UTF-8
+      const bom = "\uFEFF" + csvContent;
+
+      // Download
+      const blob = new Blob([bom], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `Adjustment-report-${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
+    exportAdjustmentXLSX(){
+      window.location.href = route('reports.adjustment.export.xlsx');
     },
   },
 };
