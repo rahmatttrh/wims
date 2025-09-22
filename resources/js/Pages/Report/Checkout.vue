@@ -69,6 +69,13 @@
               >
                 Export XLSX
               </button>
+              <button
+                type="button"
+                @click="exportOutboundPDF(); showExport = false"
+                class="block w-full px-4 py-2 text-left hover:bg-gray-100"
+              >
+                Export PDF
+              </button>
             </div>
           </div>
 
@@ -306,6 +313,9 @@ export default {
     },
     exportOutboundXLSX(){
       window.location.href = route('reports.checkout.export.xlsx');
+    },
+    exportOutboundPDF(){
+      window.location.href = route('reports.checkout.export.pdf');
     },
   },
 };

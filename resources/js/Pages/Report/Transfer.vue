@@ -258,6 +258,13 @@ export default {
               >
                 Export XLSX
               </button>
+              <button
+                type="button"
+                @click="exportTransferPDF(); showExport = false"
+                class="block w-full px-4 py-2 text-left hover:bg-gray-100"
+              >
+                Export PDF
+              </button>
             </div>
           </div>
 
@@ -490,6 +497,9 @@ export default {
     },
     exportTransferXLSX(){
       window.location.href = route('reports.transfer.export.xlsx');
+    },
+    exportTransferPDF(){
+      window.location.href = route('reports.transfer.export.pdf');
     },
   },
 };

@@ -22,6 +22,7 @@ use App\Exports\CheckoutExport;
 use App\Exports\TransferExport;
 use App\Exports\AdjustmentExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
@@ -136,5 +137,82 @@ class ReportController extends Controller
         $filename = 'Adjustment-report-' . now()->format('Y-m-d') . '.xlsx';
         return Excel::download(new AdjustmentExport($filters), $filename);
     }
+
+    public function exportCheckinPDF(Request $request)
+    {
+        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
+
+        $checkins = Checkin::with(['contact', 'warehouse', 'user'])
+            ->reportFilter($filters)
+            ->orderByDesc('id')
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.checkin_pdf', [
+            'checkins' => $checkins,
+            'filters'  => $filters,
+            'printedAt' => now()->format('d/m/Y H:i'),
+        ])->setPaper('A4', 'portrait');
+
+        $filename = 'Inbound-report-' . now()->format('Y-m-d') . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    public function exportCheckoutPDF(Request $request)
+    {
+        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
+
+        $checkouts = Checkout::with(['contact', 'warehouse', 'user'])
+            ->reportFilter($filters)
+            ->orderByDesc('id')
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.checkout_pdf', [
+            'checkouts' => $checkouts,
+            'filters'  => $filters,
+            'printedAt' => now()->format('d/m/Y H:i'),
+        ])->setPaper('A4', 'portrait');
+
+        $filename = 'Outbound-report-' . now()->format('Y-m-d') . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    public function exportTransferPDF(Request $request)
+    {
+        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'from_warehouse_id', 'user_id', 'to_warehouse_id', 'draft', 'trashed', 'category_id');
+
+        $transfers = Transfer::with(['fromWarehouse', 'toWarehouse', 'user'])
+            ->reportFilter($filters)
+            ->orderByDesc('id')
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.transfer_pdf', [
+            'transfers' => $transfers,
+            'filters'  => $filters,
+            'printedAt' => now()->format('d/m/Y H:i'),
+        ])->setPaper('A4', 'portrait');
+
+        $filename = 'Transfer-report-' . now()->format('Y-m-d') . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    public function exportAdjustmentPDF(Request $request)
+    {
+        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
+
+        $adjustments = Adjustment::with(['contact', 'warehouse', 'user'])
+            ->reportFilter($filters)
+            ->orderByDesc('id')
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.adjustment_pdf', [
+            'adjustments' => $adjustments,
+            'filters'  => $filters,
+            'printedAt' => now()->format('d/m/Y H:i'),
+        ])->setPaper('A4', 'portrait');
+
+        $filename = 'Adjustment-report-' . now()->format('Y-m-d') . '.pdf';
+        return $pdf->download($filename);
+    }
+
 
 }

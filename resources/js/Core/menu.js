@@ -138,7 +138,7 @@ const menus = [
   {
     name: 'items',
     route: null,
-    icon: 'heart',
+    icon: 'box-items',
     hidden: false,
     heading: null,
     children: ['items'],

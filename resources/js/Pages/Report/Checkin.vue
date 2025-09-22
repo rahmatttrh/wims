@@ -78,6 +78,13 @@
               >
                 Export XLSX
               </button>
+              <button
+                type="button"
+                @click="exportInboundPDF(); showExport = false"
+                class="block w-full px-4 py-2 text-left hover:bg-gray-100"
+              >
+                Export PDF
+              </button>
             </div>
           </div>
 
@@ -318,6 +325,10 @@
       exportInboundXLSX(){
         window.location.href = route('reports.checkin.export.xlsx');
       },
+      exportInboundPDF(){
+        window.location.href = route('reports.checkin.export.pdf');
+      },
+
 
     },
   };

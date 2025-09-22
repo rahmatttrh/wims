@@ -72,6 +72,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('reports/transfer/export/xlsx', [Controllers\ReportController::class, 'exportTransferXLSX'])->name('reports.transfer.export.xlsx');
     Route::get('reports/adjustment/export/xlsx', [Controllers\ReportController::class, 'exportAdjustmentXLSX'])->name('reports.adjustment.export.xlsx');
 
+    Route::get('reports/checkin/export/pdf', [Controllers\ReportController::class, 'exportCheckinPDF'])->name('reports.checkin.export.pdf');
+    Route::get('reports/checkout/export/pdf', [Controllers\ReportController::class, 'exportCheckoutPDF'])->name('reports.checkout.export.pdf');
+    Route::get('reports/transfer/export/pdf', [Controllers\ReportController::class, 'exportTransferPDF'])->name('reports.transfer.export.pdf');
+    Route::get('reports/adjustment/export/pdf', [Controllers\ReportController::class, 'exportAdjustmentPDF'])->name('reports.adjustment.export.pdf');
+
+
 
     // Role Permissions
     Route::post('roles/{role}/permissions', [Controllers\RoleController::class, 'permissions'])->name('roles.permissions');

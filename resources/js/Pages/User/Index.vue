@@ -34,6 +34,7 @@
           <thead>
             <tr class="text-left font-bold">
               <th class="px-6 pt-6 pb-4">{{ $t('Name') }}</th>
+              <th class="px-6 pt-6 pb-4">{{ $t('Username') }}</th>
               <th class="px-6 pt-6 pb-4">{{ $t('Email') }}</th>
               <th class="px-6 pt-6 pb-4" colspan="2">{{ $t('Role') }}</th>
             </tr>
@@ -52,6 +53,11 @@
                   {{ user.name }}
                   <icons v-if="user.two_factor_enabled" name="otp" class="shrink-0 text-blue-600 ml-2" />
                   <icons v-if="user.deleted_at" name="trash" class="shrink-0 text-red-500 ml-2" />
+                </div>
+              </td>
+              <td class="border-t">
+                <div class="focus:outline-hidden px-6 py-4 flex items-center">
+                  {{ user.username }}
                 </div>
               </td>
               <td class="border-t">

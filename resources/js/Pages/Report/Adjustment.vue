@@ -51,6 +51,13 @@
               >
                 Export XLSX
               </button>
+              <button
+                type="button"
+                @click="exportAdjustmentPDF(); showExport = false"
+                class="block w-full px-4 py-2 text-left hover:bg-gray-100"
+              >
+                Export PDF
+              </button>
             </div>
           </div>
 
@@ -281,6 +288,9 @@ export default {
     },
     exportAdjustmentXLSX(){
       window.location.href = route('reports.adjustment.export.xlsx');
+    },
+    exportAdjustmentPDF(){
+      window.location.href = route('reports.adjustment.export.pdf');
     },
   },
 };
