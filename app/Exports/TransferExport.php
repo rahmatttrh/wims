@@ -40,8 +40,8 @@ class TransferExport implements FromCollection, WithHeadings, WithMapping, WithE
             $transfer->date ? Carbon::parse($transfer->date)->format('Y-m-d') : '',
             $transfer->fromWarehouse->name ?? '',
             $transfer->toWarehouse->name ?? '',
-            $transfer->user->name ?? '',
-            $transfer->draft == 1 ? 'Yes' : 'No',
+            // $transfer->user->name ?? '',
+            // $transfer->draft == 1 ? 'Yes' : 'No',
         ];
     }
 
@@ -49,12 +49,12 @@ class TransferExport implements FromCollection, WithHeadings, WithMapping, WithE
     {
         return [
             'No',
-            'Reference',
+            'Reference / No Aju',
             'Tanggal',
             'Dari Warehouse',
             'Tujuan Warehouse',
-            'User',
-            'Draft',
+            // 'User',
+            // 'Draft',
         ];
     }
 

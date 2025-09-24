@@ -42,7 +42,7 @@
       <div style="width:50%;padding:1rem 0">
         <div style="font-weight:bold">&nbsp;</div>
         <div>{{ __('Date') }}: {{ $transfer->date }}</div>
-        <div>{{ __('Reference') }}: {{ $transfer->reference }}</div>
+        <div>{{ __('Reference / No Aju') }}: {{ $transfer->reference }}</div>
         <div>{{ __('Created at') }}: {{ $transfer->created_at }}</div>
       </div>
       <div style="width:50%;padding:1rem 0">

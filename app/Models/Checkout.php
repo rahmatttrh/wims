@@ -20,9 +20,39 @@ class Checkout extends Model
     public static $hasUser = true;
 
     protected $fillable = [
-        'date', 'reference',  'draft', 'contact_id', 'warehouse_id', 'user_id',
+        'transaction_number', 'date', 'reference',  'draft', 'contact_id', 'warehouse_id', 'user_id',
         'hash', 'approved_by', 'account_id', 'details', 'extra_attributes', 'approved_at',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($checkout) {
+            // tanggal transaksi
+            $today = now();
+            $year  = $today->format('y'); // 25
+            $month = $today->format('m'); // 09
+            $day   = $today->format('d'); // 23
+
+            // ambil warehouse name/code
+            // $warehouse = $checkout->warehouse ? strtoupper($checkout->warehouse->name) : 'XXX';
+            if ($checkout->warehouse) {
+                if ($checkout->warehouse->type === 'PLB') {
+                    $warehouse = 'PLB';
+                } else {
+                    $warehouse = 'NPLB';
+                }
+            } else {
+                $warehouse = 'XXX';
+            }
+
+            // random 3 digit
+            $random = str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
+
+            $checkout->transaction_number = "EN/{$year}/{$month}/{$day}/{$warehouse}/{$random}";
+        });
+    }
 
     protected $setHash = true;
 

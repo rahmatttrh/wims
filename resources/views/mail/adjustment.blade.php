@@ -42,7 +42,7 @@
       <div style="width:50%;padding:1rem 0">
         <div>{{ __('Type') }}: {{ $adjustment->type }}</div>
         <div>{{ __('Date') }}: {{ $adjustment->date }}</div>
-        <div>{{ __('Reference') }}: {{ $adjustment->reference }}</div>
+        <div>{{ __('Reference / No Aju') }}: {{ $adjustment->reference }}</div>
         <div>{{ __('Created at') }}: {{ $adjustment->created_at }}</div>
       </div>
     </div>

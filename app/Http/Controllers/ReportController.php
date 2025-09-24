@@ -14,6 +14,7 @@ use App\Models\Checkout;
 use App\Models\Transfer;
 use App\Models\Warehouse;
 use App\Models\Adjustment;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Resources\Collection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -144,14 +145,14 @@ class ReportController extends Controller
 
         $checkins = Checkin::with(['contact', 'warehouse', 'user'])
             ->reportFilter($filters)
-            ->orderByDesc('id')
+            ->orderBy('id', 'asc')
             ->get();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.checkin_pdf', [
             'checkins' => $checkins,
             'filters'  => $filters,
             'printedAt' => now()->format('d/m/Y H:i'),
-        ])->setPaper('A4', 'portrait');
+        ])->setPaper('A4', 'landscape');
 
         $filename = 'Inbound-report-' . now()->format('Y-m-d') . '.pdf';
         return $pdf->download($filename);
@@ -163,14 +164,14 @@ class ReportController extends Controller
 
         $checkouts = Checkout::with(['contact', 'warehouse', 'user'])
             ->reportFilter($filters)
-            ->orderByDesc('id')
+            ->orderBy('id', 'asc')
             ->get();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.checkout_pdf', [
             'checkouts' => $checkouts,
             'filters'  => $filters,
             'printedAt' => now()->format('d/m/Y H:i'),
-        ])->setPaper('A4', 'portrait');
+        ])->setPaper('A4', 'landscape');
 
         $filename = 'Outbound-report-' . now()->format('Y-m-d') . '.pdf';
         return $pdf->download($filename);
@@ -182,7 +183,7 @@ class ReportController extends Controller
 
         $transfers = Transfer::with(['fromWarehouse', 'toWarehouse', 'user'])
             ->reportFilter($filters)
-            ->orderByDesc('id')
+            ->orderBy('id', 'asc')
             ->get();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.transfer_pdf', [
@@ -201,7 +202,7 @@ class ReportController extends Controller
 
         $adjustments = Adjustment::with(['contact', 'warehouse', 'user'])
             ->reportFilter($filters)
-            ->orderByDesc('id')
+            ->orderBy('id', 'asc')
             ->get();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.adjustment_pdf', [

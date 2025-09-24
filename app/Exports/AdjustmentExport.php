@@ -39,8 +39,8 @@ class AdjustmentExport implements FromCollection, WithHeadings, WithMapping, Wit
             $adjustment->reference,
             $adjustment->date ? Carbon::parse($adjustment->date)->format('Y-m-d') : '',
             $adjustment->warehouse->name ?? '',
-            $adjustment->user->name ?? '',
-            $adjustment->draft == 1 ? 'Yes' : 'No',
+            // $adjustment->user->name ?? '',
+            // $adjustment->draft == 1 ? 'Yes' : 'No',
         ];
     }
 
@@ -48,11 +48,11 @@ class AdjustmentExport implements FromCollection, WithHeadings, WithMapping, Wit
     {
         return [
             'No',
-            'Reference',
+            'Reference / No Aju',
             'Tanggal',
             'Warehouse',
-            'User',
-            'Draft',
+            // 'User',
+            // 'Draft',
         ];
     }
 

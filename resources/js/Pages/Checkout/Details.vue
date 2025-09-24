@@ -31,7 +31,7 @@
         <div class="w-full sm:w-1/2 leading-snug mb-6 sm:mb-0">
           <div class="text-sm font-bold">&nbsp;</div>
           <div>{{ $t('Date') }}: {{ $date(checkout.date) }}</div>
-          <div>{{ $t('Reference') }}: {{ checkout.reference }}</div>
+          <div>{{ $t('Reference / No Aju') }}: {{ checkout.reference }}</div>
           <div>{{ $t('Created at') }}: {{ $datetime(checkout.created_at) }}</div>
         </div>
         <div class="text-left w-full sm:w-1/2 leading-snug">

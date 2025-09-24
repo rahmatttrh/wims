@@ -462,7 +462,7 @@ export default {
     },
     exportTransferCSV() {
       // Header
-      const headers = ["No", "Reference", "Tanggal", "Dari Warehouse", "Tujuan Warehouse", "User", "Draft"];
+      const headers = ["No", "Reference / No Aju", "Tanggal", "Dari Warehouse", "Tujuan Warehouse", "User", "Draft"];
 
       // Data rows
       const rows = this.transfers.data.map((item, index) => [

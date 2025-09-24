@@ -288,7 +288,7 @@
       },
       exportInboundCSV() {
         // Header
-        const headers = ["No", "Reference", "Tanggal", "Contact", "Warehouse", "User", "Draft", "Deleted"];
+        const headers = ["No", "Reference / No Aju", "Tanggal", "Contact", "Warehouse", "User", "Draft", "Deleted"];
 
         // Data rows
         const rows = this.checkins.data.map((item, index) => [

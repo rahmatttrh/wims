@@ -13,7 +13,7 @@
     h2 { text-align: center; margin: 10px 0; }
     .meta { margin-bottom: 15px; font-size: 12px; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #000; padding: 6px; text-align: left; }
+    th, td { border: 1px solid #000; padding: 6px; text-align: center; }
     th { background-color: #f2f2f2; }
     tfoot td { font-weight: bold; }
   </style>
@@ -34,13 +34,8 @@
               <img src="{{ public_path('logos/icon2.jpg') }}" style="width: 70px;" alt="Logo Kanan">
           </td>
       </tr>
-  </table>
-  
-  
+    </table>
   </div>
-
-  <!-- Judul -->
-  {{-- <h2>Inbound Report</h2> --}}
 
   <!-- Meta Info -->
   <div class="meta">
@@ -51,39 +46,65 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 40px;">No</th>
-        <th>Reference</th>
-        <th>Date</th>
-        <th>Contact</th>
-        <th>Warehouse</th>
-        <th>User</th>
-        <th>Draft</th>
-        <th>Deleted</th>
+        <th style="width: 20px;" rowspan="2">No</th>
+        <th rowspan="2">Transaction Number</th>
+        <th rowspan="2">Reference / No Aju</th>
+        <th rowspan="2">Tanggal</th>
+        <th rowspan="2">Jumlah Qty</th>
+        <th rowspan="2">Contact</th>
+        <th rowspan="2">Warehouse</th>
+        <th>Item</th>
+        <th>Weight</th>
+        <th>Qty</th>
+      </tr>
+      <tr>
+        <th>Description</th>
+        <th>Unit</th>
+        <th>Per Item</th>
       </tr>
     </thead>
     <tbody>
       @forelse($checkouts as $index => $c)
+        <!-- Baris utama transaksi -->
         <tr>
           <td>{{ $index + 1 }}</td>
-          <td>{{ $c->reference }}</td>
-          <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('d/m/Y') : '-' }}</td>
+          <td>{{ $c->transaction_number ?? '-' }}</td>
+          <td>{{ $c->reference ?? '-' }}</td>
+          <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('Y-m-d') : '-' }}</td>
+          <td>{{ $c->items->sum('quantity') ?? 0 }}</td>
           <td>{{ $c->contact->name ?? '-' }}</td>
           <td>{{ $c->warehouse->name ?? '-' }}</td>
-          <td>{{ $c->user->name ?? '-' }}</td>
-          <td>{{ $c->draft == 1 ? 'Yes' : 'No' }}</td>
-          <td>{{ $c->deleted_at ? 'Yes' : 'No' }}</td>
+          <td colspan="3" style="text-align: center; font-weight: bold;">Packaging List</td>
         </tr>
+
+        <!-- Detail item -->
+        @if(isset($c->items) && count($c->items) > 0)
+          @foreach($c->items as $item)
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{{ $item->item->name ?? '-' }}</td>
+              <td>{{ number_format($item->weight ?? 0, 2) ?? '-' }} {{ $settings['weight_unit'] ?? 'kg' }}</td>
+              <td>{{ number_format($item->quantity ?? 0, 2) ?? '-' }} {{ $item->unit->code ?? '-' }}</td>
+            </tr>
+          @endforeach
+        @else
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            <td>-</td><td>-</td><td>-</td>
+          </tr>
+        @endif
       @empty
         <tr>
-          <td colspan="8" style="text-align:center;">No data available</td>
+          <td colspan="10" style="text-align:center;">No data available</td>
         </tr>
       @endforelse
     </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="8">Total Data: {{ $checkouts->count() }}</td>
-      </tr>
-    </tfoot>
   </table>
 
 </body>

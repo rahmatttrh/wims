@@ -95,11 +95,11 @@
                   <div>
                     <div>{{ checkin.reference }}</div>
                     <div>{{ $date(checkin.date) }}</div>
-                    <div class="inline-flex gap-x-2 items-center justify-start">
+                    <!-- <div class="inline-flex gap-x-2 items-center justify-start">
                       {{ $t('Draft') }}:
                       <icons v-if="checkin.draft == 1" name="tick" class="text-green-600 mx-auto" />
                       <icons v-else name="cross" class="text-red-600 mx-auto" />
-                    </div>
+                    </div> -->
                   </div>
 
                   <icons v-if="checkin.deleted_at" name="trash" class="shrink-0 w-4 h-4 text-red-500 ml-2" />

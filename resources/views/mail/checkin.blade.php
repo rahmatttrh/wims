@@ -41,7 +41,7 @@
       <div style="width:50%;padding:1rem 0">
         <div style="font-weight:bold">&nbsp;</div>
         <div>{{ __('Date') }}: {{ $checkin->date }}</div>
-        <div>{{ __('Reference') }}: {{ $checkin->reference }}</div>
+        <div>{{ __('Reference / No Aju') }}: {{ $checkin->reference }}</div>
         <div>{{ __('Created at') }}: {{ $checkin->created_at }}</div>
       </div>
       <div style="width:50%;padding:1rem 0">

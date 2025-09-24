@@ -15,7 +15,7 @@
           <text-input type="datetime-local" v-model="form.end_created_at" :label="$t('End Created At')" class="mr-4" />
         </div>
         <div class="w-full sm:w-1/2 lg:w-1/4 mb-4">
-          <text-input v-model="form.reference" :label="$t('Reference')" class="mr-4" />
+          <text-input v-model="form.reference" :label="$t('Reference / No Aju')" class="mr-4" />
         </div>
         <div v-if="type == 'checkin' || type == 'checkout'" class="w-full sm:w-1/2 lg:w-1/4 mb-4">
           <!-- <auto-complete json json :label="$t('Contact')" v-model="form.contact_id" :suggestions="route('contacts.search')" class="mr-4" /> -->

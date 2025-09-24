@@ -254,7 +254,7 @@ export default {
     },
     exportAdjustmentCSV() {
       // Header
-      const headers = ["No", "Reference", "Tanggal", "Warehouse", "User", "Draft"];
+      const headers = ["No", "Reference / No Aju", "Tanggal", "Warehouse", "User", "Draft"];
 
       // Data rows
       const rows = this.adjustments.data.map((item, index) => [

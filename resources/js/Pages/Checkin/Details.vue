@@ -32,7 +32,7 @@
         <div class="w-full sm:w-1/2 leading-snug mb-6 sm:mb-0">
           <div class="text-sm font-bold">&nbsp;</div>
           <div>{{ $t('Date') }}: {{ $date(checkin.date) }}</div>
-          <div>{{ $t('Reference') }}: {{ checkin.reference }}</div>
+          <div>{{ $t('Reference / No Aju') }}: {{ checkin.reference }}</div>
           <div>{{ $t('Created at') }}: {{ $datetime(checkin.created_at) }}</div>
         </div>
         <div class="text-left w-full sm:w-1/2 leading-snug">

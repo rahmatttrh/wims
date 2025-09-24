@@ -33,7 +33,7 @@
                 id="reference"
                 :searchable="false"
                 v-model="form.reference"
-                :label="$t('Reference')"
+                :label="$t('Reference / No Aju')"
                 :error="$page.props.errors.reference"
                 :suggestions="[
                   { value: 'ulid', label: 'ULID - Universally Unique Lexicographically Sortable Identifier' },

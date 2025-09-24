@@ -31,7 +31,7 @@
         <div class="w-full sm:w-1/2 leading-snug mb-6 sm:mb-0">
           <div>{{ $t('Type') }}: {{ adjustment.type }}</div>
           <div>{{ $t('Date') }}: {{ $date(adjustment.date) }}</div>
-          <div>{{ $t('Reference') }}: {{ adjustment.reference }}</div>
+          <div>{{ $t('Reference / No Aju') }}: {{ adjustment.reference }}</div>
           <div>{{ $t('Created at') }}: {{ $datetime(adjustment.created_at) }}</div>
         </div>
       </div>

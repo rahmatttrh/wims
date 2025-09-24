@@ -5,9 +5,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-  <link rel="icon" href="/48.png" />
+  {{-- <link rel="icon" href="/48.png" /> --}}
   <meta name="theme-color" content="#1F2937" />
-  <link rel="icon" sizes="32x32" href="/32.png" />
+  {{-- <link rel="icon" sizes="32x32" href="/32.png" />
   <link rel="icon" sizes="48x48" href="/48.png" />
   <link rel="icon" sizes="76x76" href="/76.png" />
   <link rel="icon" sizes="144x144" href="/144.png" />
@@ -16,7 +16,8 @@
   <link rel="apple-touch-icon" href="/76.png" />
   <link rel="apple-touch-icon" sizes="76x76" href="/76.png" />
   <link rel="apple-touch-icon" sizes="120x120" href="/120.png" />
-  <link rel="apple-touch-icon" sizes="152x152" href="/152.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/152.png" /> --}}
+  <link rel="icon" type="image/png" href="{{ asset('logos/icon.jpg') }}">
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title inertia>{{ config('app.name', 'WIMS') }}</title>

@@ -41,7 +41,7 @@
       <div style="width:50%;padding:1rem 0">
         <div style="font-weight:bold">&nbsp;</div>
         <div>{{ __('Date') }}: {{ $checkout->date }}</div>
-        <div>{{ __('Reference') }}: {{ $checkout->reference }}</div>
+        <div>{{ __('Reference / No Aju') }}: {{ $checkout->reference }}</div>
         <div>{{ __('Created at') }}: {{ $checkout->created_at }}</div>
       </div>
       <div style="width:50%;padding:1rem 0">

@@ -26,7 +26,7 @@
           <div class="flex flex-col lg:flex-row gap-6">
             <div class="flex flex-col gap-6 w-full lg:w-1/2">
               <TextInput type="date" v-model="form.date" :error="$page.props.errors.date" :label="$t('Date')" />
-              <TextInput v-model="form.reference" :error="$page.props.errors.reference" :label="$t('Reference')" />
+              <TextInput v-model="form.reference" :error="$page.props.errors.reference" :label="$t('Reference / No Aju')" />
             </div>
             <div class="flex flex-col gap-6 w-full lg:w-1/2">
               <template v-if="!$super && $user.warehouse_id">

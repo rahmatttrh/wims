@@ -52,12 +52,12 @@
     <thead>
       <tr>
         <th style="width: 40px;">No</th>
-        <th>Reference</th>
+        <th>Reference / No Aju</th>
         <th>Date</th>
-        <th>Contact</th>
-        <th>Warehouse</th>
-        <th>User</th>
-        <th>Draft</th>
+        <th>Dari Warehouse</th>
+        <th>Ke Warehouse</th>
+        {{-- <th>User</th>
+        <th>Draft</th> --}}
       </tr>
     </thead>
     <tbody>
@@ -68,18 +68,18 @@
           <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('d/m/Y') : '-' }}</td>
           <td>{{ $c->fromWarehouse->name ?? '-' }}</td>
           <td>{{ $c->toWarehouse->name ?? '-' }}</td>
-          <td>{{ $c->user->name ?? '-' }}</td>
-          <td>{{ $c->draft == 1 ? 'Yes' : 'No' }}</td>
+          {{-- <td>{{ $c->user->name ?? '-' }}</td>
+          <td>{{ $c->draft == 1 ? 'Yes' : 'No' }}</td> --}}
         </tr>
       @empty
         <tr>
-          <td colspan="7" style="text-align:center;">No data available</td>
+          <td colspan="5" style="text-align:center;">No data available</td>
         </tr>
       @endforelse
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="7">Total Data: {{ $transfers->count() }}</td>
+        <td colspan="5">Total Data: {{ $transfers->count() }}</td>
       </tr>
     </tfoot>
   </table>
