@@ -299,11 +299,11 @@ export default {
                   <div>
                     <div>{{ transfer.reference }}</div>
                     <div>{{ $date(transfer.date) }}</div>
-                    <div class="flex items-center">
+                    <!-- <div class="flex items-center">
                       {{ $t('Draft') }}:
                       <icons v-if="transfer.draft == 1" name="tick" class="text-green-600 mx-auto" />
                       <icons v-else name="cross" class="text-red-600 mx-auto" />
-                    </div>
+                    </div> -->
                   </div>
 
                   <icons v-if="transfer.deleted_at" name="trash" class="shrink-0 w-4 h-4 text-red-500 ml-2" />

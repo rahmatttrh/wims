@@ -21,7 +21,7 @@ class Checkin extends Model
 
     protected $fillable = [
         'transaction_number', 'date', 'reference',  'draft', 'contact_id', 'warehouse_id', 'user_id',
-        'hash', 'approved_by', 'account_id', 'details', 'extra_attributes', 'approved_at',
+        'hash', 'approved_by', 'account_id', 'details', 'extra_attributes', 'approved_at', 'item_id', 'unit_id',
     ];
 
     protected static function boot()
@@ -111,5 +111,15 @@ class Checkin extends Model
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
     }
 }

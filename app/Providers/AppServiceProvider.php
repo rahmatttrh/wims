@@ -6,13 +6,39 @@ use Carbon\Carbon;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Tecdiary\Laravel\Attachments\AttachmentsServiceProvider;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
+    // public function boot()
+    // {
+    //     app()->useLangPath(base_path('lang'));
+    //     JsonResource::withoutWrapping();
+
+    //     try {
+    //         if (env('APP_INSTALLED') && function_exists('get_settings')) {
+    //             try {
+    //                 $settings = get_settings(['timezone', 'default_locale']);
+    //                 $settings['timezone'] ??= config('app.timezone');
+    //                 config(['app.timezone' => $settings['timezone']]);
+    //                 Carbon::setLocale($settings['default_locale'] ?? 'en');
+    //             } catch (\Exception $e) {
+    //                 // logger()->error('Provider settings error: ' . $e->getMessage());
+    //             }
+    //         }
+    //     } catch (\Exception $e) {
+    //     }
+    // }
+
     public function boot()
     {
         app()->useLangPath(base_path('lang'));
         JsonResource::withoutWrapping();
+
+        // Bagikan CSRF token ke semua halaman Inertia
+        Inertia::share([
+            'csrf_token' => fn () => csrf_token(),
+        ]);
 
         try {
             if (env('APP_INSTALLED') && function_exists('get_settings')) {

@@ -21,7 +21,7 @@ class Transfer extends Model
 
     protected $fillable = [
         'date', 'reference',  'draft', 'hash', 'to_warehouse_id', 'from_warehouse_id',
-        'user_id', 'approved_by', 'account_id', 'details', 'extra_attributes', 'approved_at',
+        'user_id', 'approved_by', 'account_id', 'details', 'extra_attributes', 'approved_at', 'item_id', 'unit_id',
     ];
 
     protected $setHash = true;
@@ -81,5 +81,15 @@ class Transfer extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
     }
 }

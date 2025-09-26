@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Inbound Report</title>
   <style>
-    body { font-family: DejaVu Sans, sans-serif; font-size: 12px; margin: 30px; }
+    body { font-family: DejaVu Sans, sans-serif; font-size: 10px; margin: 30px; }
     .header { display: flex; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
     .logo { width: 70px; }
     .company { margin-left: 15px; }
@@ -34,13 +34,8 @@
               <img src="{{ public_path('logos/icon2.jpg') }}" style="width: 70px;" alt="Logo Kanan">
           </td>
       </tr>
-  </table>
-  
-  
+    </table>
   </div>
-
-  <!-- Judul -->
-  {{-- <h2>Inbound Report</h2> --}}
 
   <!-- Meta Info -->
   <div class="meta">
@@ -51,82 +46,47 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 20px;" rowspan="2">No</th>
-        <th rowspan="2">Transaction Number</th>
-        <th rowspan="2">Reference / No Aju</th>
-        <th rowspan="2">Tanggal</th>
-        <th rowspan="2">Jumlah Qty</th>
-        <th rowspan="2">Contact</th>
-        <th rowspan="2">Warehouse</th>
-        <th>Item</th>
-        <th>Weight</th>
-        <th>Qty</th>
-        {{-- <th>User</th>
-        <th>Draft</th>
-        <th>Deleted</th> --}}
+        <th style="width: 40px" rowspan="2">No</th>
+        <th colspan="3">Data dok pabean</th>
+        <th colspan="2">Bukti Penerimaan Barang / Good Receive Note / dok lain yang sejenis</th>
+        <th rowspan="2">Pengirim atau pemasok barang</th>
+        <th rowspan="2">Nama Pemilik Barang</th>
+        <th rowspan="2">Kode barang</th>
+        <th rowspan="2">Nama barang</th>
+        <th rowspan="2">Satuan barang</th>
+        <th rowspan="2">Jumlah barang</th>
       </tr>
       <tr>
-        <th>Description</th>
-        <th>Unit</th>
-        <th>Per Item</th>
+        <th>Jenis</th>
+        <th>No. Daftar</th>
+        <th>Tgl. Daftar</th>
+        <th>No</th>
+        <th>Tanggal</th>
       </tr>
     </thead>
     <tbody>
       @forelse($checkins as $index => $c)
-        <!-- Baris utama transaksi -->
         <tr>
           <td>{{ $index + 1 }}</td>
-          <td>{{ $c->transaction_number ?? '-' }}</td>
-          <td>{{ $c->reference ?? '-' }}</td>
-          <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('Y-m-d') : '-' }}</td>
-          <td>{{ $c->items->sum('quantity') ?? 0 }}</td>
-          <td>{{ $c->contact->name ?? '-' }}</td>
           <td>{{ $c->warehouse->name ?? '-' }}</td>
-          <td colspan="3" style="text-align: center; font-weight: bold;">Packaging List</td>
+          <td>{{ $c->transaction_number ?? '-' }}</td>
+          <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('Y-m-d') : '-' }}</td>
+          <td>{{ $c->reference ?? '-' }}</td>
+          <td>{{ $c->date_in ? \Carbon\Carbon::parse($c->date_in)->format('Y-m-d') : '-' }}</td>
+          <td>{{ $c->sender_name ?? '-' }}</td>
+          <td>{{ $c->contact->name ?? '-' }}</td>
+          <td>{{ $c->item->code ?? '-' }}</td>
+          <td>{{ $c->item->name ?? '-' }}</td>
+          <td>{{ $c->unit->code ?? '-' }}</td>
+          {{-- <td>{{ $c->item->sum('quantity') ?? 0 }}</td> --}}
+          <td>{{ $c->qty_in ?? '-'}}</td>
         </tr>
-    
-        <!-- Detail item -->
-        @if(isset($c->items) && count($c->items) > 0)
-          @foreach($c->items as $item)
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>{{ $item->item->name ?? '-' }}</td>
-              <td>{{ number_format($item->weight ?? 0, 2) ?? '-' }} {{ $settings['weight_unit'] ?? 'kg' }}</td>
-              <td>{{ number_format($item->quantity ?? 0, 2) ?? '-' }} {{ $item->unit->code ?? '-' }}</td>
-            </tr>
-          @endforeach
-        @else
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-          </tr>
-        @endif
       @empty
         <tr>
-          <td colspan="10" style="text-align:center;">No data available</td>
+          <td colspan="12" style="text-align:center;">No data available</td>
         </tr>
       @endforelse
     </tbody>
-    
-    {{-- <tfoot>
-      <tr>
-        <td colspan="5">Total Data: {{ $checkins->count() }}</td>
-      </tr>
-    </tfoot> --}}
   </table>
 
 </body>

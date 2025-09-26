@@ -143,7 +143,7 @@ class ReportController extends Controller
     {
         $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
 
-        $checkins = Checkin::with(['contact', 'warehouse', 'user'])
+        $checkins = Checkin::with(['contact', 'warehouse', 'user', 'item', 'unit'])
             ->reportFilter($filters)
             ->orderBy('id', 'asc')
             ->get();
@@ -162,14 +162,20 @@ class ReportController extends Controller
     {
         $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
 
-        $checkouts = Checkout::with(['contact', 'warehouse', 'user'])
+        $checkouts = Checkout::with(['contact', 'warehouse', 'user', 'item', 'unit'])
             ->reportFilter($filters)
             ->orderBy('id', 'asc')
             ->get();
 
+        // Hitung total nilai (price_item * qty_out)
+        $grandTotal = $checkouts->sum(function ($checkout) {
+            return ($checkout->item->price_item ?? 0) * ($checkout->qty_out ?? 0);
+        });
+
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.checkout_pdf', [
             'checkouts' => $checkouts,
             'filters'  => $filters,
+            'grandTotal' => $grandTotal,
             'printedAt' => now()->format('d/m/Y H:i'),
         ])->setPaper('A4', 'landscape');
 

@@ -46,62 +46,46 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 20px;" rowspan="2">No</th>
-        <th rowspan="2">Transaction Number</th>
-        <th rowspan="2">Reference / No Aju</th>
-        <th rowspan="2">Tanggal</th>
-        <th rowspan="2">Jumlah Qty</th>
-        <th rowspan="2">Contact</th>
-        <th rowspan="2">Warehouse</th>
-        <th>Item</th>
-        <th>Weight</th>
-        <th>Qty</th>
+        <th style="width: 40px" rowspan="2">No</th>
+        <th colspan="3">Data dok pabean</th>
+        <th colspan="2">Bukti Pengeluaran Barang / dok lain yang sejenis</th>
+        <th rowspan="2">Pembeli/Penerima atau pemasok barang</th>
+        <th rowspan="2">Nama Pemilik Barang</th>
+        <th rowspan="2">Kode barang</th>
+        <th rowspan="2">Nama barang</th>
+        <th rowspan="2">Satuan barang</th>
+        <th rowspan="2">Jumlah barang</th>
+        <th rowspan="2">Nilai barang</th>
       </tr>
       <tr>
-        <th>Description</th>
-        <th>Unit</th>
-        <th>Per Item</th>
+        <th>Jenis</th>
+        <th>No. Daftar</th>
+        <th>Tgl. Daftar</th>
+        <th>No</th>
+        <th>Tanggal</th>
       </tr>
     </thead>
     <tbody>
       @forelse($checkouts as $index => $c)
-        <!-- Baris utama transaksi -->
         <tr>
           <td>{{ $index + 1 }}</td>
-          <td>{{ $c->transaction_number ?? '-' }}</td>
-          <td>{{ $c->reference ?? '-' }}</td>
-          <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('Y-m-d') : '-' }}</td>
-          <td>{{ $c->items->sum('quantity') ?? 0 }}</td>
-          <td>{{ $c->contact->name ?? '-' }}</td>
           <td>{{ $c->warehouse->name ?? '-' }}</td>
-          <td colspan="3" style="text-align: center; font-weight: bold;">Packaging List</td>
+          <td>{{ $c->transaction_number ?? '-' }}</td>
+          <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('Y-m-d') : '-' }}</td>
+          <td>{{ $c->reference ?? '-' }}</td>
+          <td>{{ $c->date_out ? \Carbon\Carbon::parse($c->date_in)->format('Y-m-d') : '-' }}</td>
+          <td>{{ $c->receiver_name ?? '-' }}</td>
+          <td>{{ $c->contact->name ?? '-' }}</td>
+          <td>{{ $c->item->code ?? '-' }}</td>
+          <td>{{ $c->item->name ?? '-' }}</td>
+          <td>{{ $c->unit->code ?? '-' }}</td>
+          {{-- <td>{{ $c->item->sum('quantity') ?? 0 }}</td> --}}
+          <td>{{ $c->qty_out ?? '-'}}</td>
+          <td>Rp. {{ number_format(($c->item->price_item ?? 0) * ($c->qty_out ?? 0), 0, ',', '.') }}</td>
         </tr>
-
-        <!-- Detail item -->
-        @if(isset($c->items) && count($c->items) > 0)
-          @foreach($c->items as $item)
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>{{ $item->item->name ?? '-' }}</td>
-              <td>{{ number_format($item->weight ?? 0, 2) ?? '-' }} {{ $settings['weight_unit'] ?? 'kg' }}</td>
-              <td>{{ number_format($item->quantity ?? 0, 2) ?? '-' }} {{ $item->unit->code ?? '-' }}</td>
-            </tr>
-          @endforeach
-        @else
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            <td>-</td><td>-</td><td>-</td>
-          </tr>
-        @endif
       @empty
         <tr>
-          <td colspan="10" style="text-align:center;">No data available</td>
+          <td colspan="12" style="text-align:center;">No data available</td>
         </tr>
       @endforelse
     </tbody>

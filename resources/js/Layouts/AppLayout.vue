@@ -137,8 +137,12 @@
                     <div class="border-t border-gray-100"></div>
 
                     <!-- Authentication -->
-                    <form @submit.prevent="logout">
+                    <!-- <form @submit.prevent="logout">
                       <tec-dropdown-link as="button"> Log Out </tec-dropdown-link>
+                    </form> -->
+                    <form method="POST" :action="route('logout')">
+                      <input type="hidden" name="_token" :value="$page.props.csrf_token" />
+                      <tec-dropdown-link as="button"> {{ $t('Log Out') }} </tec-dropdown-link>
                     </form>
                   </template>
                 </tec-dropdown>
