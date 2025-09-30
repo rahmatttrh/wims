@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Contact;
 use App\Models\Checkout;
+use App\Models\TypeBc;
 use App\Models\Warehouse;
 use App\Mail\EmailCheckout;
 use Illuminate\Http\Request;
@@ -30,16 +31,28 @@ class CheckoutController extends Controller
     public function create()
     {
         return Inertia::render('Checkout/Form', [
-            'contacts'   => Contact::ofAccount()->get(),
+         
+            // 'contacts'   => Contact::ofAccount()->get(),
+            // 'contacts'   => ['BC 16', 'BC 28'],
+            // 'contactbs'   => Contact::ofAccount()->get(),
+            'contactbs'   => Contact::ofAccount()->get(),
+            'contacts'   => TypeBc::where('code', '!=', 'bc1.6')->get(),
             'warehouses' => Warehouse::ofAccount()->active()->get(),
         ]);
     }
 
     public function store(CheckoutRequest $request)
     {
+      // dd($request->all());
         $data = $request->validated();
         $checkout = (new PrepareOrder($data, $request->file('attachments'), new Checkout()))->process()->save();
         event(new \App\Events\CheckoutEvent($checkout, 'created'));
+
+        $checkout->no_receive = $request->no_receive;
+        $checkout->date_receive = $request->date_receive; 
+        $checkout->type_bc_id = $request->type_bc_id;
+        // tambahkan manual kalau belum keisi
+        $checkout->save();
 
         if ((get_settings('auto_email') ?? null) && $checkout->contact->email) {
             $checkout->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight,photo', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username', 'attachments']);

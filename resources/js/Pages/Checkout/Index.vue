@@ -73,7 +73,8 @@
         <table class="w-full whitespace-nowrap">
           <thead>
             <tr class="text-left font-bold">
-              <th class="px-6 pt-6 pb-4">{{ $t('Checkout') }}</th>
+              <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Aju') }}</th>
+              <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Penerimaan') }}</th>
               <th class="px-6 pt-6 pb-4">{{ $t('Relations') }}</th>
               <th class="px-6 pt-6 pb-4" colspan="2">{{ $t('Details') }}</th>
             </tr>
@@ -83,8 +84,16 @@
               <td class="border-t" @click="goto(checkout.id)" :class="{ 'cursor-pointer': $can('read-checkouts') }">
                 <div class="px-6 py-4 flex items-center focus:text-indigo-500">
                   <div>
-                    <div>{{ checkout.reference }}</div>
-                    <div>{{ $date(checkout.date) }}</div>
+                    <!-- <div>{{ checkout.reference }}</div> -->
+                    <div class="flex items-center">
+                     <div class="text-gray-500 mr-1">{{ $t('No Aju') }}:</div>
+                     {{ checkout.reference }}
+                  </div>  
+                  <div class="flex items-center">
+                     <div class="text-gray-500 mr-1">{{ $t('Tanggal Aju') }}:</div>
+                     {{ $date(checkout.date) }}
+                  </div>    
+                    <!-- <div>{{ $date(checkout.date) }}</div> -->
                     <!-- <div class="inline-flex gap-x-2 items-center justify-start">
                       {{ $t('Draft') }}:
                       <icons v-if="checkout.draft == 1" name="tick" class="text-green-600 mx-auto" />
@@ -95,6 +104,23 @@
                   <icons v-if="checkout.deleted_at" name="trash" class="shrink-0 w-4 h-4 text-red-500 ml-2" />
                 </div>
               </td>
+              <td class="border-t" @click="goto(checkin.id)" :class="{ 'cursor-pointer': $can('read-checkins') }">
+               
+               <div class="px-6 py-4">
+                 <div class="flex items-center">
+                   <div class="text-gray-500 mr-1">{{ $t('No Penerimaan') }}:</div>
+                   {{ checkout.no_receive }}
+                 </div>
+                 <div class="flex items-center">
+                   <div class="text-gray-500 mr-1">{{ $t('Tgl Penerimaan') }}:</div>
+                   {{ checkout.date_receive }}
+                 </div>
+                 <div class="flex items-center">
+                   <div class="text-gray-500 mr-1">{{ $t('User') }}:</div>
+                   {{ checkout.user.name }}
+                 </div>
+               </div>
+             </td>
               <td class="border-t" @click="goto(checkout.id)" :class="{ 'cursor-pointer': $can('read-checkouts') }">
                 <div class="px-6 py-4">
                   <div class="flex items-center">
@@ -105,10 +131,10 @@
                     <div class="text-gray-500 mr-1">{{ $t('Warehouse') }}:</div>
                     {{ checkout.warehouse.name }}
                   </div>
-                  <div class="flex items-center">
+                  <!-- <div class="flex items-center">
                     <div class="text-gray-500 mr-1">{{ $t('User') }}:</div>
                     {{ checkout.user.name }}
-                  </div>
+                  </div> -->
                 </div>
               </td>
               <td class="border-t max-w-lg min-w-56" @click="goto(checkout.id)" :class="{ 'cursor-pointer': $can('read-checkouts') }">

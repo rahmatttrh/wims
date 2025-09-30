@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Outbound Report</title>
+  <title>Transfer Report</title>
   <style>
-    body { font-family: DejaVu Sans, sans-serif; font-size: 12px; margin: 30px; }
+    body { font-family: DejaVu Sans, sans-serif; font-size: 10px; margin: 30px; }
     .header { display: flex; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
     .logo { width: 70px; }
     .company { margin-left: 15px; }
@@ -28,19 +28,53 @@
               <img src="{{ public_path('logos/icon.jpg') }}" style="width: 70px;" alt="Logo Kiri">
           </td>
           <td style="text-align: center; font-size: 18px; font-weight: bold; border: none;">
-              Outbound Report
+              TRANSFER REPORT
           </td>
           <td style="width: 70px; text-align: right; border: none;">
-              <img src="{{ public_path('logos/icon2.jpg') }}" style="width: 70px;" alt="Logo Kanan">
+            <img src="{{ public_path('logos/bea_cukai.png') }}" style="width: 100px;" alt="Logo Kanan">
           </td>
       </tr>
     </table>
   </div>
 
+  {{-- <div class="meta">
+    Location: <strong>{{ $warehouseName }}</strong>
+  </div>
+
+  <div class="meta">
+    Data period:
+    <strong>
+      {{ $start_date ? \Carbon\Carbon::parse($start_date)->format('d/m/Y') : '-' }}
+      s/d
+      {{ $end_date ? \Carbon\Carbon::parse($end_date)->format('d/m/Y') : '-' }}
+    </strong>
+  </div>
+  
+
   <!-- Meta Info -->
   <div class="meta">
-    Dicetak pada: <strong>{{ $printedAt }}</strong>
-  </div>
+    Print Date: <strong>{{ $printedAt }}</strong>
+  </div> --}}
+
+  <table width="100%" style="margin-bottom: 15px; font-size: 12px; border: none;">
+    <tr style="border: none;">
+      <td style="text-align: left; border: none;">Location: <strong>{{ $warehouseName }}</strong></td>
+    </tr>
+    <tr style="border: none;">
+      <td style="text-align: left; border: none;">
+        Data period: 
+        <strong>
+          {{ $start_date ? \Carbon\Carbon::parse($start_date)->format('d/m/Y') : '-' }}
+          s/d
+          {{ $end_date ? \Carbon\Carbon::parse($end_date)->format('d/m/Y') : '-' }}
+        </strong>
+      </td>
+      <td style="text-align: right; border: none;">
+        Print Date: <strong>{{ $printedAt }}</strong>
+      </td>
+    </tr>
+  </table>
+
 
   <!-- Table -->
   <table>
@@ -54,7 +88,7 @@
         <th>Saldo Awal</th>
         <th>Jumlah Pemasukan Barang</th>
         <th>Jumlah Pengeluaran Barang</th>
-        <th>Penyesuaian (Adjustment)/th>
+        <th>Penyesuaian (Adjustment)</th>
         <th>Saldo Akhir</th>
         <th>Hasil Pencacahan</th>
         <th>Jumlah Selisih</th>
@@ -62,25 +96,26 @@
       </tr>
     </thead>
     <tbody>
-      @forelse($transfers as $index => $c)
-        <tr>
-          <td>{{ $index + 1 }}</td>
-          {{-- <td>{{ $c->item->code ?? '-' }}</td>
-          <td>{{ $c->item->name?? '-' }}</td>
-          <td>{{ $c->unit->code ?? '-' }}</td> --}}
-          <td>145</td>
-          <td>777</td>
-          <td>007</td>
-          <td>100</td>
-          <td>50</td>
-          <td>60</td>
-          <td>40</td>
-          <td>0</td>
-          <td>70</td>
-          <td>70</td>
-          <td>0</td>
-          <td>Sesuai</td>
-        </tr>
+      @php $no = 1; @endphp
+      @forelse($transfers as $c)
+        @foreach($c->items as $ci)
+          <tr>
+            <td>{{ $no++ }}</td>
+            {{-- <td>{{ $c->type_bc == null ? '-' : $c->type_bc->name }}</td> --}}
+            <td>{{ $ci->item->code ?? '-' }}</td>
+            <td>{{ $ci->item->name ?? '-' }}</td>
+            <td>{{ $ci->unit->code ?? '-' }}</td>
+            <td>{{ $ci->item->track_quantity ?? '-' }}</td>
+            <td>{{ $ci->item->track_quantity ?? '-' }}</td>
+            <td>{{ $c->transfer_in ?? '-' }}</td>
+            <td>{{ $c->transfer_out ?? '-' }}</td>
+            <td>{{ $c->adjustment ?? '-'}}</td>
+            <td>{{ $ci->pencacahan }}</td>
+            <td>{{ $ci->saldo_akhir }}</td>
+            <td>{{ $ci->selisih }}</td>
+            <td>{{ $c->details ?? '-' }}</td>
+          </tr>
+        @endforeach
       @empty
         <tr>
           <td colspan="12" style="text-align:center;">No data available</td>

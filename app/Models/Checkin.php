@@ -20,7 +20,7 @@ class Checkin extends Model
     public static $hasUser = true;
 
     protected $fillable = [
-        'transaction_number', 'date', 'reference',  'draft', 'contact_id', 'warehouse_id', 'user_id',
+        'transaction_number', 'date', 'date_receive', 'type_bc_id', 'no_receive', 'reference',  'draft', 'contact_id', 'warehouse_id', 'user_id',
         'hash', 'approved_by', 'account_id', 'details', 'extra_attributes', 'approved_at', 'item_id', 'unit_id',
     ];
 
@@ -47,10 +47,13 @@ class Checkin extends Model
                 $warehouse = 'XXX';
             }
 
-            // random 3 digit
-            $random = str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
+            // random digit
+            $random = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
+            $random_2 = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
+            $random_3 = str_pad(rand(1, 9999999), 7, '0', STR_PAD_LEFT);
+            $random_4 = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
 
-            $checkin->transaction_number = "EN/{$year}/{$month}/{$day}/{$warehouse}/{$random}";
+            $checkin->transaction_number = "{$random}-{$random_2}-{$random_3}-{$random_4}";
         });
     }
 
@@ -113,13 +116,9 @@ class Checkin extends Model
         return $this->belongsTo(Warehouse::class);
     }
 
-    public function item()
+    public function type_bc()
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsTo(TypeBc::class); 
     }
 
-    public function unit()
-    {
-        return $this->belongsTo(Unit::class);
-    }
 }

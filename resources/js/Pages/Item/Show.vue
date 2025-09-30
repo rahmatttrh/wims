@@ -13,17 +13,10 @@
           <template #description>{{ $t('Please review the item details below') }}</template>
         </tec-section-title>
         <div class="flex">
-          <button
-            @click="print()"
-            class="flex items-center justify-center mr-2 h-8 w-8 rounded-full text-gray-600 hover:text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-hidden"
-          >
+          <button @click="print()" class="flex items-center justify-center mr-2 h-8 w-8 rounded-full text-gray-600 hover:text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-hidden">
             <icons name="printer" class="h-5 w-5" />
           </button>
-          <Link
-            v-if="$can('update-items')"
-            :href="route('items.edit', item.id)"
-            class="flex items-center justify-center mr-2 h-8 w-8 rounded-full text-gray-600 hover:text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-hidden"
-          >
+          <Link v-if="$can('update-items')" :href="route('items.edit', item.id)" class="flex items-center justify-center mr-2 h-8 w-8 rounded-full text-gray-600 hover:text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-hidden">
             <icons name="edit" class="h-5 w-5" />
           </Link>
         </div>

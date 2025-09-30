@@ -9,7 +9,7 @@ class CheckoutItem extends Model
     use HasManySyncable;
 
     protected $fillable = [
-        'checkout_id', 'item_id', 'weight', 'quantity', 'unit_id', 'batch_no', 'expiry_date', 'account_id', 'draft', 'warehouse_id',
+        'checkout_id', 'item_id', 'weight', 'quantity', 'buyer', 'owner', 'code', 'value', 'unit_id', 'batch_no', 'expiry_date', 'account_id', 'draft', 'warehouse_id',
     ];
 
     public function checkout()

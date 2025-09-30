@@ -498,9 +498,13 @@ export default {
     exportTransferXLSX(){
       window.location.href = route('reports.transfer.export.xlsx');
     },
-    exportTransferPDF(){
-      window.location.href = route('reports.transfer.export.pdf');
-    },
+    // exportTransferPDF(){
+    //   window.location.href = route('reports.transfer.export.pdf');
+    // },
+    exportTransferPDF() {
+      const query = window.location.search;
+      window.location.href = route('reports.transfer.export.pdf') + query;
+    }
   },
 };
 </script>

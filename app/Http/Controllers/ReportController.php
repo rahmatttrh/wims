@@ -8,10 +8,13 @@ use App\Models\Unit;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Checkin;
+use App\Models\CheckinItem;
 use App\Models\Contact;
 use App\Models\Category;
 use App\Models\Checkout;
+use App\Models\CheckoutItem;
 use App\Models\Transfer;
+use App\Models\TransferItem;
 use App\Models\Warehouse;
 use App\Models\Adjustment;
 use App\Models\Setting;
@@ -139,19 +142,39 @@ class ReportController extends Controller
         return Excel::download(new AdjustmentExport($filters), $filename);
     }
 
+    // PDF
+
     public function exportCheckinPDF(Request $request)
     {
-        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
+        dd($request->all());
+        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id', 'type_bc_id');
 
-        $checkins = Checkin::with(['contact', 'warehouse', 'user', 'item', 'unit'])
+        $start = $request->get('start_date');
+        $end   = $request->get('end_date');
+
+        $checkins = Checkin::with([
+            'contact',
+            'warehouse',
+            'user',
+            'items.item',
+            'items.unit',
+            'type_bc'
+        ])
             ->reportFilter($filters)
             ->orderBy('id', 'asc')
             ->get();
+
+        $printedAt = now()->format('Y-m-d H:i:s');
+
+        $warehouseName = $checkins->first()->warehouse->name ?? '-';
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.checkin_pdf', [
             'checkins' => $checkins,
             'filters'  => $filters,
             'printedAt' => now()->format('d/m/Y H:i'),
+            'start_date' => $start,
+            'end_date'   => $end,
+            'warehouseName' => $warehouseName,
         ])->setPaper('A4', 'landscape');
 
         $filename = 'Inbound-report-' . now()->format('Y-m-d') . '.pdf';
@@ -160,43 +183,94 @@ class ReportController extends Controller
 
     public function exportCheckoutPDF(Request $request)
     {
-        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
+        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id', 'type_bc_id');
 
-        $checkouts = Checkout::with(['contact', 'warehouse', 'user', 'item', 'unit'])
+        $start = $request->get('start_date');
+        $end   = $request->get('end_date');
+
+        $checkouts = Checkout::with([
+            'contact',
+            'warehouse',
+            'user',
+            'items.item',
+            'items.unit',
+            'type_bc'
+        ])
             ->reportFilter($filters)
             ->orderBy('id', 'asc')
             ->get();
 
-        // Hitung total nilai (price_item * qty_out)
-        $grandTotal = $checkouts->sum(function ($checkout) {
-            return ($checkout->item->price_item ?? 0) * ($checkout->qty_out ?? 0);
-        });
+        // dd($checkouts);
+
+        $printedAt = now()->format('Y-m-d H:i:s');
+
+        $warehouseName = $checkouts->first()->warehouse->name ?? '-';
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.checkout_pdf', [
             'checkouts' => $checkouts,
             'filters'  => $filters,
-            'grandTotal' => $grandTotal,
             'printedAt' => now()->format('d/m/Y H:i'),
+            'start_date' => $start,
+            'end_date'   => $end,
+            'warehouseName' => $warehouseName,
         ])->setPaper('A4', 'landscape');
 
         $filename = 'Outbound-report-' . now()->format('Y-m-d') . '.pdf';
         return $pdf->download($filename);
     }
 
+    // public function exportTransferPDF(Request $request)
+    // {
+    //     $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'from_warehouse_id', 'user_id', 'to_warehouse_id', 'draft', 'trashed', 'category_id');
+
+    //     $transfers = Transfer::with(['fromWarehouse', 'toWarehouse', 'user', 'item'])
+    //         ->reportFilter($filters)
+    //         ->orderBy('id', 'asc')
+    //         ->get();
+
+    //     $warehouseName = $transfers->first()->warehouse->name ?? '-';
+
+    //     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.transfer_pdf', [
+    //         'transfers' => $transfers,
+    //         'filters'  => $filters,
+    //         'printedAt' => now()->format('d/m/Y H:i'),
+    //         'warehouseName' => $warehouseName,
+    //     ])->setPaper('A4', 'landscape');
+
+    //     $filename = 'Transfer-report-' . now()->format('Y-m-d') . '.pdf';
+    //     return $pdf->download($filename);
+    // }
+
     public function exportTransferPDF(Request $request)
     {
         $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'from_warehouse_id', 'user_id', 'to_warehouse_id', 'draft', 'trashed', 'category_id');
 
-        $transfers = Transfer::with(['fromWarehouse', 'toWarehouse', 'user'])
+        $start = $request->get('start_date');
+        $end   = $request->get('end_date');
+
+        $transfers = Transfer::with([
+            'fromWarehouse',
+            'toWarehouse',
+            'user',
+            'items.item',
+            'items.unit'
+        ])
             ->reportFilter($filters)
             ->orderBy('id', 'asc')
             ->get();
+
+        $warehouseName = $transfers->isNotEmpty() && $transfers->first()->toWarehouse
+        ? $transfers->first()->toWarehouse->name
+        : '-';
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.transfer_pdf', [
             'transfers' => $transfers,
             'filters'  => $filters,
             'printedAt' => now()->format('d/m/Y H:i'),
-        ])->setPaper('A4', 'portrait');
+            'warehouseName' => $warehouseName,
+            'start_date' => $start,
+            'end_date'   => $end,
+        ])->setPaper('A4', 'landscape');
 
         $filename = 'Transfer-report-' . now()->format('Y-m-d') . '.pdf';
         return $pdf->download($filename);
@@ -220,6 +294,4 @@ class ReportController extends Controller
         $filename = 'Adjustment-report-' . now()->format('Y-m-d') . '.pdf';
         return $pdf->download($filename);
     }
-
-
 }

@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use App\Models\Checkin;
 use App\Models\Contact;
 use App\Models\Warehouse;
+use App\Models\TypeBc;
 use App\Mail\EmailCheckin;
 use Illuminate\Http\Request;
 use App\Actions\Tec\PrepareOrder;
@@ -30,22 +31,36 @@ class CheckinController extends Controller
     public function create()
     {
         return Inertia::render('Checkin/Form', [
-            'contacts'   => Contact::ofAccount()->get(),
+            'contactbs'   => Contact::ofAccount()->get(),
+            'contacts'   => TypeBc::where('code', 'bc1.6')->get(),
+            // 'contacts'   => ['BC 16', 'BC 28'],
             'warehouses' => Warehouse::ofAccount()->active()->get(),
         ]);
     }
 
     public function store(CheckinRequest $request)
     {
+         // dd($request->type_bc_id['name']);
+         // dd($request->all());
         $data = $request->validated();
         $checkin = (new PrepareOrder($data, $request->file('attachments'), new Checkin()))->process()->save();
         event(new \App\Events\CheckinEvent($checkin, 'created'));
 
+
+         $checkin->no_receive = $request->no_receive;
+         $checkin->date_receive = $request->date_receive; 
+         $checkin->type_bc_id = $request->type_bc_id;
+         // tambahkan manual kalau belum keisi
+         $checkin->save();
+         
+//   dd($checkin);
         if ((get_settings('auto_email') ?? null) && $checkin->contact->email) {
             $checkin->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username,email']);
 
-            Mail::to($checkin->contact->email)->cc(auth()->user()->email)->queue(new EmailCheckin($checkin));
+            // Mail::to($checkin->contact->email)->cc(auth()->user()->email)->queue(new EmailCheckin($checkin));
         }
+
+      //   dd($checkin);
 
         return redirect()->route('checkins.index')->with('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'created']));
     }

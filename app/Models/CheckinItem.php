@@ -9,7 +9,7 @@ class CheckinItem extends Model
     use HasManySyncable;
 
     protected $fillable = [
-        'checkin_id', 'item_id', 'weight', 'quantity', 'unit_id', 'batch_no', 'expiry_date', 'account_id', 'draft', 'warehouse_id',
+        'checkin_id', 'item_id', 'code', 'sender', 'owner', 'weight', 'quantity', 'unit_id', 'batch_no', 'expiry_date', 'account_id', 'draft', 'warehouse_id',
     ];
 
     public function checkin()
@@ -62,6 +62,6 @@ class CheckinItem extends Model
     public function variations()
     {
         // return $this->hasMany(Variation::class);
-        return $this->belongsToMany(Variation::class)->withPivot('weight', 'quantity', 'unit_id');
+        return $this->belongsToMany(Variation::class)->withPivot('weight', 'quantity', 'sender', 'owner', 'unit_id');
     }
 }

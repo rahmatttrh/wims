@@ -314,9 +314,13 @@ export default {
     exportOutboundXLSX(){
       window.location.href = route('reports.checkout.export.xlsx');
     },
-    exportOutboundPDF(){
-      window.location.href = route('reports.checkout.export.pdf');
-    },
+    // exportOutboundPDF(){
+    //   window.location.href = route('reports.checkout.export.pdf');
+    // },
+    exportOutboundPDF() {
+      const query = window.location.search;
+      window.location.href = route('reports.checkout.export.pdf') + query;
+    }
   },
 };
 </script>

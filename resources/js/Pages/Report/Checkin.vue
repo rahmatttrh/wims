@@ -325,9 +325,16 @@
       exportInboundXLSX(){
         window.location.href = route('reports.checkin.export.xlsx');
       },
-      exportInboundPDF(){
-        window.location.href = route('reports.checkin.export.pdf');
-      },
+      // exportInboundPDF(){
+      //   // linkUrl
+      //   let currentURL = window.location.search;
+      //   // confirm(currentURL);
+      //   window.location.href = route('reports.checkin.export.pdf', currentURL);
+      // },
+      exportInboundPDF() {
+        const query = window.location.search;
+        window.location.href = route('reports.checkin.export.pdf') + query;
+      }
 
 
     },

@@ -5,120 +5,95 @@
         <tbody>
           <tr>
             <td class="px-6 py-2 whitespace-nowrap">
-              <button type="button" @click="() => (show = true)">
+              <button type="button" @click="showImage">
                 <img v-if="item.photo" class="block w-24 h-24 rounded-xs mr-2 -my-2" :src="item.photo" />
               </button>
             </td>
             <td class="px-6 py-2">
               <svg
+                ref="barcode"
                 class="barcode"
-                jsbarcode-width="2"
-                jsbarcode-height="70"
-                jsbarcode-fontSize="12"
-                :jsbarcode-value="item.code"
-                :jsbarcode-format="item.symbology"
+                :data-code="item.code"
+                :data-symbology="item.symbology"
               ></svg>
             </td>
           </tr>
+
           <tr>
             <td class="px-6 py-2 whitespace-nowrap">{{ $t('Name') }}</td>
-            <td class="px-6 py-2">
-              <span class="font-bold">{{ item.name }}</span>
-            </td>
+            <td class="px-6 py-2"><span class="font-bold">{{ item.name }}</span></td>
           </tr>
+
           <tr>
             <td class="px-6 py-2 whitespace-nowrap">{{ $t('SKU') }}</td>
-            <td class="px-6 py-2">
-              {{ item.sku }}
-            </td>
+            <td class="px-6 py-2">{{ item.sku }}</td>
           </tr>
+
           <tr>
             <td class="px-6 py-2 whitespace-nowrap">{{ $t('Category') }}</td>
-            <td class="px-6 py-2">
-              {{ item.categories[0].name }}
-            </td>
+            <td class="px-6 py-2">{{ (item.categories && item.categories[0]) ? item.categories[0].name : '' }}</td>
           </tr>
-          <tr v-if="item.categories.length > 2">
+
+          <tr v-if="item.categories && item.categories.length > 1">
             <td class="px-6 py-2 whitespace-nowrap">{{ $t('Child Category') }}</td>
-            <td class="px-6 py-2">
-              {{ item.categories[1].name }}
-            </td>
+            <td class="px-6 py-2">{{ item.categories[1].name }}</td>
           </tr>
+
           <tr>
             <td class="px-6 py-2 whitespace-nowrap">{{ $t('Rack') }}</td>
-            <td class="px-6 py-2">
-              <div v-if="item.rack_location">{{ item.rack_location }}</div>
-            </td>
+            <td class="px-6 py-2"><div v-if="item.rack_location">{{ item.rack_location }}</div></td>
           </tr>
+
           <tr>
             <td class="px-6 py-2 whitespace-nowrap">{{ $t('Unit') }}</td>
-            <td class="px-6 py-2">
-              <div v-if="item.unit">{{ item.unit.name }}</div>
-            </td>
+            <td class="px-6 py-2"><div v-if="item.unit">{{ item.unit.name }}</div></td>
           </tr>
+
           <tr>
             <td class="px-6 py-2 whitespace-nowrap">{{ $t('Track Serials') }}</td>
-            <td class="px-6 py-2">
-              <icons v-if="item.track_serials" name="tick" class="text-green-600" />
-              <icons v-else name="cross" class="text-red-600" />
-            </td>
+            <td class="px-6 py-2"><icons v-if="item.track_serials" name="tick" class="text-green-600" /><icons v-else name="cross" class="text-red-600" /></td>
           </tr>
+
           <tr>
             <td class="px-6 py-2 whitespace-nowrap">{{ $t('Track Weight') }}</td>
-            <td class="px-6 py-2">
-              <icons v-if="item.track_weight" name="tick" class="text-green-600" />
-              <icons v-else name="cross" class="text-red-600" />
-            </td>
+            <td class="px-6 py-2"><icons v-if="item.track_weight" name="tick" class="text-green-600" /><icons v-else name="cross" class="text-red-600" /></td>
           </tr>
+
           <tr>
             <td class="px-6 py-2 whitespace-nowrap">{{ $t('Track Quantity') }}</td>
-            <td class="px-6 py-2">
-              <icons v-if="item.track_quantity" name="tick" class="text-green-600" />
-              <icons v-else name="cross" class="text-red-600" />
-            </td>
+            <td class="px-6 py-2"><icons v-if="item.track_quantity" name="tick" class="text-green-600" /><icons v-else name="cross" class="text-red-600" /></td>
           </tr>
-          <!-- <tr>
-          <td class="px-6 py-2 whitespace-nowrap">{{ $t('Track Variants e.g. Size and/or Color') }}</td>
-          <td class="px-6 py-2">
-            <icons v-if="item.has_variants" name="tick" class="text-green-600" />
-            <icons v-else name="cross" class="text-red-600" />
-          </td>
-        </tr> -->
+
           <tr v-if="item.has_variants">
             <td class="px-6 py-2 whitespace-nowrap">{{ $t('Variants') }}</td>
             <td class="px-6 py-2">
               <div v-for="v in item.variants" :key="v.name">
-                <strong>{{ v.name }}:</strong>
-                {{
-                  v.option
-                    .filter(o => o)
-                    // .map(o => $t(o))
-                    .join(', ')
-                }}
+                <strong>{{ v.name }}:</strong> {{ v.option.filter(o => o).join(', ') }}
               </div>
             </td>
           </tr>
+
           <tr>
             <td class="px-6 py-2 whitespace-nowrap">{{ $t('Details') }}</td>
-            <td class="px-6 py-2">
-              <span v-if="item.details">{{ item.details }}</span>
-            </td>
+            <td class="px-6 py-2"><span v-if="item.details">{{ item.details }}</span></td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <!-- Stock per gudang -->
     <div class="-mx-4 md:mx-0 print:m-0 print:block">
       <div class="mt-6 avoid print:mt-0">
         <div class="grid gap-6" :class="modal ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'">
-          <div :key="'w_' + w.id" v-for="w in item.stock" class="w-full print:m-3 print:border print:rounded-md print:w-5/12">
+          <div v-for="(w, idx) in groupedStock" :key="'w_' + idx" class="w-full print:m-3 print:border print:rounded-md print:w-5/12">
             <div class="bg-white pt-3 pb-2 md:rounded-md shadow-sm overflow-x-auto print:mb-2">
               <div class="flex items-center justify-between px-4 -my-3 py-3">
-                <h4 class="text-lg font-bold">{{ w[0].warehouse.name }} ({{ w[0].warehouse.code }})</h4>
+                <h4 class="text-lg font-bold">{{ w[0].warehouse?.name || '' }} ({{ w[0].warehouse?.code || '' }})</h4>
                 <p>{{ w[0].rack_location || '' }}</p>
               </div>
               <table class="w-full mt-3">
                 <tbody>
-                  <tr :key="stock.id" v-for="stock in w" :class="{ 'font-bold': !stock.variation }">
+                  <tr v-for="stock in w" :key="stock.id" :class="{ 'font-bold': !stock.variation }">
                     <td class="border-t pl-4 pr-2 py-2">
                       <span v-if="stock.variation" v-html="$meta(stock.variation.meta)" />
                       <span v-else>{{ $t('Quantity') }}</span>
@@ -135,51 +110,9 @@
         </div>
       </div>
     </div>
-    <template v-if="item.has_variants && variations.length">
-      <div class="mt-6 -mx-4 md:mx-0 flex flex-col gap-6 avoid print:mb-2 print:block">
-        <loading v-if="loading" />
-        <div v-for="variation in variations" :key="variation.sku" class="bg-white p-4 md:rounded-md shadow-sm overflow-x-auto">
-          <div class="flex items-center">
-            <span class="text-gray-500 mr-2">{{ $t('Variation') }}:</span>
-            <h4 class="text-lg font-bold" v-html="$meta(variation.meta)"></h4>
-          </div>
-          <div>
-            <span class="text-gray-500 mr-2">{{ $t('SKU') }}:</span>
-            {{ variation.sku }}
-          </div>
-          <div class="-mx-4 pb-4 border-b print:hidden"></div>
-          <div class="flex flex-wrap mt-4 -mb-4 -mr-4 print:m-0">
-            <div
-              :key="stock.id"
-              v-for="stock in variation.stock"
-              class="w-full lg:w-1/2 xl:w-1/3 avoid print:m-2 print:rounded-md print:w-5/12"
-            >
-              <div class="px-4 mb-4 mr-4 border py-2 md:rounded-md print:mb-2 print:rounded-sm">
-                <h4 class="text-lg font-bold">{{ stock.warehouse.name }} ({{ stock.warehouse.code }})</h4>
-                <table class="w-full">
-                  <tbody>
-                    <tr v-if="item.track_quantity">
-                      <td class="pr-3 py-2">{{ $t('Quantity') }}</td>
-                      <td class="pl-3 py-2">{{ $number(stock.quantity) }} {{ item.unit ? item.unit.code : '' }}</td>
-                    </tr>
-                    <tr v-if="item.track_weight">
-                      <td class="pr-3 py-2">{{ $t('Weight') }}</td>
-                      <td class="pl-3 py-2">{{ $number(stock.weight) }} {{ $settings.weight_unit }}</td>
-                    </tr>
-                    <tr v-if="stock.rack_location">
-                      <td class="pr-3 py-2">{{ $t('Rack Location') }}</td>
-                      <td class="pl-3 py-2">{{ stock.rack_location }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </template>
 
-    <modal :show="show" max-width="2xl" :closeable="true" :transparent="true" @close="() => (show = false)">
+    <!-- Image modal -->
+    <modal :show="showImageModal" max-width="2xl" :closeable="true" :transparent="true" @close="showImageModal = false">
       <div class="print:block print:h-full">
         <img class="block max-w-full mx-auto rounded-md" :src="item.photo" />
       </div>
@@ -191,35 +124,88 @@
 import JsBarcode from 'jsbarcode';
 import Loading from '@/Shared/Loading.vue';
 import Modal from '@/Jetstream/Modal.vue';
+
 export default {
   components: { Loading, Modal },
-
   props: { item: Object, modal: { default: false } },
 
   data() {
     return {
-      show: false,
+      showImageModal: false,
       loading: false,
       variations: [],
     };
   },
 
+  computed: {
+    // groupedStock: supaya tetap aman walau struktur stock berbeda
+    groupedStock() {
+      // jika item.stock sudah tergrup (array of arrays) kembalikan langsung
+      if (!this.item) return [];
+      if (Array.isArray(this.item.stock) && this.item.stock.length && Array.isArray(this.item.stock[0])) {
+        return this.item.stock;
+      }
+      // jika stock adalah flat array, group by warehouse_id
+      if (Array.isArray(this.item.stock)) {
+        const groups = {};
+        this.item.stock.forEach(s => {
+          const key = s.warehouse_id || 'unknown';
+          groups[key] = groups[key] || [];
+          groups[key].push(s);
+        });
+        return Object.values(groups);
+      }
+      // fallback: jika ada all_stock
+      if (Array.isArray(this.item.all_stock)) {
+        const groups = {};
+        this.item.all_stock.forEach(s => {
+          const key = s.warehouse_id || 'unknown';
+          groups[key] = groups[key] || [];
+          groups[key].push(s);
+        });
+        return Object.values(groups);
+      }
+      return [];
+    },
+  },
+
   mounted() {
-    JsBarcode('.barcode').init();
-    if (!this.item.stock) {
-      this.item.stock = this.item.all_stock;
-    }
-    // if (this.item.has_variants == 1) {
-    //   this.loading = true;
-    //   axios
-    //     .get(route('items.show', this.item.id) + '?json=yes&variation_stock=yes')
-    //     .then(res => (this.variations = res.data.variations))
-    //     .finally(() => (this.loading = false));
-    // }
+    this.renderBarcode();
+    // jika perlu load variasi via API uncomment dan sesuaikan
+    // if (this.item && this.item.has_variants == 1) { ... }
   },
 
   updated() {
-    JsBarcode('.barcode').init();
+    this.renderBarcode();
+  },
+
+  methods: {
+    renderBarcode() {
+      this.$nextTick(() => {
+        try {
+          const svgs = this.$el.querySelectorAll('.barcode');
+          svgs.forEach(svg => {
+            const code = svg.getAttribute('data-code') || (this.item && this.item.code) || '';
+            const sym = svg.getAttribute('data-symbology') || (this.item && this.item.symbology) || undefined;
+            // JsBarcode(svg, value, options)
+            JsBarcode(svg, code, {
+              format: sym || undefined,
+              width: 2,
+              height: 70,
+              fontSize: 12,
+              displayValue: true,
+            });
+          });
+        } catch (e) {
+          // jika JsBarcode tidak tersedia atau error, jangan crash
+          // console.warn('JsBarcode error', e);
+        }
+      });
+    },
+
+    showImage() {
+      this.showImageModal = true;
+    },
   },
 };
 </script>

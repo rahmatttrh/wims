@@ -22,21 +22,73 @@
         <trashed-message v-if="edit && edit.deleted_at" class="mb-6" @restore="restore">
           {{ $t('This record has been deleted.') }}
         </trashed-message>
+
         <div class="flex flex-col gap-6">
           <div class="flex flex-col lg:flex-row gap-6">
             <div class="flex flex-col gap-6 w-full lg:w-1/2">
-              <text-input type="date" v-model="form.date" :error="$page.props.errors.date" :label="$t('Date')" />
-              <text-input v-model="form.reference" :error="$page.props.errors.reference" :label="$t('Reference / No Aju')" />
+               
+               <auto-complete
+                
+                id="type_bc_id"
+                :label="$t('Jenis')"
+                :suggestions="contacts"
+                v-model="form.type_bc_id"
+                :error="$page.props.errors.type_bc_id"
+               
+               />
+               <!-- <div class="form-group">
+               <label for="type_bc_id">Jenis</label>
+               <select id="type_bc_id" v-model="form.type_bc_id">
+                  <option disabled value="">-- Pilih Jenis --</option>
+                  <option v-for="contact in contacts" :key="contact.id" :value="contact.id">
+                     {{ contact.name }}
+                  </option>
+               </select>
+               </div> -->
+
+               <!-- <select v-model="form.type_bc_id" >
+                  <option disabled value="" selected>-- Pilih Jenis --</option>
+               <option v-for="contact in contacts" :key="contact.id" :value="contact.id">
+                  {{ contact.name }}
+               </option>
+               </select> -->
+
+               <!-- <auto-complete
+               id="type_bc_id"
+               :label="$t('Jenis')"
+               :suggestions="contacts.map(c => ({ label: c.name, value: c.id }))"
+               v-model="form.type_bc_id"
+               :error="$page.props.errors.type_bc_id"
+               /> -->
             </div>
+          </div>
+        </div>
+        <div class="flex flex-col gap-6">
+          <div class="flex flex-col lg:flex-row gap-6">
             <div class="flex flex-col gap-6 w-full lg:w-1/2">
+              <text-input type="date" v-model="form.date" :error="$page.props.errors.date" :label="$t('Tanggal Aju')" />
+              <text-input type="date" v-model="form.date_receive" :error="$page.props.errors.date_receive" :label="$t('Tanggal Penerimaan Barang')" />
               <auto-complete
                 json
                 id="contact"
                 :label="$t('Contact')"
+                :suggestions="contactbs"
+                v-model="form.contact_id"
+                :required="false"
+                :error="$page.props.errors.contact_id"
+               />
+            </div>
+            <div class="flex flex-col gap-6 w-full lg:w-1/2">
+               <text-input v-model="form.reference" :error="$page.props.errors.reference" :label="$t('No. Aju')" />
+               <text-input v-model="form.no_receive" :error="$page.props.errors.no_receive" :label="$t('No. Bukti Penerimaan Barang')" />
+              <!-- <auto-complete
+                json
+                id="contact"
+                :label="$t('Jenis')"
                 :suggestions="contacts"
                 v-model="form.contact_id"
                 :error="$page.props.errors.contact_id"
-              />
+              /> -->
               <template v-if="!$super && $user.warehouse_id">
                 <text-input
                   disabled
@@ -88,8 +140,13 @@
                     'bg-indigo-50': ii % 2 != 0,
                     error:
                       $page.props.errors['items.' + ii + '.variation_id'] ||
+                      $page.props.errors['items.' + ii + '.code'] ||
+                      $page.props.errors['items.' + ii + '.sender'] ||
+                      $page.props.errors['items.' + ii + '.owner'] ||
                       $page.props.errors['items.' + ii + '.quantity'] ||
+                      $page.props.errors['items.' + ii + '.unit'] ||
                       $page.props.errors['items.' + ii + '.weight'],
+
                   }"
                 >
                   <h4 class="text-base font-bold" :class="{ '-mb-4': item.has_variants }">{{ item.name }} ({{ item.code }})</h4>
@@ -144,6 +201,15 @@
                     <div v-if="$page.props.errors['items.' + ii + '.variation_id']" class="text-red-600 pt-1 rounded-md">
                       {{ $page.props.errors['items.' + ii + '.variation_id'].split('when').shift() }}.
                     </div>
+                    <div v-if="$page.props.errors['items.' + ii + '.code']" class="text-red-600 pt-1 rounded-md">
+                      {{ $page.props.errors['items.' + ii + '.code'] }}
+                    </div>
+                    <div v-if="$page.props.errors['items.' + ii + '.sender']" class="text-red-600 pt-1 rounded-md">
+                      {{ $page.props.errors['items.' + ii + '.sender'] }}
+                    </div>
+                    <div v-if="$page.props.errors['items.' + ii + '.owner']" class="text-red-600 pt-1 rounded-md">
+                      {{ $page.props.errors['items.' + ii + '.owner'] }}
+                    </div>
                     <div v-if="$page.props.errors['items.' + ii + '.quantity']" class="text-red-600 pt-1 rounded-md">
                       {{ $page.props.errors['items.' + ii + '.quantity'] }}
                     </div>
@@ -160,9 +226,12 @@
                   <tr class="text-left font-bold">
                     <th class="px-2 lg:pl-6 py-4 w-4"><icons name="trash" /></th>
                     <th class="px-2 lg:px-6 py-4">{{ $t('Item') }}</th>
-                    <th class="px-2 lg:px-6 py-4 text-center" :class="$settings.track_weight ? 'w-32 xl:w-56' : 'w-px'">
+                    <th class="px-2 lg:px-6 py-4 text-center w-32 xl:w-56">{{ $t('Kode') }}</th>
+                    <th class="px-2 lg:px-6 py-4 text-center w-32 xl:w-56">{{ $t('Pengirim') }}</th>
+                    <th class="px-2 lg:px-6 py-4 text-center w-32 xl:w-56">{{ $t('Pemilik') }}</th>
+                    <!-- <th class="px-2 lg:px-6 py-4 text-center" :class="$settings.track_weight ? 'w-32 xl:w-56' : 'w-px'">
                       <span v-if="$settings.track_weight">{{ $t('Weight') }}</span>
-                    </th>
+                    </th> -->
                     <th class="px-2 lg:px-6 py-4 text-center w-32 xl:w-56">{{ $t('Quantity') }}</th>
                     <th class="px-2 lg:px-6 py-4 text-center w-32 xl:w-56">{{ $t('Unit') }}</th>
                   </tr>
@@ -176,7 +245,11 @@
                           :class="{
                             error:
                               $page.props.errors['items.' + ii + '.variation_id'] ||
+                              $page.props.errors['items.' + ii + '.code'] ||
+                              $page.props.errors['items.' + ii + '.sender'] ||
+                              $page.props.errors['items.' + ii + '.owner'] ||
                               $page.props.errors['items.' + ii + '.quantity'] ||
+                              $page.props.errors['items.' + ii + '.unit'] ||
                               $page.props.errors['items.' + ii + '.weight'],
                           }"
                         >
@@ -203,7 +276,11 @@
                           :class="{
                             error:
                               $page.props.errors['items.' + ii + '.variation_id'] ||
+                              $page.props.errors['items.' + ii + '.code'] ||
+                              $page.props.errors['items.' + ii + '.sender'] ||
+                              $page.props.errors['items.' + ii + '.owner'] ||
                               $page.props.errors['items.' + ii + '.quantity'] ||
+                              $page.props.errors['items.' + ii + '.unit'] ||
                               $page.props.errors['items.' + ii + '.weight'],
                           }"
                         >
@@ -221,6 +298,11 @@
                           <td>
                             <div class="px-2 lg:px-6 pb-2 focus:text-indigo-500">
                               <div v-html="$meta(variation.meta)"></div>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="px-2 xl:px-6 pb-2 text-right" v-if="$settings.track_weight == 1 && item.track_weight == 1">
+                              <text-input type="number" v-model="variation.weight" size="small" class="w-full block" />
                             </div>
                           </td>
                           <td>
@@ -247,14 +329,22 @@
                         <tr
                           v-if="
                             $page.props.errors['items.' + ii + '.variation_id'] ||
+                            $page.props.errors['items.' + ii + '.code'] ||
+                            $page.props.errors['items.' + ii + '.sender'] ||
+                            $page.props.errors['items.' + ii + '.owner'] ||
                             $page.props.errors['items.' + ii + '.quantity'] ||
+                            $page.props.errors['items.' + ii + '.satuan'] ||
                             $page.props.errors['items.' + ii + '.weight']
                           "
                           class="group-hover:bg-gray-100 focus-within:bg-gray-100"
                           :class="{
                             error:
                               $page.props.errors['items.' + ii + '.variation_id'] ||
+                              $page.props.errors['items.' + ii + '.code'] ||
+                              $page.props.errors['items.' + ii + '.sender'] ||
+                              $page.props.errors['items.' + ii + '.owner'] ||
                               $page.props.errors['items.' + ii + '.quantity'] ||
+                              $page.props.errors['items.' + ii + '.satuan'] ||
                               $page.props.errors['items.' + ii + '.weight'],
                           }"
                         >
@@ -269,6 +359,9 @@
                               <div v-if="$page.props.errors['items.' + ii + '.quantity']" class="text-red-600 pt-1 rounded-md">
                                 {{ $page.props.errors['items.' + ii + '.quantity'] }}
                               </div>
+                              <div v-if="$page.props.errors['items.' + ii + '.quantity']" class="text-red-600 pt-1 rounded-md">
+                                {{ $page.props.errors['items.' + ii + '.quantity'] }}
+                              </div>
                               <div v-if="$page.props.errors['items.' + ii + '.weight']" class="text-red-600 pt-1 rounded-md">
                                 {{ $page.props.errors['items.' + ii + '.weight'].split('when').shift() }}.
                               </div>
@@ -277,14 +370,19 @@
                         </tr>
                       </tbody>
                     </template>
+                    
+                    
                     <tbody v-else>
                       <tr
                         class="hover:bg-gray-100 focus-within:bg-gray-100"
                         :class="{
                           error:
-                            $page.props.errors['items.' + ii + '.variation_id'] ||
+                            $page.props.errors['items.' + ii + '.item_id'] ||
+                            $page.props.errors['items.' + ii + '.code'] ||
+                            $page.props.errors['items.' + ii + '.sender'] ||
+                            $page.props.errors['items.' + ii + '.owner'] ||
                             $page.props.errors['items.' + ii + '.quantity'] ||
-                            $page.props.errors['items.' + ii + '.weight'],
+                            $page.props.errors['items.' + ii + '.unit'],
                         }"
                       >
                         <td class="border-t">
@@ -308,7 +406,9 @@
                               <span class="text-base">{{ item.name }} ({{ item.code }})</span>
                             </h4>
                             <!-- </button> -->
-
+                            <div v-if="$page.props.errors['items.' + ii + '.id']" class="text-red-600 pt-1 rounded-md">
+                              {{ $page.props.errors['items.' + ii + '.id'].split('when').shift() }}.
+                            </div>
                             <div v-if="$page.props.errors['items.' + ii + '.variation_id']" class="text-red-600 pt-1 rounded-md">
                               {{ $page.props.errors['items.' + ii + '.variation_id'].split('when').shift() }}.
                             </div>
@@ -319,10 +419,23 @@
                               {{ $page.props.errors['items.' + ii + '.weight'].split('when').shift() }}.
                             </div>
                           </div>
+                          <text-input type="text" v-model="item.id" hidden size="small" :value="item.id"  class="w-full block" />
+                        </td>
+                       
+                        
+                        <td class="border-t">
+                          <div class="px-2 xl:px-6 py-2 text-right">
+                            <text-input type="text" v-model="item.code" size="small" class="w-full block" />
+                          </div>
                         </td>
                         <td class="border-t">
-                          <div class="px-2 xl:px-6 py-2 text-right" v-if="$settings.track_weight == 1 && item.track_weight == 1">
-                            <text-input type="number" v-model="item.weight" size="small" class="w-full block" />
+                          <div class="px-2 xl:px-6 py-2 text-right">
+                            <text-input type="text" v-model="item.sender" size="small" class="w-full block" />
+                          </div>
+                        </td>
+                        <td class="border-t">
+                          <div class="px-2 xl:px-6 py-2 text-right">
+                            <text-input type="text" v-model="item.owner" size="small" class="w-full block" />
                           </div>
                         </td>
                         <td class="border-t">
@@ -330,6 +443,11 @@
                             <text-input type="number" v-model="item.quantity" size="small" class="w-full block" />
                           </div>
                         </td>
+                        <!-- <td class="border-t">
+                          <div class="px-2 xl:px-6 py-2 text-right">
+                            <text-input type="number" v-model="item.quantity" size="small" class="w-full block" />
+                          </div>
+                        </td> -->
                         <td class="border-t">
                           <div class="px-2 xl:px-6 py-2 text-right" v-if="item.unit">
                             <select-input v-model="item.unit_id" size="small" class="w-full block">
@@ -528,7 +646,7 @@ import SelectVariantModal from '@/Shared/SelectVariantModal.vue';
 import TecSecondaryButton from '@/Jetstream/SecondaryButton.vue';
 
 export default {
-  props: ['edit', 'contacts', 'warehouses'],
+  props: ['edit', 'contacts', 'contactbs', 'warehouses'],
 
   components: {
     Dialog,
@@ -567,6 +685,10 @@ export default {
         contact_id: this.edit ? this.edit.contact_id : null,
         date: this.edit ? this.edit.date_raw : this.$formatJSDate(new Date()),
         warehouse_id: this.edit ? this.edit.warehouse_id : this.$super ? null : this.$user?.warehouse_id,
+        
+        no_receive: this.edit ? this.edit.no_receive : null,
+        date_receive: this.edit ? this.edit.date_receive : null,
+        type_bc_id: this.edit ? this.edit.type_bc_id : null,
       }),
     };
   },
@@ -592,6 +714,9 @@ export default {
           id: i.id,
           item_id: i.item_id,
           unit_id: i.unit_id,
+          sender: i.sender,
+          owner: i.owner,
+          code: i.code,
           weight: parseFloat(i.weight),
           quantity: parseFloat(i.quantity),
           selected: {
@@ -706,6 +831,9 @@ export default {
       this.form
         .transform(data => ({
           ...data,
+          type_bc_id: data.type_bc_id,
+          date_receive: data.date_receive,
+          no_receive: data.no_receive,
           items: data.items.map(i => ({
             ...i,
             unit: null,
@@ -716,7 +844,7 @@ export default {
               serials: i.selected.serials && i.selected.serials.length ? i.selected.serials.map(s => s.id) : [],
               variations: i.selected.variations.map(v => {
                 let fv = {};
-                return (fv[v.id] = { variation_id: v.id, quantity: v.quantity, weight: v.weight, unit_id: v.unit_id || null });
+                return (fv[v.id] = { variation_id: v.id,type_bc_id: v.type_bc_id,no_receive: v.no_receive, date_receive: v.date_receive ,sender: v.sender, quantity: v.quantity, weight: v.weight, unit_id: v.unit_id || null });
               }),
             },
           })),

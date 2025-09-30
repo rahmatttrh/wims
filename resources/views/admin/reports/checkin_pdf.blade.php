@@ -11,7 +11,16 @@
     .company h1 { margin: 0; font-size: 18px; }
     .company p { margin: 2px 0; font-size: 12px; }
     h2 { text-align: center; margin: 10px 0; }
-    .meta { margin-bottom: 15px; font-size: 12px; }
+    /* .meta { margin-bottom: 15px; font-size: 12px; } */
+    .meta { margin-bottom: 10px; font-size: 12px; }
+    .meta-flex { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;   /* biar vertikal rata tengah */
+      width: 100%;           /* penuhi baris */
+      font-size: 12px; 
+      margin-bottom: 15px;
+    }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { border: 1px solid #000; padding: 6px; text-align: center; }
     th { background-color: #f2f2f2; }
@@ -28,33 +37,57 @@
               <img src="{{ public_path('logos/icon.jpg') }}" style="width: 70px;" alt="Logo Kiri">
           </td>
           <td style="text-align: center; font-size: 18px; font-weight: bold; border: none;">
-              Inbound Report
+              INBOUND REPORT
           </td>
           <td style="width: 70px; text-align: right; border: none;">
-              <img src="{{ public_path('logos/icon2.jpg') }}" style="width: 70px;" alt="Logo Kanan">
+            <img src="{{ public_path('logos/bea_cukai.png') }}" style="width: 100px;" alt="Logo Kanan">
           </td>
       </tr>
     </table>
   </div>
 
-  <!-- Meta Info -->
-  <div class="meta">
-    Dicetak pada: <strong>{{ $printedAt }}</strong>
-  </div>
+  {{-- <table width="100%" style="margin-bottom: 1px; font-size: 12px; border: none;">
+    <tr style="border: none;">
+      <td style="text-align: left; border: none;">Location: <strong>{{ $warehouseName }}</strong></td>
+    </tr>
+  </table> --}}
+  {{-- <div class="meta">
+    Location: <strong>{{ $warehouseName }}</strong>
+  </div> --}}
+
+  <table width="100%" style="margin-bottom: 15px; font-size: 12px; border: none;">
+    <tr style="border: none;">
+      <td style="text-align: left; border: none;">Location: <strong>{{ $warehouseName }}</strong></td>
+    </tr>
+    <tr style="border: none;">
+      <td style="text-align: left; border: none;">
+        Data period: 
+        <strong>
+          {{ $start_date ? \Carbon\Carbon::parse($start_date)->format('d/m/Y') : '-' }}
+          s/d
+          {{ $end_date ? \Carbon\Carbon::parse($end_date)->format('d/m/Y') : '-' }}
+        </strong>
+      </td>
+      <td style="text-align: right; border: none;">
+        Print Date: <strong>{{ $printedAt }}</strong>
+      </td>
+    </tr>
+  </table>
+  
 
   <!-- Table -->
   <table>
     <thead>
       <tr>
-        <th style="width: 40px" rowspan="2">No</th>
-        <th colspan="3">Data dok pabean</th>
-        <th colspan="2">Bukti Penerimaan Barang / Good Receive Note / dok lain yang sejenis</th>
-        <th rowspan="2">Pengirim atau pemasok barang</th>
-        <th rowspan="2">Nama Pemilik Barang</th>
-        <th rowspan="2">Kode barang</th>
-        <th rowspan="2">Nama barang</th>
-        <th rowspan="2">Satuan barang</th>
-        <th rowspan="2">Jumlah barang</th>
+        <th rowspan="2" style="width: 40px;">No</th>
+        <th colspan="3">Data Dokumen Pabean</th>
+        <th colspan="2">Bukti Penerimaan Barang / GRN / Dok lain sejenis</th>
+        <th rowspan="2">Pengirim / Pemasok</th>
+        <th rowspan="2">Pemilik Barang</th>
+        <th rowspan="2">Kode Barang</th>
+        <th rowspan="2">Nama Barang</th>
+        <th rowspan="2">Satuan</th>
+        <th rowspan="2">Jumlah</th>
       </tr>
       <tr>
         <th>Jenis</th>
@@ -65,22 +98,24 @@
       </tr>
     </thead>
     <tbody>
-      @forelse($checkins as $index => $c)
-        <tr>
-          <td>{{ $index + 1 }}</td>
-          <td>{{ $c->warehouse->name ?? '-' }}</td>
-          <td>{{ $c->transaction_number ?? '-' }}</td>
-          <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('Y-m-d') : '-' }}</td>
-          <td>{{ $c->reference ?? '-' }}</td>
-          <td>{{ $c->date_in ? \Carbon\Carbon::parse($c->date_in)->format('Y-m-d') : '-' }}</td>
-          <td>{{ $c->sender_name ?? '-' }}</td>
-          <td>{{ $c->contact->name ?? '-' }}</td>
-          <td>{{ $c->item->code ?? '-' }}</td>
-          <td>{{ $c->item->name ?? '-' }}</td>
-          <td>{{ $c->unit->code ?? '-' }}</td>
-          {{-- <td>{{ $c->item->sum('quantity') ?? 0 }}</td> --}}
-          <td>{{ $c->qty_in ?? '-'}}</td>
-        </tr>
+      @php $no = 1; @endphp
+      @forelse($checkins as $c)
+        @foreach($c->items as $ci)
+          <tr>
+            <td>{{ $no++ }}</td>
+            <td>{{ $c->type_bc->name ?? '-'}}</td>
+            <td>{{ $c->transaction_number ?? '-' }}</td>
+            <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('d/m/Y') : '-' }}</td>
+            <td>{{ $c->reference ?? '-' }}</td>
+            <td>{{ $c->date_receive ? \Carbon\Carbon::parse($c->date_receive)->format('d/m/Y') : '-' }}</td>
+            <td>{{ $ci->sender ?? '-' }}</td>
+            <td>{{ $ci->owner ?? '-' }}</td>
+            <td>{{ $ci->item->code ?? '-' }}</td>
+            <td>{{ $ci->item->name ?? '-' }}</td>
+            <td>{{ $ci->unit->code ?? '-' }}</td>
+            <td>{{ $ci->quantity ?? '-' }}</td>
+          </tr>
+        @endforeach
       @empty
         <tr>
           <td colspan="12" style="text-align:center;">No data available</td>

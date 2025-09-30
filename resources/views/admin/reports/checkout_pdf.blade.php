@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <title>Outbound Report</title>
   <style>
-    body { font-family: DejaVu Sans, sans-serif; font-size: 12px; margin: 30px; }
+    body { font-family: DejaVu Sans, sans-serif; font-size: 10px; margin: 30px; }
     .header { display: flex; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
     .logo { width: 70px; }
     .company { margin-left: 15px; }
     .company h1 { margin: 0; font-size: 18px; }
     .company p { margin: 2px 0; font-size: 12px; }
     h2 { text-align: center; margin: 10px 0; }
-    .meta { margin-bottom: 15px; font-size: 12px; }
+    /* .meta { margin-bottom: 15px; font-size: 12px; } */
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { border: 1px solid #000; padding: 6px; text-align: center; }
     th { background-color: #f2f2f2; }
@@ -28,19 +28,51 @@
               <img src="{{ public_path('logos/icon.jpg') }}" style="width: 70px;" alt="Logo Kiri">
           </td>
           <td style="text-align: center; font-size: 18px; font-weight: bold; border: none;">
-              Outbound Report
+              OUTBOUND REPORT
           </td>
           <td style="width: 70px; text-align: right; border: none;">
-              <img src="{{ public_path('logos/icon2.jpg') }}" style="width: 70px;" alt="Logo Kanan">
+              <img src="{{ public_path('logos/bea_cukai.png') }}" style="width: 100px;" alt="Logo Kanan">
           </td>
       </tr>
     </table>
   </div>
 
-  <!-- Meta Info -->
-  <div class="meta">
-    Dicetak pada: <strong>{{ $printedAt }}</strong>
+  {{-- <div class="meta">
+    Location: <strong>{{ $warehouseName }}</strong>
   </div>
+
+  <div class="meta">
+    Data period:
+    <strong>
+      {{ $start_date ? \Carbon\Carbon::parse($start_date)->format('d/m/Y') : '-' }}
+      s/d
+      {{ $end_date ? \Carbon\Carbon::parse($end_date)->format('d/m/Y') : '-' }}
+    </strong>
+  </div> --}}
+
+  <table width="100%" style="margin-bottom: 15px; font-size: 12px; border: none;">
+    <tr style="border: none;">
+      <td style="text-align: left; border: none;">Location: <strong>{{ $warehouseName }}</strong></td>
+    </tr>
+    <tr style="border: none;">
+      <td style="text-align: left; border: none;">
+        Data period: 
+        <strong>
+          {{ $start_date ? \Carbon\Carbon::parse($start_date)->format('d/m/Y') : '-' }}
+          s/d
+          {{ $end_date ? \Carbon\Carbon::parse($end_date)->format('d/m/Y') : '-' }}
+        </strong>
+      </td>
+      <td style="text-align: right; border: none;">
+        Print Date: <strong>{{ $printedAt }}</strong>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Meta Info -->
+  {{-- <div class="meta">
+    Print Date: <strong>{{ $printedAt }}</strong>
+  </div> --}}
 
   <!-- Table -->
   <table>
@@ -66,23 +98,31 @@
       </tr>
     </thead>
     <tbody>
-      @forelse($checkouts as $index => $c)
-        <tr>
-          <td>{{ $index + 1 }}</td>
-          <td>{{ $c->warehouse->name ?? '-' }}</td>
-          <td>{{ $c->transaction_number ?? '-' }}</td>
-          <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('Y-m-d') : '-' }}</td>
-          <td>{{ $c->reference ?? '-' }}</td>
-          <td>{{ $c->date_out ? \Carbon\Carbon::parse($c->date_in)->format('Y-m-d') : '-' }}</td>
-          <td>{{ $c->receiver_name ?? '-' }}</td>
-          <td>{{ $c->contact->name ?? '-' }}</td>
-          <td>{{ $c->item->code ?? '-' }}</td>
-          <td>{{ $c->item->name ?? '-' }}</td>
-          <td>{{ $c->unit->code ?? '-' }}</td>
-          {{-- <td>{{ $c->item->sum('quantity') ?? 0 }}</td> --}}
-          <td>{{ $c->qty_out ?? '-'}}</td>
-          <td>Rp. {{ number_format(($c->item->price_item ?? 0) * ($c->qty_out ?? 0), 0, ',', '.') }}</td>
-        </tr>
+      @php $no = 1; @endphp
+      @forelse($checkouts as $c)
+        @foreach($c->items as $ci)
+          <tr>
+            <td>{{ $no++ }}</td>
+            {{-- <td>{{ $c->type_bc == null ? '-' : $c->type_bc->name }}</td> --}}
+            <td>{{ $c->type_bc->name ?? '-' }}</td>
+            <td>{{ $c->transaction_number ?? '-' }}</td>
+            <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('d/m/Y') : '-' }}</td>
+            <td>{{ $c->reference ?? '-' }}</td>
+            <td>{{ $c->date_receive ? \Carbon\Carbon::parse($c->date_receive)->format('d/m/Y') : '-' }}</td>
+            <td>{{ $ci->buyer ?? '-' }}</td>
+            <td>{{ $ci->owner ?? '-' }}</td>
+            <td>{{ $ci->item->code ?? '-' }}</td>
+            <td>{{ $ci->item->name ?? '-' }}</td>
+            <td>{{ $ci->unit->code ?? '-' }}</td>
+            <td>{{ $ci->quantity ?? '-' }}</td>
+            <td>
+              @if($ci->value)
+                Rp. {{ number_format($ci->value, 0, ',', '.') }}
+              @else
+                -
+              @endif</td>
+          </tr>
+        @endforeach
       @empty
         <tr>
           <td colspan="12" style="text-align:center;">No data available</td>

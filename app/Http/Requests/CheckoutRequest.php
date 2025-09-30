@@ -22,8 +22,8 @@ class CheckoutRequest extends FormRequest
             'attachments.*' => 'mimes:' . env('ATTACHMENT_EXTS', 'jpg,png,pdf,docx,xlsx,zip'),
 
             'date'         => 'required|date',
-            'contact_id'   => 'required|exists:contacts,id',
-            'warehouse_id' => 'required|exists:warehouses,id',
+            'contact_id'   => 'nullable|exists:contacts,id',
+            'warehouse_id' => 'nullable|exists:warehouses,id',
             'reference'    => 'nullable|max:50|unique:checkouts,reference,' . optional($this->route('checkout'))->id,
 
             'items'                    => 'required|array|min:1',
@@ -37,6 +37,11 @@ class CheckoutRequest extends FormRequest
             'items.*.variation_id'     => 'nullable|exists:variations,id',
             'items.*.selected'         => 'nullable|array|required_if:items.*.has_variants,1',
             'items.*.weight'           => 'nullable|numeric|required_if:items.*.track_weight,1',
+
+            'items.*.buyer'          => 'nullable',
+            'items.*.owner'          => 'nullable',
+            'items.*.code'          => 'nullable',
+            'items.*.value'          => 'nullable',
         ];
     }
 

@@ -22,21 +22,50 @@
         <trashed-message v-if="edit && edit.deleted_at" class="mb-6" @restore="restore">
           {{ $t('This record has been deleted.') }}
         </trashed-message>
+
         <div class="flex flex-col gap-6">
           <div class="flex flex-col lg:flex-row gap-6">
             <div class="flex flex-col gap-6 w-full lg:w-1/2">
-              <text-input type="date" v-model="form.date" :error="$page.props.errors.date" :label="$t('Date')" />
-              <text-input v-model="form.reference" :error="$page.props.errors.reference" :label="$t('Reference / No Aju')" />
+               <auto-complete
+                
+                id="type_bc_id"
+                :label="$t('Jenis')"
+                :suggestions="contacts"
+                v-model="form.type_bc_id"
+                :error="$page.props.errors.type_bc_id"
+               />
+            </div>
+          </div>
+        </div>
+
+
+        <div class="flex flex-col gap-6">
+          <div class="flex flex-col lg:flex-row gap-6">
+            <div class="flex flex-col gap-6 w-full lg:w-1/2">
+              <!-- <text-input type="date" v-model="form.date" :error="$page.props.errors.date" :label="$t('Date')" />
+              <text-input v-model="form.reference" :error="$page.props.errors.reference" :label="$t('Reference / No Aju')" /> -->
+              <text-input type="date" v-model="form.date" :error="$page.props.errors.date" :label="$t('Tanggal Aju')" />
+              <text-input type="date" v-model="form.date_receive" :error="$page.props.errors.date_receive" :label="$t('Tanggal Penerimaan Barang')" />
+              <auto-complete
+                json
+                id="contact"
+                :label="$t('Contact')"
+                :suggestions="contactbs"
+                v-model="form.contact_id"
+                :error="$page.props.errors.contact_id"
+              />
             </div>
             <div class="flex flex-col gap-6 w-full lg:w-1/2">
-              <auto-complete
+               <text-input v-model="form.reference" :error="$page.props.errors.reference" :label="$t('No. Reference / No. Aju')" />
+               <text-input v-model="form.no_receive" :error="$page.props.errors.no_receive" :label="$t('No. Bukti Penerimaan Barang')" />
+              <!-- <auto-complete
                 json
                 id="contact"
                 :label="$t('Contact')"
                 :suggestions="contacts"
                 v-model="form.contact_id"
                 :error="$page.props.errors.contact_id"
-              />
+              /> -->
               <template v-if="!$super && $user.warehouse_id">
                 <text-input
                   disabled
@@ -44,6 +73,7 @@
                   :label="$t('Warehouse')"
                   :modelValue="warehouses.find(w => w.id == $user.warehouse_id)?.name"
                 />
+
               </template>
               <template v-else>
                 <auto-complete
@@ -54,7 +84,7 @@
                   v-model="form.warehouse_id"
                   :error="$page.props.errors.warehouse_id"
                 />
-              </template>
+              </template> 
             </div>
           </div>
           <div class="p-4 md:px-6 bg-gray-50 -mx-4 md:-mx-6">
@@ -159,11 +189,16 @@
                   <tr class="text-left font-bold">
                     <th class="px-2 lg:pl-6 py-4 w-4"><icons name="trash" /></th>
                     <th class="px-2 lg:px-6 py-4">{{ $t('Item') }}</th>
-                    <th class="px-2 lg:px-6 py-4 text-center" :class="$settings.track_weight ? 'w-32 xl:w-56' : 'w-px'">
+                    <th class="px-2 lg:px-6 py-4 text-center w-32 xl:w-56">{{ $t('Kode') }}</th>
+                    <th class="px-2 lg:px-6 py-4 text-center w-32 xl:w-56">{{ $t('Pembeli') }}</th>
+                    <th class="px-2 lg:px-6 py-4 text-center w-32 xl:w-56">{{ $t('Pemilik') }}</th>
+                    <!-- <th class="px-2 lg:px-6 py-4 text-center" :class="$settings.track_weight ? 'w-32 xl:w-56' : 'w-px'">
                       <span v-if="$settings.track_weight">{{ $t('Weight') }}</span>
-                    </th>
+                    </th> -->
                     <th class="px-2 lg:px-6 py-4 text-center w-32 xl:w-56">{{ $t('Quantity') }}</th>
                     <th class="px-2 lg:px-6 py-4 text-center w-32 xl:w-56">{{ $t('Unit') }}</th>
+                    <th class="px-2 lg:px-6 py-4 text-center w-32 xl:w-56">{{ $t('Nilai') }}</th>
+
                   </tr>
                 </thead>
                 <template v-if="form.items.length">
@@ -317,18 +352,34 @@
                             <div v-if="$page.props.errors['items.' + ii + '.weight']" class="text-red-600 pt-1 rounded-md">
                               {{ $page.props.errors['items.' + ii + '.weight'].split('when').shift() }}.
                             </div>
-                          </div>
-                        </td>
-                        <td class="border-t">
-                          <div class="px-2 xl:px-6 py-2 text-right" v-if="$settings.track_weight == 1 && item.track_weight == 1">
-                            <text-input type="number" v-model="item.weight" size="small" class="w-full block" />
+                            <text-input type="text" v-model="item.id" hidden size="small" :value="item.id"  class="w-full block" />
                           </div>
                         </td>
                         <td class="border-t">
                           <div class="px-2 xl:px-6 py-2 text-right">
-                            <text-input type="number" v-model="item.quantity" size="small" class="w-full block" />
+                            <text-input type="text" v-model="item.code" size="small" class="w-full block" />
                           </div>
                         </td>
+                        <td class="border-t">
+                          <div class="px-2 xl:px-6 py-2 text-right">
+                            <text-input type="text" v-model="item.buyer" size="small" class="w-full block" />
+                          </div>
+                        </td>
+                        <td class="border-t">
+                          <div class="px-2 xl:px-6 py-2 text-right">
+                            <text-input type="text" v-model="item.owner" size="small" class="w-full block" />
+                          </div>
+                        </td>
+                        <td class="border-t">
+                          <div class="px-2 xl:px-6 py-2 text-right">
+                            <text-input type="number" v-model="item.weight" size="small" class="w-full block" />
+                          </div>
+                        </td>
+                        <!-- <td class="border-t">
+                          <div class="px-2 xl:px-6 py-2 text-right">
+                            <text-input type="number" v-model="item.quantity" size="small" class="w-full block" />
+                          </div>
+                        </td> -->
                         <td class="border-t">
                           <div class="px-2 xl:px-6 py-2 text-right" v-if="item.unit">
                             <select-input v-model="item.unit_id" size="small" class="w-full block">
@@ -337,6 +388,11 @@
                                 <option v-for="sub in item.unit.subunits" :key="sub.id" :value="sub.id">{{ sub.name }}</option>
                               </template>
                             </select-input>
+                          </div>
+                        </td>
+                        <td class="border-t">
+                          <div class="px-2 xl:px-6 py-2 text-right">
+                            <text-input type="number" v-model="item.value" size="small" class="w-full block" />
                           </div>
                         </td>
                       </tr>
@@ -527,7 +583,7 @@ import SelectVariantModal from '@/Shared/SelectVariantModal.vue';
 import TecSecondaryButton from '@/Jetstream/SecondaryButton.vue';
 
 export default {
-  props: ['edit', 'contacts', 'warehouses'],
+  props: ['edit', 'contacts', 'contactbs', 'warehouses'],
 
   components: {
     Dialog,
@@ -566,6 +622,10 @@ export default {
         contact_id: this.edit ? this.edit.contact_id : null,
         date: this.edit ? this.edit.date_raw : this.$formatJSDate(new Date()),
         warehouse_id: this.edit ? this.edit.warehouse_id : this.$super ? null : this.$user?.warehouse_id,
+
+        no_receive: this.edit ? this.edit.no_receive : null,
+        date_receive: this.edit ? this.edit.date_receive : null,
+        type_bc_id: this.edit ? this.edit.type_bc_id : null,
       }),
     };
   },
@@ -594,6 +654,12 @@ export default {
           weight: parseFloat(i.weight),
           quantity: parseFloat(i.quantity),
           old_quantity: parseFloat(i.quantity),
+
+          buyer: i.buyer,
+          owner: i.owner,
+          code: i.code,
+          value: parseFloat(i.value),
+
           selected: {
             serials: [],
             variations: i.variations.map(v => {

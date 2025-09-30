@@ -31,8 +31,12 @@
       <div class="block sm:flex justify-between print:flex">
         <div class="w-full sm:w-1/2 leading-snug mb-6 sm:mb-0">
           <div class="text-sm font-bold">&nbsp;</div>
-          <div>{{ $t('Date') }}: {{ $date(checkin.date) }}</div>
-          <div>{{ $t('Reference / No Aju') }}: {{ checkin.reference }}</div>
+          <div>{{ $t('Tanggal Aju') }}: {{ $date(checkin.date) }}</div>
+          <div>{{ $t('No Aju') }}: {{ checkin.reference }}</div>
+         <br>
+          <div>{{ $t('Tanggal Penerimaan') }}: {{ $date(checkin.date_receive) }}</div>
+          <div>{{ $t('No Penerimaan') }}: {{ checkin.no_receive }}</div>
+          
           <div>{{ $t('Created at') }}: {{ $datetime(checkin.created_at) }}</div>
         </div>
         <div class="text-left w-full sm:w-1/2 leading-snug">
@@ -48,10 +52,14 @@
           <thead>
             <tr>
               <th class="px-6 py-2 text-left">{{ $t('Item') }}</th>
-              <th class="px-6 py-2 text-right" :class="$settings.track_weight ? 'w-32' : 'w-px'">
+              
+              <th class="px-6 py-2 text-left">{{ $t('Pengirim') }}</th>
+              <th class="px-6 py-2 text-left">{{ $t('Pemilik') }}</th>
+              <!-- <th class="px-6 py-2 text-right" :class="$settings.track_weight ? 'w-32' : 'w-px'">
                 <span v-if="$settings.track_weight">{{ $t('Weight') }}</span>
-              </th>
+              </th> -->
               <th class="px-6 py-2 w-32 text-right">{{ $t('Quantity') }}</th>
+              <th class="px-6 py-2 w-32 text-right">{{ $t('Unit') }}</th>
             </tr>
           </thead>
           <template v-for="(item, ii) in checkin.items" :key="'i_' + item.id">
@@ -72,6 +80,12 @@
                     {{ $t(item.item.name) }} ({{ item.item.code }})
                   </div>
                 </td>
+                <td class="group-hover:bg-gray-100 border-t px-6 pt-2 font-bold">
+                  <div class="flex items-center gap-x-2 gap-y-1">
+                    
+                    {{ $t(item.item.sender) }} ({{ item.item.sender }})
+                  </div>
+                </td>
                 <td
                   class="group-hover:bg-gray-100 border-t px-6 py-2 text-right"
                   :class="$settings.track_weight && item.item.track_weight ? 'w-32' : 'w-px'"
@@ -85,16 +99,27 @@
                     <span v-html="$meta(variation.meta)"></span>
                   </div>
                 </td>
+
+                
+                
+
+
                 <td
                   :class="{ 'pb-2': vi + 1 == item.variations.length, 'w-32': $settings.track_weight && item.item.track_weight }"
                   class="group-hover:bg-gray-100 px-6 pt-2 text-right"
                 >
-                  <span v-if="$settings.track_weight && item.item.track_weight"
+                  <!-- <span v-if="$settings.track_weight && item.item.track_weight"
                     >{{ $number(variation.pivot.weight) }} {{ $settings.weight_unit }}</span
+                  > -->
+                  <span v-if="$settings.track_weight && item.item.track_weight"
+                    >{{ $number(variation.pivot.weight) }} {{ item.unit ? item.unit.code : '' }}</span
                   >
                 </td>
-                <td :class="{ 'pb-2': vi + 1 == item.variations.length }" class="group-hover:bg-gray-100 px-6 pt-2 w-32 text-right">
+                <!-- <td :class="{ 'pb-2': vi + 1 == item.variations.length }" class="group-hover:bg-gray-100 px-6 pt-2 w-32 text-right">
                   {{ $number(variation.pivot.quantity) }} {{ item.unit ? item.unit.code : '' }}
+                </td> -->
+                <td :class="{ 'pb-2': vi + 1 == item.variations.length }" class="group-hover:bg-gray-100 px-6 pt-2 w-32 text-right">
+                  {{ $number(variation.pivot.quantity) }}
                 </td>
               </tr>
             </tbody>
@@ -111,16 +136,31 @@
                     {{ $t(item.item.name) }} ({{ item.item.code }})
                   </div>
                 </td>
-                <td
+
+                <td class="group-hover:bg-gray-100 border-t px-6 py-2 w-32 ">
+                  {{ item.sender }}
+                </td>
+
+                <td class="group-hover:bg-gray-100 border-t px-6 py-2 w-32 ">
+                  {{ item.owner }}
+                </td>
+                <!-- <td
                   class="group-hover:bg-gray-100 border-t px-6 py-2 text-right"
                   :class="$settings.track_weight && item.item.track_weight ? 'w-32' : 'w-px'"
                 >
+                  
                   <span v-if="$settings.track_weight && item.item.track_weight"
-                    >{{ $number(item.weight) }} {{ $settings.weight_unit }}</span
+                    >{{ $number(item.weight) }} {{ item.unit ? item.unit.code : '' }}</span
                   >
+                </td> -->
+                <!-- <td class="group-hover:bg-gray-100 border-t px-6 py-2 w-32 text-right">
+                  {{ $number(item.quantity) }} {{ item.unit ? item.unit.code : '' }}
+                </td> -->
+                <td class="group-hover:bg-gray-100 border-t px-6 py-2 w-32 text-right">
+                  {{ $number(item.quantity) }}
                 </td>
                 <td class="group-hover:bg-gray-100 border-t px-6 py-2 w-32 text-right">
-                  {{ $number(item.quantity) }} {{ item.unit ? item.unit.code : '' }}
+                  {{ item.unit ? item.unit.code : '' }}
                 </td>
               </tr>
             </tbody>

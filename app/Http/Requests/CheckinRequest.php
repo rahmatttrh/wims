@@ -33,6 +33,9 @@ class CheckinRequest extends FormRequest
             'items.*.unit_id'         => 'nullable|exists:units,id',
             'items.*.selected'        => 'nullable|array|required_if:items.*.has_variants,1',
             'items.*.weight'          => 'nullable|numeric|required_if:items.*.track_weight,1',
+            'items.*.sender'          => 'nullable',
+            'items.*.owner'          => 'nullable',
+            'items.*.code'          => 'nullable',
         ];
     }
 
