@@ -37,12 +37,26 @@
           >
           </auto-complete>
         </search-filter>
-        <tec-button :href="route('checkouts.create')">
-          <span>
+        
+
+        <div class="flex space-x-2">
+          <tec-button :href="route('checkouts.create')">
+            <span>
+              <icons name="plus" class="w-5 h-5 lg:mr-2" />
+            </span>
+            <span class="hidden lg:inline">{{ $t('create_x', { x: $t('Checkout') }) }}</span>
+          </tec-button>
+
+          <a
+            :href="route('checkouts.import.excel')"
+            target="_blank"
+            class="flex items-center px-4 py-4 bg-gray-800 rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-gray-700 focus:outline-hidden"
+          >
             <icons name="plus" class="w-5 h-5 lg:mr-2" />
-          </span>
-          <span class="hidden lg:inline">{{ $t('create_x', { x: $t('Checkout') }) }}</span>
-        </tec-button>
+            <span class="hidden lg:inline">{{ $t('Import Excel') }}</span>
+          </a>
+        </div>
+
         <!-- <tec-dropdown align="right" width="48" v-if="$can(['create-checkouts', 'import-checkouts', 'export-checkouts'])">
           <template #trigger>
             <button

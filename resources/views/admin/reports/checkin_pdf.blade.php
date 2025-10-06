@@ -113,7 +113,10 @@
             <td>{{ $ci->item->code ?? '-' }}</td>
             <td>{{ $ci->item->name ?? '-' }}</td>
             <td>{{ $ci->unit->code ?? '-' }}</td>
-            <td>{{ $ci->quantity ?? '-' }}</td>
+            {{-- <td>{{ $ci->quantity ?? '-' }}</td> --}}
+            <td>{{ rtrim(rtrim(number_format($ci->quantity, 4, '.', ''), '0'), '.') }}</td>
+
+
           </tr>
         @endforeach
       @empty

@@ -144,14 +144,73 @@ class ReportController extends Controller
 
     // PDF
 
+    // public function exportCheckinPDF(Request $request)
+    // {
+    //     // dd($request->all());
+    //     $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id', 'type_bc_id');
+
+    //     $start = $request->get('start_date');
+    //     $end   = $request->get('end_date');
+
+    //     $checkins = Checkin::with([
+    //         'contact',
+    //         'warehouse',
+    //         'user',
+    //         'items.item',
+    //         'items.unit',
+    //         'type_bc'
+    //     ])
+    //         ->reportFilter($filters)
+    //         ->orderBy('id', 'asc')
+    //         ->get();
+
+    //     $printedAt = now()->format('Y-m-d H:i:s');
+
+    //     $warehouseName = $checkins->first()->warehouse->name ?? '-';
+
+    //     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.checkin_pdf', [
+    //         'checkins' => $checkins,
+    //         'filters'  => $filters,
+    //         'printedAt' => now()->format('d/m/Y H:i'),
+    //         'start_date' => $start,
+    //         'end_date'   => $end,
+    //         'warehouseName' => $warehouseName,
+    //     ])->setPaper('A4', 'landscape');
+
+    //     $filename = 'Inbound-report-' . now()->format('Y-m-d') . '.pdf';
+    //     return $pdf->download($filename);
+    // }
+
     public function exportCheckinPDF(Request $request)
     {
-        dd($request->all());
-        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id', 'type_bc_id');
+        // Ambil semua filter yang dikirim
+        $filters = $request->all(
+            'start_date',
+            'end_date',
+            'start_created_at',
+            'end_created_at',
+            'reference',
+            'contact_id',
+            'user_id',
+            'warehouse_id',
+            'draft',
+            'trashed',
+            'category_id',
+            'type_bc_id'
+        );
 
+        // Tentukan tanggal default (bulan berjalan) jika tidak diinput
         $start = $request->get('start_date');
         $end   = $request->get('end_date');
 
+        if (!$start || !$end) {
+            $start = now()->startOfMonth()->format('Y-m-d');
+            $end   = now()->endOfMonth()->format('Y-m-d');
+            $filters['start_date'] = $start;
+            $filters['end_date'] = $end;
+        }
+
+        // Ambil data Checkin sesuai filter
         $checkins = Checkin::with([
             'contact',
             'warehouse',
@@ -164,10 +223,10 @@ class ReportController extends Controller
             ->orderBy('id', 'asc')
             ->get();
 
-        $printedAt = now()->format('Y-m-d H:i:s');
-
+        // Nama gudang (jika ada)
         $warehouseName = $checkins->first()->warehouse->name ?? '-';
 
+        // Generate PDF
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.checkin_pdf', [
             'checkins' => $checkins,
             'filters'  => $filters,
@@ -177,17 +236,80 @@ class ReportController extends Controller
             'warehouseName' => $warehouseName,
         ])->setPaper('A4', 'landscape');
 
+        // Nama file
         $filename = 'Inbound-report-' . now()->format('Y-m-d') . '.pdf';
+
         return $pdf->download($filename);
     }
 
+    // public function exportCheckoutPDF(Request $request)
+    // {
+    //     $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id', 'type_bc_id');
+
+    //     $start = $request->get('start_date');
+    //     $end   = $request->get('end_date');
+
+    //     $checkouts = Checkout::with([
+    //         'contact',
+    //         'warehouse',
+    //         'user',
+    //         'items.item',
+    //         'items.unit',
+    //         'type_bc'
+    //     ])
+    //         ->reportFilter($filters)
+    //         ->orderBy('id', 'asc')
+    //         ->get();
+
+    //     // dd($checkouts);
+
+    //     $printedAt = now()->format('Y-m-d H:i:s');
+
+    //     $warehouseName = $checkouts->first()->warehouse->name ?? '-';
+
+    //     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.checkout_pdf', [
+    //         'checkouts' => $checkouts,
+    //         'filters'  => $filters,
+    //         'printedAt' => now()->format('d/m/Y H:i'),
+    //         'start_date' => $start,
+    //         'end_date'   => $end,
+    //         'warehouseName' => $warehouseName,
+    //     ])->setPaper('A4', 'landscape');
+
+    //     $filename = 'Outbound-report-' . now()->format('Y-m-d') . '.pdf';
+    //     return $pdf->download($filename);
+    // }
+
     public function exportCheckoutPDF(Request $request)
     {
-        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'contact_id', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id', 'type_bc_id');
+        // Ambil semua filter yang dikirim
+        $filters = $request->all(
+            'start_date',
+            'end_date',
+            'start_created_at',
+            'end_created_at',
+            'reference',
+            'contact_id',
+            'user_id',
+            'warehouse_id',
+            'draft',
+            'trashed',
+            'category_id',
+            'type_bc_id'
+        );
 
+        // Tentukan tanggal default (bulan berjalan) jika tidak diinput
         $start = $request->get('start_date');
         $end   = $request->get('end_date');
 
+        if (!$start || !$end) {
+            $start = now()->startOfMonth()->format('Y-m-d');
+            $end   = now()->endOfMonth()->format('Y-m-d');
+            $filters['start_date'] = $start;
+            $filters['end_date'] = $end;
+        }
+
+        // Ambil data Checkout sesuai filter
         $checkouts = Checkout::with([
             'contact',
             'warehouse',
@@ -200,12 +322,10 @@ class ReportController extends Controller
             ->orderBy('id', 'asc')
             ->get();
 
-        // dd($checkouts);
-
-        $printedAt = now()->format('Y-m-d H:i:s');
-
+        // Nama gudang (jika ada)
         $warehouseName = $checkouts->first()->warehouse->name ?? '-';
 
+        // Generate PDF
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.checkout_pdf', [
             'checkouts' => $checkouts,
             'filters'  => $filters,
@@ -215,7 +335,9 @@ class ReportController extends Controller
             'warehouseName' => $warehouseName,
         ])->setPaper('A4', 'landscape');
 
+        // Nama file
         $filename = 'Outbound-report-' . now()->format('Y-m-d') . '.pdf';
+
         return $pdf->download($filename);
     }
 
@@ -223,18 +345,31 @@ class ReportController extends Controller
     // {
     //     $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'from_warehouse_id', 'user_id', 'to_warehouse_id', 'draft', 'trashed', 'category_id');
 
-    //     $transfers = Transfer::with(['fromWarehouse', 'toWarehouse', 'user', 'item'])
+    //     $start = $request->get('start_date');
+    //     $end   = $request->get('end_date');
+
+    //     $transfers = Transfer::with([
+    //         'fromWarehouse',
+    //         'toWarehouse',
+    //         'user',
+    //         'items.item',
+    //         'items.unit'
+    //     ])
     //         ->reportFilter($filters)
     //         ->orderBy('id', 'asc')
     //         ->get();
 
-    //     $warehouseName = $transfers->first()->warehouse->name ?? '-';
+    //     $warehouseName = $transfers->isNotEmpty() && $transfers->first()->toWarehouse
+    //     ? $transfers->first()->toWarehouse->name
+    //     : '-';
 
     //     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.transfer_pdf', [
     //         'transfers' => $transfers,
     //         'filters'  => $filters,
     //         'printedAt' => now()->format('d/m/Y H:i'),
     //         'warehouseName' => $warehouseName,
+    //         'start_date' => $start,
+    //         'end_date'   => $end,
     //     ])->setPaper('A4', 'landscape');
 
     //     $filename = 'Transfer-report-' . now()->format('Y-m-d') . '.pdf';
@@ -242,12 +377,34 @@ class ReportController extends Controller
     // }
 
     public function exportTransferPDF(Request $request)
-    {
-        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'from_warehouse_id', 'user_id', 'to_warehouse_id', 'draft', 'trashed', 'category_id');
+{
+        // Ambil semua filter yang dikirim
+        $filters = $request->all(
+            'start_date',
+            'end_date',
+            'start_created_at',
+            'end_created_at',
+            'reference',
+            'from_warehouse_id',
+            'user_id',
+            'to_warehouse_id',
+            'draft',
+            'trashed',
+            'category_id'
+        );
 
+        // Tentukan tanggal default (bulan berjalan) jika tidak diinput
         $start = $request->get('start_date');
         $end   = $request->get('end_date');
 
+        if (!$start || !$end) {
+            $start = now()->startOfMonth()->format('Y-m-d');
+            $end   = now()->endOfMonth()->format('Y-m-d');
+            $filters['start_date'] = $start;
+            $filters['end_date'] = $end;
+        }
+
+        // Ambil data Transfer sesuai filter
         $transfers = Transfer::with([
             'fromWarehouse',
             'toWarehouse',
@@ -259,10 +416,12 @@ class ReportController extends Controller
             ->orderBy('id', 'asc')
             ->get();
 
+        // Nama gudang tujuan (jika ada)
         $warehouseName = $transfers->isNotEmpty() && $transfers->first()->toWarehouse
-        ? $transfers->first()->toWarehouse->name
-        : '-';
+            ? $transfers->first()->toWarehouse->name
+            : '-';
 
+        // Generate PDF
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.transfer_pdf', [
             'transfers' => $transfers,
             'filters'  => $filters,
@@ -272,9 +431,12 @@ class ReportController extends Controller
             'end_date'   => $end,
         ])->setPaper('A4', 'landscape');
 
+        // Nama file
         $filename = 'Transfer-report-' . now()->format('Y-m-d') . '.pdf';
+
         return $pdf->download($filename);
     }
+
 
     public function exportAdjustmentPDF(Request $request)
     {

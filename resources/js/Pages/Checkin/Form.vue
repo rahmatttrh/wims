@@ -13,6 +13,10 @@
           {{ $t('create_x', { x: $t('Checkin') }) }}
         </template>
       </template>
+      
+
+
+      
 
       <template #description>{{
         edit ? $t('Update the record by modifying the details in the form below') : $t('Please fill the form below to add new record.')
@@ -61,6 +65,18 @@
                :error="$page.props.errors.type_bc_id"
                /> -->
             </div>
+            <!-- <div class="flex flex-col gap-6 w-full lg:w-1/2">
+               
+               <auto-complete
+                
+                id="category_logistic_id"
+                :label="$t('Category Logistics')"
+                :suggestions="category_logistics"
+                v-model="form.category_logistic_id"
+                :error="$page.props.errors.category_logistic_id"
+               
+               />
+            </div> -->
           </div>
         </div>
         <div class="flex flex-col gap-6">
@@ -689,6 +705,7 @@ export default {
         no_receive: this.edit ? this.edit.no_receive : null,
         date_receive: this.edit ? this.edit.date_receive : null,
         type_bc_id: this.edit ? this.edit.type_bc_id : null,
+        // category_logistic_id: this.edit ? this.edit.category_logistic_id : null,
       }),
     };
   },
@@ -832,6 +849,7 @@ export default {
         .transform(data => ({
           ...data,
           type_bc_id: data.type_bc_id,
+          // category_logistic_id: data.category_logistic_id,
           date_receive: data.date_receive,
           no_receive: data.no_receive,
           items: data.items.map(i => ({
@@ -844,7 +862,7 @@ export default {
               serials: i.selected.serials && i.selected.serials.length ? i.selected.serials.map(s => s.id) : [],
               variations: i.selected.variations.map(v => {
                 let fv = {};
-                return (fv[v.id] = { variation_id: v.id,type_bc_id: v.type_bc_id,no_receive: v.no_receive, date_receive: v.date_receive ,sender: v.sender, quantity: v.quantity, weight: v.weight, unit_id: v.unit_id || null });
+                return (fv[v.id] = { variation_id: v.id,type_bc_id: v.type_bc_id, no_receive: v.no_receive, date_receive: v.date_receive ,sender: v.sender, quantity: v.quantity, weight: v.weight, unit_id: v.unit_id || null });
               }),
             },
           })),

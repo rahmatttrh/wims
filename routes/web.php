@@ -24,6 +24,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('users/{user}/disable_2fa', [Controllers\UserController::class, 'disable2FA'])->name('users.disable.2fa');
     Route::delete('items/{item}/photo', [Controllers\ItemController::class, 'destroyPhoto'])->name('items.deletePhoto');
 
+
+    Route::get('inbound/import', [Controllers\CheckinController::class, 'import'])->name('checkins.import.excel');
+
+    Route::post('inbound/import/save', [Controllers\CheckinController::class, 'importStore'])->name('checkins.import.save');
+    Route::post('inbound/import/save', [Controllers\CheckinController::class, 'importStore'])->name('checkins.import.store');
+
+    Route::get('outbound/import', [Controllers\CheckoutController::class, 'import'])->name('checkouts.import.excel');
+
+    Route::post('outbound/import/save', [Controllers\CheckoutController::class, 'importStore'])->name('checkouts.import.save');
+    Route::post('outbound/import/save', [Controllers\CheckoutController::class, 'importStore'])->name('checkouts.import.store');
+
     Route::extendedResources([
         'items'       => Controllers\ItemController::class,
         'roles'       => Controllers\RoleController::class,

@@ -28,7 +28,7 @@
               <img src="{{ public_path('logos/icon.jpg') }}" style="width: 70px;" alt="Logo Kiri">
           </td>
           <td style="text-align: center; font-size: 18px; font-weight: bold; border: none;">
-              TRANSFER REPORT
+              MUTASI REPORT
           </td>
           <td style="width: 70px; text-align: right; border: none;">
             <img src="{{ public_path('logos/bea_cukai.png') }}" style="width: 100px;" alt="Logo Kanan">

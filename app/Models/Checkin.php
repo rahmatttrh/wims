@@ -121,4 +121,5 @@ class Checkin extends Model
         return $this->belongsTo(TypeBc::class); 
     }
 
+
 }

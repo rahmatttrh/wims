@@ -1,7 +1,7 @@
 <template>
-  <admin-layout :title="$t('import_x', { x: $t('Items') })">
+  <admin-layout :title="$t('import_x', { x: $t('Inbound') })">
     <tec-form-section @submitted="submit">
-      <template #title>{{ $t('import_x', { x: $t('Items') }) }}</template>
+      <template #title>{{ $t('import_x', { x: $t('Inbound') }) }}</template>
       <template #description>{{ $t('Please upload the excel file to import records.') }}</template>
 
       <template #form>
@@ -111,7 +111,7 @@ export default {
       // data.append('excel', this.form.excel);
       // data.append('_method', this.form._method);
       // this.$inertia.post(route('items.import.save'), data);
-      this.form.post(route('items.import.save'), { preserveScroll: true });
+      this.form.post(route('checkins.import.save'), { preserveScroll: true });
     },
   },
 };

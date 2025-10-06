@@ -4,6 +4,7 @@
       <tec-section-title class="-mx-4 md:mx-0 mb-6">
         <template #title>{{ $t('Inbound') }}</template>
         <template #description>{{ $t('Please review the data in the table below') }}</template>
+        
       </tec-section-title>
 
       <div class="mb-6 flex justify-between items-center print:hidden">
@@ -37,12 +38,49 @@
           >
           </auto-complete>
         </search-filter>
-        <tec-button :href="route('checkins.create')">
+
+        <div class="flex space-x-2">
+          <tec-button :href="route('checkins.create')">
+            <span>
+              <icons name="plus" class="w-5 h-5 lg:mr-2" />
+            </span>
+            <span class="hidden lg:inline">{{ $t('create_x', { x: $t('Checkin') }) }}</span>
+          </tec-button>
+
+          <a
+            :href="route('checkins.import.excel')"
+            target="_blank"
+            class="flex items-center px-4 py-4 bg-gray-800 rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-gray-700 focus:outline-hidden"
+          >
+            <icons name="plus" class="w-5 h-5 lg:mr-2" />
+            <span class="hidden lg:inline">{{ $t('Import Excel') }}</span>
+          </a>
+        </div>
+
+
+        <!-- <a href="{{ route('checkins.import.excel') }}" ">Import</a> -->
+         <!-- <tec-button @click="bukaBlade">
+            <span>
+               <icons name="plus" class="w-5 h-5 lg:mr-2" />
+            </span>
+            <span class="hidden lg:inline">Import Excel</span>
+         </tec-button> -->
+
+         <!-- <button @click="bukaBlade" class="btn btn-primary">
+            Buka Halaman Blade Asli
+         </button> -->
+
+       
+
+        <!-- <tec-button :href="route('checkins.import.excel')" target="_blank">
           <span>
             <icons name="plus" class="w-5 h-5 lg:mr-2" />
           </span>
-          <span class="hidden lg:inline">{{ $t('create_x', { x: $t('Checkin') }) }}</span>
-        </tec-button>
+          <span class="hidden lg:inline">Import Excel</span>
+        </tec-button> -->
+
+        
+
 
         
         <!-- <tec-button :href="route('checkins.create')">
@@ -287,6 +325,8 @@
   </admin-layout>
 </template>
 
+
+
 <script>
 import pickBy from 'lodash/pickBy';
 import throttle from 'lodash/throttle';
@@ -303,6 +343,9 @@ import AutoComplete from '@/Shared/AutoComplete.vue';
 import SearchFilter from '@/Shared/SearchFilter.vue';
 import TecDropdownLink from '@/Jetstream/DropdownLink.vue';
 import TecSectionTitle from '@/Jetstream/SectionTitle.vue';
+
+
+
 
 export default {
   components: {
@@ -359,6 +402,9 @@ export default {
       deep: true,
     },
   },
+
+
+  
 
   methods: {
     goto(id) {

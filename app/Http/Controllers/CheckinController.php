@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
+use App\Imports\InboundImport;
 use App\Models\Checkin;
 use App\Models\Contact;
 use App\Models\Warehouse;
@@ -13,6 +14,8 @@ use App\Actions\Tec\PrepareOrder;
 use App\Http\Resources\Collection;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\CheckinRequest;
+use Maatwebsite\Excel\Facades\Excel;
+// use App\Models\CategoryLogistics;
 
 class CheckinController extends Controller
 {
@@ -28,11 +31,30 @@ class CheckinController extends Controller
         ]);
     }
 
+
+    public function import()
+    {
+        return view('import.inbounds');
+    }
+
+    public function importStore(Request $req)
+    {
+      // dd('import inbound');
+      $file = $req->file('file');
+      $fileName = $file->getClientOriginalName();
+      $file->move('InboundData', $fileName);
+      Excel::import(new InboundImport, public_path('InboundData/' . $fileName));
+      
+      return redirect()->route('checkins.index')->with('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'imported']));
+      //   return view('import.inbounds');
+    }
+
     public function create()
     {
         return Inertia::render('Checkin/Form', [
             'contactbs'   => Contact::ofAccount()->get(),
             'contacts'   => TypeBc::where('code', 'bc1.6')->get(),
+            // 'category_logistics'   => CategoryLogistics::where('code', '001')->get(),
             // 'contacts'   => ['BC 16', 'BC 28'],
             'warehouses' => Warehouse::ofAccount()->active()->get(),
         ]);
@@ -40,27 +62,28 @@ class CheckinController extends Controller
 
     public function store(CheckinRequest $request)
     {
-         // dd($request->type_bc_id['name']);
-         // dd($request->all());
+        // dd($request->type_bc_id['name']);
+        // dd($request->all());
         $data = $request->validated();
         $checkin = (new PrepareOrder($data, $request->file('attachments'), new Checkin()))->process()->save();
         event(new \App\Events\CheckinEvent($checkin, 'created'));
 
 
-         $checkin->no_receive = $request->no_receive;
-         $checkin->date_receive = $request->date_receive; 
-         $checkin->type_bc_id = $request->type_bc_id;
-         // tambahkan manual kalau belum keisi
-         $checkin->save();
-         
-//   dd($checkin);
+        $checkin->no_receive = $request->no_receive;
+        $checkin->date_receive = $request->date_receive;
+        $checkin->type_bc_id = $request->type_bc_id;
+        //  $checkin->category_logistic_id = $request->category_logistic_id;
+        // tambahkan manual kalau belum keisi
+        $checkin->save();
+
+        //   dd($checkin);
         if ((get_settings('auto_email') ?? null) && $checkin->contact->email) {
             $checkin->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username,email']);
 
             // Mail::to($checkin->contact->email)->cc(auth()->user()->email)->queue(new EmailCheckin($checkin));
         }
 
-      //   dd($checkin);
+        //   dd($checkin);
 
         return redirect()->route('checkins.index')->with('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'created']));
     }
@@ -77,7 +100,8 @@ class CheckinController extends Controller
         $this->authorize('update', $checkin);
 
         return Inertia::render('Checkin/Form', [
-            'contacts'   => Contact::ofAccount()->get(),
+            'contactbs'   => Contact::ofAccount()->get(),
+            'contacts'   => TypeBc::where('code', 'bc1.6')->get(),
             'warehouses' => Warehouse::ofAccount()->active()->get(),
             'edit'       => $checkin->load(['items.variations', 'items.item.variations', 'attachments']),
         ]);

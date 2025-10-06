@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Contact;
 use App\Models\Checkout;
+use App\Imports\OutboundImport;
 use App\Models\TypeBc;
 use App\Models\Warehouse;
 use App\Mail\EmailCheckout;
@@ -13,6 +14,7 @@ use App\Actions\Tec\PrepareOrder;
 use App\Http\Resources\Collection;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\CheckoutRequest;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CheckoutController extends Controller
 {
@@ -26,6 +28,23 @@ class CheckoutController extends Controller
                 Checkout::with(['contact', 'warehouse', 'user'])->filter($filters)->orderByDesc('id')->paginate()->withQueryString()
             ),
         ]);
+    }
+
+    public function import()
+    {
+        return view('import.outbounds');
+    }
+
+    public function importStore(Request $req)
+    {
+      // dd('import inbound');
+      $file = $req->file('file');
+      $fileName = $file->getClientOriginalName();
+      $file->move('InboundData', $fileName);
+      Excel::import(new OutboundImport, public_path('OutboundData/' . $fileName));
+      
+      return redirect()->route('checkouts.index')->with('message', __choice('action_text', ['record' => 'Checkout', 'action' => 'imported']));
+      //   return view('import.inbounds');
     }
 
     public function create()
@@ -75,7 +94,8 @@ class CheckoutController extends Controller
         $this->authorize('update', $checkout);
 
         return Inertia::render('Checkout/Form', [
-            'contacts'   => Contact::ofAccount()->get(),
+            'contactbs'   => Contact::ofAccount()->get(),
+            'contacts'   => TypeBc::where('code', '!=', 'bc1.6')->get(),
             'warehouses' => Warehouse::ofAccount()->active()->get(),
             'edit'       => $checkout->load(['items.variations', 'items.item.variations', 'attachments']),
         ]);
