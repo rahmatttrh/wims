@@ -1,195 +1,3 @@
-<!-- <template>
-  <admin-layout :title="$t('x_report', { x: $t('Transfer') })">
-    <div class="px-4 md:px-0">
-      <div class="flex items-start justify-between">
-        <tec-section-title class="-mx-4 md:mx-0 mb-6">
-          <template #title>{{ $t('x_report', { x: $t('Transfer') }) }}</template>
-          <template #description>{{ $t('Please review the report below') }}</template>
-        </tec-section-title>
-        <tec-button type="button" @click="toggleForm()">
-          <span>
-            <icons name="toggle" class="w-5 h-5 lg:mr-2" />
-          </span>
-          <span class="hidden lg:inline">{{ $t('toggle_x', { x: $t('Form') }) }}</span>
-        </tec-button>
-      </div>
-
-      <transition name="slidedown">
-        <div v-show="showForm" class="w-full print:hidden">
-          <report-form
-            :users="users"
-            type="transfer"
-            :categories="categories"
-            :warehouses="warehouses"
-            :action="route('reports.transfer')"
-          />
-        </div>
-      </transition>
-      <div class="bg-white -mx-4 md:mx-0 md:rounded-md shadow-sm overflow-x-auto">
-        <table class="w-full whitespace-nowrap">
-          <thead>
-            <tr class="text-left font-bold">
-              <th class="px-6 pt-6 pb-4">{{ $t('Transfer') }}</th>
-              <th class="px-6 pt-6 pb-4">{{ $t('Relations') }}</th>
-              <th class="px-6 pt-6 pb-4">{{ $t('Details') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr :key="transfer.id" v-for="(transfer, ci) in transfers.data" class="hover:bg-gray-100 focus-within:bg-gray-100">
-              <td class="border-t" @click="goto(transfer.id)" :class="{ 'cursor-pointer': $can('read-transfers') }">
-                <div class="px-6 py-4 flex items-center focus:text-indigo-500">
-                  <div>
-                    <div>{{ transfer.reference }}</div>
-                    <div>{{ $date(transfer.date) }}</div>
-                    <div class="flex items-center">
-                      {{ $t('Draft') }}:
-                      <icons v-if="transfer.draft == 1" name="tick" class="text-green-600 mx-auto" />
-                      <icons v-else name="cross" class="text-red-600 mx-auto" />
-                    </div>
-                  </div>
-
-                  <icons v-if="transfer.deleted_at" name="trash" class="shrink-0 w-4 h-4 text-red-500 ml-2" />
-                </div>
-              </td>
-              <td class="border-t" @click="goto(transfer.id)" :class="{ 'cursor-pointer': $can('read-transfers') }">
-                <div class="px-6 py-4">
-                  <div class="flex items-center">
-                    <div class="text-gray-500 mr-1">{{ $t('To') }}:</div>
-                    {{ transfer.to_warehouse.name }}
-                  </div>
-                  <div class="flex items-center">
-                    <div class="text-gray-500 mr-1">{{ $t('From') }}:</div>
-                    {{ transfer.from_warehouse.name }}
-                  </div>
-                  <div class="flex items-center">
-                    <div class="text-gray-500 mr-1">{{ $t('User') }}:</div>
-                    {{ transfer.user.name }}
-                  </div>
-                </div>
-              </td>
-              <td class="border-t max-w-lg min-w-56" @click="goto(transfer.id)" :class="{ 'cursor-pointer': $can('read-transfers') }">
-                <div class="px-6 py-4 flex items-center">
-                  <div class="w-full whitespace-normal line-clamp-3">
-                    {{ transfer.details }}
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr v-if="transfers.data.length === 0">
-              <td class="border-t px-6 py-4" colspan="3">{{ $t('There is no data to display.') }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <pagination class="mt-6" :meta="transfers.meta" :links="transfers.links" />
-    </div>
-
-    <modal :show="details" max-width="4xl" :closeable="true" @close="hideDetails">
-      <div class="px-6 py-4 print:px-0">
-        <div v-if="details && transfer" class="flex items-center justify-between print:hidden">
-          <div class="text-lg">
-            {{ $t('Transfer Details') }} <span class="hidden sm:inline">({{ transfer.reference }})</span>
-          </div>
-          <div class="-mr-2 flex items-center">
-            <button
-              @click="print()"
-              class="flex items-center justify-center mr-2 h-8 w-8 rounded-full text-gray-600 hover:text-gray-800 hover:bg-gray-300 focus:outline-hidden"
-            >
-              <icons name="printer" class="h-5 w-5" />
-            </button>
-            <Link
-              v-if="$can('update-transfers')"
-              :href="route('transfers.edit', transfer.id)"
-              class="flex items-center justify-center mr-2 h-8 w-8 rounded-full text-gray-600 hover:text-gray-800 hover:bg-gray-300 focus:outline-hidden"
-            >
-              <icons name="edit" class="h-5 w-5" />
-            </Link>
-            <button
-              @click="hideDetails()"
-              class="flex items-center justify-center h-8 w-8 rounded-full text-gray-600 hover:text-gray-800 hover:bg-gray-300 focus:outline-hidden"
-            >
-              <icons name="cross" class="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-
-        <div class="mt-4 print-mt-0">
-          <transfer-details v-if="transfer" :transfer="transfer" />
-        </div>
-      </div>
-    </modal>
-
-    <loading v-if="loading" />
-  </admin-layout>
-</template>
-<script>
-import Modal from '@/Jetstream/Modal.vue';
-import TecButton from '@/Jetstream/Button.vue';
-import ReportForm from '@/Pages/Report/Form.vue';
-import Pagination from '@/Shared/Pagination.vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import TransferDetails from '@/Pages/Transfer/Details.vue';
-import TecSectionTitle from '@/Jetstream/SectionTitle.vue';
-import BCLayout from '@/Layouts/BCLayout.vue';
-
-export default {
-  components: {
-    Modal,
-    TecButton,
-    ReportForm,
-    Pagination,
-    AdminLayout,
-    BCLayout,
-    TransferDetails,
-    TecSectionTitle,
-  },
-
-  props: {
-    filters: Object,
-    transfers: Object,
-    users: Array,
-    categories: Array,
-    warehouses: Array,
-  },
-
-  data() {
-    return {
-      transfer: null,
-      details: false,
-      showForm: false,
-      loading: false,
-    };
-  },
-
-  methods: {
-    toggleForm() {
-      this.showForm = !this.showForm;
-    },
-    goto(id) {
-      if (this.transfer && this.transfer.id == id) {
-        this.details = true;
-      } else {
-        this.loading = true;
-        axios.get(route('transfers.show', id) + '?json=yes').then(res => {
-          this.transfer = res.data;
-          this.details = true;
-          this.loading = false;
-        });
-      }
-    },
-    showDetails() {
-      this.details = false;
-    },
-    hideDetails() {
-      this.details = false;
-    },
-    print() {
-      window.print();
-    },
-  },
-};
-</script> -->
-
 <template>
   <admin-layout :title="$t('x_report', { x: $t('Transfer') })">
     <div class="px-4 md:px-0">
@@ -198,27 +6,6 @@ export default {
           <template #title>{{ $t('x_report', { x: $t('Transfer') }) }}</template>
           <template #description>{{ $t('Please review the report below') }}</template>
         </tec-section-title>
-        <!-- <tec-button type="button" @click="toggleForm()">
-          <span>
-            <icons name="toggle" class="w-5 h-5 lg:mr-2" />
-          </span>
-          <span class="hidden lg:inline">{{ $t('toggle_x', { x: $t('Form') }) }}</span>
-        </tec-button> -->
-
-        <!-- <div class="flex space-x-2">
-          <tec-button type="button" @click="toggleForm()">
-            <span>
-              <icons name="toggle" class="w-5 h-5 lg:mr-2" />
-            </span>
-            <span class="hidden lg:inline">{{ $t('toggle_x', { x: $t('Form') }) }}</span>
-          </tec-button>
-          <tec-button type="button" @click="exportTransferCSV">
-            <span>
-              <icons name="download" class="w-5 h-5 lg:mr-2" />
-            </span>
-            <span class="hidden lg:inline">Export</span>
-          </tec-button>
-        </div> -->
 
         <div class="flex space-x-2">
           <!-- Toggle Form -->
@@ -229,7 +16,7 @@ export default {
             <span class="hidden lg:inline">{{ $t('toggle_x', { x: $t('Form') }) }}</span>
           </tec-button>
 
-          <!-- Export Dropdown (tanpa permission) -->
+          <!-- Export Dropdown -->
           <div class="relative">
             <button
               @click="showExport = !showExport"
@@ -239,7 +26,6 @@ export default {
               <span>{{ $t('Export') }}</span>
             </button>
 
-            <!-- Dropdown Menu -->
             <div
               v-show="showExport"
               class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50"
@@ -267,11 +53,10 @@ export default {
               </button>
             </div>
           </div>
-
         </div>
-
       </div>
 
+      <!-- Filter form -->
       <transition name="slidedown">
         <div v-show="showForm" class="w-full print:hidden">
           <report-form
@@ -283,228 +68,178 @@ export default {
           />
         </div>
       </transition>
+
+      <!-- Table -->
       <div class="bg-white -mx-4 md:mx-0 md:rounded-md shadow-sm overflow-x-auto">
         <table class="w-full whitespace-nowrap">
           <thead>
             <tr class="text-left font-bold">
-              <th class="px-6 pt-6 pb-4">{{ $t('Transfer') }}</th>
-              <th class="px-6 pt-6 pb-4">{{ $t('Relations') }}</th>
+              <th class="px-6 pt-6 pb-4">#</th>
+              <th class="px-6 pt-6 pb-4">{{ $t('Item') }}</th>
+              <th class="px-6 pt-6 pb-4">{{ $t('Stock Summary') }}</th>
               <th class="px-6 pt-6 pb-4">{{ $t('Details') }}</th>
             </tr>
           </thead>
           <tbody>
-            <tr :key="transfer.id" v-for="(transfer, ci) in transfers.data" class="hover:bg-gray-100 focus-within:bg-gray-100">
-              <td class="border-t" @click="goto(transfer.id)" :class="{ 'cursor-pointer': $can('read-transfers') }">
-                <div class="px-6 py-4 flex items-center focus:text-indigo-500">
-                  <div>
-                    <div>{{ transfer.reference }}</div>
-                    <div>{{ $date(transfer.date) }}</div>
-                    <!-- <div class="flex items-center">
-                      {{ $t('Draft') }}:
-                      <icons v-if="transfer.draft == 1" name="tick" class="text-green-600 mx-auto" />
-                      <icons v-else name="cross" class="text-red-600 mx-auto" />
-                    </div> -->
-                  </div>
+            <tr
+              v-for="(transfer, ci) in transfers"
+              :key="transfer.id"
+              class="hover:bg-gray-100 focus-within:bg-gray-100"
+            >
+              <!-- Item info -->
+              <td class="border-t px-6 py-4">{{ ci + 1 }}</td>
+              <td class="border-t px-6 py-4">
+                <div>
+                  <div class="font-medium">{{ transfer.code }}</div>
+                  <div>{{ transfer.name }}</div>
+                  <div>{{ transfer.unit }}</div>
+                </div>
+              </td>
 
-                  <icons v-if="transfer.deleted_at" name="trash" class="shrink-0 w-4 h-4 text-red-500 ml-2" />
-                </div>
+              <!-- Stock info -->
+              <td class="border-t px-6 py-4">
+                <div><b>{{ $t('Jumlah Barang') }}:</b> {{ formatQty(transfer.jumlah_barang) }}</div>
+                <div><b>{{ $t('Saldo Awal') }}:</b> {{ formatQty(transfer.saldo_awal) }}</div>
+                <div><b>{{ $t('Barang Masuk') }}:</b> {{ formatQty(transfer.barang_masuk) }}</div>
+                <div><b>{{ $t('Barang Keluar') }}:</b> {{ formatQty(transfer.barang_keluar) }}</div>
+                <div><b>{{ $t('Adjustment') }}:</b> {{ formatQty(transfer.adjustment) }}</div>
+                <div><b>{{ $t('Saldo Akhir') }}:</b> {{ formatQty(transfer.saldo_akhir) }}</div>
+                <div><b>{{ $t('Cacah') }}:</b> {{ formatQty(transfer.cacah) }}</div>
+                <div><b>{{ $t('Selisih') }}:</b> {{ formatQty(transfer.selisih) }}</div>
               </td>
-              <td class="border-t" @click="goto(transfer.id)" :class="{ 'cursor-pointer': $can('read-transfers') }">
-                <div class="px-6 py-4">
-                  <div class="flex items-center">
-                    <div class="text-gray-500 mr-1">{{ $t('To') }}:</div>
-                    {{ transfer.to_warehouse.name }}
-                  </div>
-                  <div class="flex items-center">
-                    <div class="text-gray-500 mr-1">{{ $t('From') }}:</div>
-                    {{ transfer.from_warehouse.name }}
-                  </div>
-                  <div class="flex items-center">
-                    <div class="text-gray-500 mr-1">{{ $t('User') }}:</div>
-                    {{ transfer.user.name }}
-                  </div>
-                </div>
-              </td>
-              <td class="border-t max-w-lg min-w-56" @click="goto(transfer.id)" :class="{ 'cursor-pointer': $can('read-transfers') }">
-                <div class="px-6 py-4 flex items-center">
-                  <div class="w-full whitespace-normal line-clamp-3">
-                    {{ transfer.details }}
-                  </div>
-                </div>
+
+              <!-- Details -->
+              <td class="border-t px-6 py-4 max-w-lg min-w-56">
+                {{ transfer.details }}
               </td>
             </tr>
-            <tr v-if="transfers.data.length === 0">
-              <td class="border-t px-6 py-4" colspan="3">{{ $t('There is no data to display.') }}</td>
+
+            <tr v-if="!transfers.length">
+              <td colspan="4" class="border-t px-6 py-4 text-center text-gray-500">
+                {{ $t('There is no data to display.') }}
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <pagination class="mt-6" :meta="transfers.meta" :links="transfers.links" />
     </div>
-
-    <modal :show="details" max-width="4xl" :closeable="true" @close="hideDetails">
-      <div class="px-6 py-4 print:px-0">
-        <div v-if="details && transfer" class="flex items-center justify-between print:hidden">
-          <div class="text-lg">
-            {{ $t('Transfer Details') }} <span class="hidden sm:inline">({{ transfer.reference }})</span>
-          </div>
-          <div class="-mr-2 flex items-center">
-            <button
-              @click="print()"
-              class="flex items-center justify-center mr-2 h-8 w-8 rounded-full text-gray-600 hover:text-gray-800 hover:bg-gray-300 focus:outline-hidden"
-            >
-              <icons name="printer" class="h-5 w-5" />
-            </button>
-            <Link
-              v-if="$can('update-transfers')"
-              :href="route('transfers.edit', transfer.id)"
-              class="flex items-center justify-center mr-2 h-8 w-8 rounded-full text-gray-600 hover:text-gray-800 hover:bg-gray-300 focus:outline-hidden"
-            >
-              <icons name="edit" class="h-5 w-5" />
-            </Link>
-            <button
-              @click="hideDetails()"
-              class="flex items-center justify-center h-8 w-8 rounded-full text-gray-600 hover:text-gray-800 hover:bg-gray-300 focus:outline-hidden"
-            >
-              <icons name="cross" class="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-
-        <div class="mt-4 print-mt-0">
-          <transfer-details v-if="transfer" :transfer="transfer" />
-        </div>
-      </div>
-    </modal>
-
-    <loading v-if="loading" />
   </admin-layout>
 </template>
+
 <script>
-import Modal from '@/Jetstream/Modal.vue';
-import TecButton from '@/Jetstream/Button.vue';
-import ReportForm from '@/Pages/Report/Form.vue';
-import Pagination from '@/Shared/Pagination.vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import TransferDetails from '@/Pages/Transfer/Details.vue';
-import TecSectionTitle from '@/Jetstream/SectionTitle.vue';
-import BCLayout from '@/Layouts/BCLayout.vue';
+import Modal from '@/Jetstream/Modal.vue'
+import TecButton from '@/Jetstream/Button.vue'
+import ReportForm from '@/Pages/Report/Form.vue'
+import AdminLayout from '@/Layouts/AdminLayout.vue'
+import TecSectionTitle from '@/Jetstream/SectionTitle.vue'
 
 export default {
   components: {
     Modal,
     TecButton,
     ReportForm,
-    Pagination,
     AdminLayout,
-    BCLayout,
-    TransferDetails,
-    TecSectionTitle,
+    TecSectionTitle
   },
 
   props: {
     filters: Object,
-    transfers: Object,
+    transfers: Array, // ✅ BUKAN Object (karena bukan pagination)
     users: Array,
     categories: Array,
-    warehouses: Array,
+    warehouses: Array
   },
 
   data() {
     return {
-      transfer: null,
-      details: false,
       showForm: false,
-      loading: false,
-      showExport: false,
-    };
+      showExport: false
+    }
   },
 
-  // Add
   mounted() {
-    document.addEventListener("click", this.handleClickOutside);
+    document.addEventListener('click', this.handleClickOutside)
   },
   beforeUnmount() {
-    document.removeEventListener("click", this.handleClickOutside);
+    document.removeEventListener('click', this.handleClickOutside)
   },
 
   methods: {
     toggleForm() {
-      this.showForm = !this.showForm;
-    },
-    goto(id) {
-      if (this.transfer && this.transfer.id == id) {
-        this.details = true;
-      } else {
-        this.loading = true;
-        axios.get(route('transfers.show', id) + '?json=yes').then(res => {
-          this.transfer = res.data;
-          this.details = true;
-          this.loading = false;
-        });
-      }
-    },
-    showDetails() {
-      this.details = false;
-    },
-    hideDetails() {
-      this.details = false;
-    },
-    print() {
-      window.print();
+      this.showForm = !this.showForm
     },
 
     handleClickOutside(event) {
-        const dropdown = this.$el.querySelector(".relative");
-        if (dropdown && !dropdown.contains(event.target)) {
-          this.showExport = false;
-        }
+      const dropdown = this.$el.querySelector('.relative')
+      if (dropdown && !dropdown.contains(event.target)) {
+        this.showExport = false
+      }
     },
+
+    formatQty(value) {
+      return Number(value ?? 0).toLocaleString('id-ID', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })
+    },
+
     exportTransferCSV() {
-      // Header
-      const headers = ["No", "Reference / No Aju", "Tanggal", "Dari Warehouse", "Tujuan Warehouse", "User", "Draft"];
+      const headers = [
+        'No',
+        'Kode Barang',
+        'Nama Barang',
+        'Satuan',
+        'Saldo Awal',
+        'Barang Masuk',
+        'Barang Keluar',
+        'Adjustment',
+        'Saldo Akhir',
+        'Cacah',
+        'Selisih',
+        'Keterangan'
+      ]
 
-      // Data rows
-      const rows = this.transfers.data.map((item, index) => [
+      const rows = this.transfers.map((item, index) => [
         index + 1,
-        item.reference || "",
-        this.$date(item.date) || "",
-        item.from_warehouse?.name || "",
-        item.to_warehouse?.name || "",
-        item.user?.name || "",
-        item.draft == 1 ? "Yes" : "No"
-      ]);
+        item.code,
+        item.name,
+        item.unit,
+        item.saldo_awal,
+        item.barang_masuk,
+        item.barang_keluar,
+        item.adjustment,
+        item.saldo_akhir,
+        item.cacah,
+        item.selisih,
+        item.details
+      ])
 
-      // Pakai ";" biar Excel di Indonesia baca sebagai kolom
-      const delimiter = ";";
-
-      // Gabungkan header + data
       const csvContent = [headers, ...rows]
-        .map(row => row.map(cell => `"${cell}"`).join(delimiter)) // kasih quote untuk aman
-        .join("\n");
+        .map(r => r.map(cell => `"${cell}"`).join(';'))
+        .join('\n')
 
-      // Tambahkan BOM untuk UTF-8
-      const bom = "\uFEFF" + csvContent;
+      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.download = `Transfer-report-${new Date().toISOString().slice(0, 10)}.csv`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    },
 
-      // Download
-      const blob = new Blob([bom], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `Transfer-report-${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    exportTransferXLSX() {
+      window.location.href = route('reports.transfer.export.xlsx')
     },
-    exportTransferXLSX(){
-      window.location.href = route('reports.transfer.export.xlsx');
-    },
-    // exportTransferPDF(){
-    //   window.location.href = route('reports.transfer.export.pdf');
-    // },
     exportTransferPDF() {
-      const query = window.location.search;
-      window.location.href = route('reports.transfer.export.pdf') + query;
+      const query = window.location.search
+      window.location.href = route('reports.transfer.export.pdf') + query
     }
-  },
-};
+  }
+}
 </script>
+
+<style scoped>
+.relative {
+  position: relative;
+}
+</style>

@@ -140,21 +140,21 @@
                       <div class="w-full flex items-center justify-between">
                         <span class="text-gray-600">{{ $t('Quantity') }}:</span>
                         <span class="font-bold">
-  {{
-    (item.stock.reduce((a, c) => a + parseFloat(c.quantity), 0))
-      .toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
-  }}
-</span>
+                          {{
+                            (item.stock.reduce((a, c) => a + parseFloat(c.quantity), 0))
+                              .toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+                          }}
+                        </span>
 
                       </div>
                       <div v-if="item.track_weight == 1" class="w-full flex items-center justify-between">
                         <span class="text-gray-600">{{ $t('Weight') }}:</span>
                         <span class="font-bold">
-  {{
-    (item.stock.reduce((a, c) => a + parseFloat(c.weight), 0))
-      .toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
-  }}
-</span>
+                          {{
+                            (item.stock.reduce((a, c) => a + parseFloat(c.weight), 0))
+                              .toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+                          }}
+                        </span>
 
                       </div>
                     </div>
