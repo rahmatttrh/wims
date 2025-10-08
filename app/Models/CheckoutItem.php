@@ -52,4 +52,9 @@ class CheckoutItem extends Model
         // return $this->hasMany(Variation::class);
         return $this->belongsToMany(Variation::class)->withPivot('weight', 'quantity', 'unit_id');
     }
+
+    public function adjustmentItem()
+    {
+        return $this->hasMany(adjustmentItem::class);
+    }
 }

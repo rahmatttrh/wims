@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Warehouse;
 use App\Models\Adjustment;
@@ -51,6 +52,10 @@ class AdjustmentController extends Controller
     public function show(Request $request, Adjustment $adjustment)
     {
         $adjustment->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username', 'attachments']);
+
+        $adjustment->formatted_created_at = Carbon::parse($adjustment->created_at)
+            ->locale('id')
+            ->translatedFormat('d F Y H:i');
 
         return $request->json ? $adjustment : Inertia::render('Adjustment/Show', ['adjustment' => $adjustment]);
     }

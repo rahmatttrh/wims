@@ -28,7 +28,8 @@
             <tr v-for="trail in trails.data" :key="trail.id">
               <td class="border-t px-6 py-4">
                 <div>
-                  {{ $datetime(trail.created_at) }}
+                  <!-- {{ $datetime(trail.created_at) }} -->
+                  {{ trail.formatted_created_at }}
                 </div>
                 <!-- <div class="capitalize text-gray-500">{{ trail.subject_type }}: {{ trail.subject_id }}</div> -->
                 <div class="capitalize text-gray-500">{{ trail.type }} ({{ trail.subject_id }})</div>
@@ -36,10 +37,24 @@
               <td class="border-t px-6 py-4">{{ $t(trail.warehouse.name) }}</td>
               <td class="border-t px-6 py-4" v-html="trail.variation ? $meta(trail.variation.meta) : ''"></td>
               <!-- <td class="border-t  px-6 py-4">{{ $t('Type') }}</td> -->
-              <td class="border-t px-6 py-4">{{ $number(trail.quantity) }} {{ trail.unit ? trail.unit.code : '' }}</td>
+              <!-- <td class="border-t px-6 py-4">{{ $number(trail.quantity) }} {{ trail.unit ? trail.unit.code : '' }}</td> -->
+
+              <!-- <td class="border-t px-6 py-4">{{ $number(trail.quantity) }}</td>
               <td class="border-t px-6 py-4">
                 <span v-if="trail.weight">{{ $number(trail.weight) }} {{ $settings.weight_unit || '' }}</span>
+              </td> -->
+
+              <td class="border-t px-6 py-4">
+                {{ Number.isInteger(Number(trail.quantity)) ? Number(trail.quantity) : Number(trail.quantity).toFixed(2) }}
               </td>
+
+              <td class="border-t px-6 py-4">
+                <span v-if="trail.weight">
+                  {{ Number.isInteger(Number(trail.weight)) ? Number(trail.weight) : Number(trail.weight).toFixed(2) }}
+                  {{ $settings.weight_unit || '' }}
+                </span>
+              </td>
+
             </tr>
             <tr v-if="trails.data.length === 0">
               <td class="border-t px-6 py-4" colspan="5">{{ $t('There is no data to display.') }}</td>

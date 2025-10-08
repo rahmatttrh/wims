@@ -376,10 +376,112 @@ class ReportController extends Controller
     //     return $pdf->download($filename);
     // }
 
+    // public function exportTransferPDF(Request $request)
+    // {
+    //     $filters = $request->all([
+    //         'start_date',
+    //         'end_date',
+    //         'start_created_at',
+    //         'end_created_at',
+    //         'reference',
+    //         'from_warehouse_id',
+    //         'user_id',
+    //         'to_warehouse_id',
+    //         'draft',
+    //         'trashed',
+    //         'category_id'
+    //     ]);
+
+    //     // Range tanggal default (bulan berjalan)
+    //     $start = $request->get('start_date');
+    //     $end   = $request->get('end_date');
+
+    //     if (!$start || !$end) {
+    //         $start = now()->startOfMonth()->format('Y-m-d');
+    //         $end   = now()->endOfMonth()->format('Y-m-d');
+    //         $filters['start_date'] = $start;
+    //         $filters['end_date']   = $end;
+    //     }
+
+    //     // Ambil gudang default kalau user belum pilih
+    //     $defaultWarehouse = \App\Models\Warehouse::first();
+    //     $fromWarehouseId  = $request->get('from_warehouse_id') ?? $defaultWarehouse?->id;
+    //     $toWarehouseId    = $request->get('to_warehouse_id') ?? $defaultWarehouse?->id;
+
+    //     // Ambil data item
+    //     $items = \App\Models\Item::with(['unit', 'checkinItems', 'checkoutItems'])
+    //         ->when($filters['category_id'] ?? null, fn($q, $cat) => $q->ofCategory($cat))
+    //         ->get();
+
+    //     // Olah data laporan
+    //     $reportData = $items->map(function ($item) use ($start, $end, $fromWarehouseId, $toWarehouseId) {
+
+    //         // Hitung pemasukan, pengeluaran, adjustment
+    //         $checkinQty = $item->checkinItems()
+    //             ->whereHas('checkin', function ($q) use ($start, $end, $toWarehouseId) {
+    //                 $q->whereBetween('date', [$start, $end])
+    //                     ->where('warehouse_id', $toWarehouseId);
+    //             })
+    //             ->sum('quantity');
+
+    //         $checkoutQty = $item->checkoutItems()
+    //             ->whereHas('checkout', function ($q) use ($start, $end, $fromWarehouseId) {
+    //                 $q->whereBetween('date', [$start, $end])
+    //                     ->where('warehouse_id', $fromWarehouseId);
+    //             })
+    //             ->sum('quantity');
+
+    //         $adjustmentQty = $item->hasMany(\App\Models\AdjustmentItem::class)
+    //             ->whereHas('adjustment', function ($q) use ($start, $end, $toWarehouseId) {
+    //                 $q->whereBetween('date', [$start, $end])
+    //                     ->where('warehouse_id', $toWarehouseId);
+    //             })
+    //             ->sum('quantity');
+
+    //         // Hitung saldo awal dan saldo akhir
+    //         $saldoAwal = $item->stock()
+    //             ->where('warehouse_id', $toWarehouseId)
+    //             ->where('created_at', '<', $start)
+    //             ->sum('quantity');
+
+    //         $saldoAkhir = $saldoAwal + $checkinQty - $checkoutQty + $adjustmentQty;
+
+    //         // Tambahan: jumlah barang (stok awal + pemasukan)
+    //         $jumlahBarang = $saldoAwal + $checkinQty;
+
+    //         return [
+    //             'code'            => $item->code,
+    //             'name'            => $item->name,
+    //             'unit'            => $item->unit->code ?? '-',
+    //             'saldo_awal'      => $saldoAwal,
+    //             'pemasukan'       => $checkinQty,
+    //             'pengeluaran'     => $checkoutQty,
+    //             'adjustment'      => $adjustmentQty,
+    //             'saldo_akhir'     => $saldoAkhir,
+    //             'jumlah_barang'   => $jumlahBarang, // kolom baru
+    //             'keterangan'      => $item->details ?? '-',
+    //         ];
+    //     });
+
+    //     // Ambil nama gudang
+    //     $warehouseName = \App\Models\Warehouse::find($toWarehouseId)?->name ?? ($defaultWarehouse?->name ?? '-');
+
+    //     // Generate PDF
+    //     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.transfer_pdf', [
+    //         'reportData'   => $reportData,
+    //         'filters'      => $filters,
+    //         'printedAt'    => now()->format('d/m/Y H:i'),
+    //         'warehouseName'=> $warehouseName,
+    //         'start_date'   => $start,
+    //         'end_date'     => $end,
+    //     ])->setPaper('A4', 'landscape');
+
+    //     return $pdf->download('Transfer-report-' . now()->format('Y-m-d') . '.pdf');
+    // }
+
     public function exportTransferPDF(Request $request)
-{
-        // Ambil semua filter yang dikirim
-        $filters = $request->all(
+    {
+        $filters = $request->all([
             'start_date',
             'end_date',
             'start_created_at',
@@ -391,6 +493,156 @@ class ReportController extends Controller
             'draft',
             'trashed',
             'category_id'
+        ]);
+
+        // Range tanggal default (bulan berjalan)
+        $start = $request->get('start_date');
+        $end   = $request->get('end_date');
+
+        if (!$start || !$end) {
+            $start = now()->startOfMonth()->format('Y-m-d');
+            $end   = now()->endOfMonth()->format('Y-m-d');
+            $filters['start_date'] = $start;
+            $filters['end_date']   = $end;
+        }
+
+        // Ambil gudang default kalau user belum pilih
+        $defaultWarehouse = \App\Models\Warehouse::first();
+        $fromWarehouseId  = $request->get('from_warehouse_id') ?? $defaultWarehouse?->id;
+        $toWarehouseId    = $request->get('to_warehouse_id') ?? $defaultWarehouse?->id;
+
+        // Ambil data item
+        $items = \App\Models\Item::with(['unit', 'checkinItems', 'checkoutItems'])
+            ->when($filters['category_id'] ?? null, fn($q, $cat) => $q->ofCategory($cat))
+            ->get();
+
+        // Olah data laporan
+        $reportData = $items->map(function ($item) use ($start, $end, $fromWarehouseId, $toWarehouseId) {
+
+            // Hitung pemasukan, pengeluaran, adjustment
+            $checkinQty = $item->checkinItems()
+                ->whereHas('checkin', function ($q) use ($start, $end, $toWarehouseId) {
+                    $q->whereBetween('date', [$start, $end])
+                        ->where('warehouse_id', $toWarehouseId);
+                })
+                ->sum('quantity');
+
+            $checkoutQty = $item->checkoutItems()
+                ->whereHas('checkout', function ($q) use ($start, $end, $fromWarehouseId) {
+                    $q->whereBetween('date', [$start, $end])
+                        ->where('warehouse_id', $fromWarehouseId);
+                })
+                ->sum('quantity');
+
+            $adjustmentQty = $item->hasMany(\App\Models\AdjustmentItem::class)
+                ->whereHas('adjustment', function ($q) use ($start, $end, $toWarehouseId) {
+                    $q->whereBetween('date', [$start, $end])
+                        ->where('warehouse_id', $toWarehouseId);
+                })
+                ->sum('quantity');
+
+            // Hitung saldo awal dan saldo akhir
+            $saldoAwal = $item->stock()
+                ->where('warehouse_id', $toWarehouseId)
+                ->where('created_at', '<', $start)
+                ->sum('quantity');
+
+            $saldoAkhir = $saldoAwal + $checkinQty - $checkoutQty + $adjustmentQty;
+
+            // Tambahan: jumlah barang (stok awal + pemasukan)
+            $jumlahBarang = $saldoAwal + $checkinQty;
+
+            return [
+                'code'            => $item->code,
+                'name'            => $item->name,
+                'unit'            => $item->unit->code ?? '-',
+                'saldo_awal'      => $saldoAwal,
+                'pemasukan'       => $checkinQty,
+                'pengeluaran'     => $checkoutQty,
+                'adjustment'      => $adjustmentQty,
+                'saldo_akhir'     => $saldoAkhir,
+                'jumlah_barang'   => $jumlahBarang, // kolom baru
+                'keterangan'      => $item->details ?? '-',
+            ];
+        });
+
+        $reportData = $reportData->filter(function ($row) {
+            return $row['pemasukan'] > 0
+                || $row['pengeluaran'] > 0
+                || $row['adjustment'] > 0
+                || $row['saldo_awal'] != $row['saldo_akhir']; // jika saldo berubah
+        })->values();
+
+        // Ambil nama gudang
+        $warehouseName = \App\Models\Warehouse::find($toWarehouseId)?->name ?? ($defaultWarehouse?->name ?? '-');
+
+        // Generate PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.transfer_pdf', [
+            'reportData'   => $reportData,
+            'filters'      => $filters,
+            'printedAt'    => now()->format('d/m/Y H:i'),
+            'warehouseName'=> $warehouseName,
+            'start_date'   => $start,
+            'end_date'     => $end,
+        ])->setPaper('A4', 'landscape');
+
+        return $pdf->download('Transfer-report-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+
+
+
+    // public function exportAdjustmentPDF(Request $request)
+    // {
+    //     $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
+
+    //     // Tentukan tanggal default (bulan berjalan) jika tidak diinput
+    //     $start = $request->get('start_date');
+    //     $end   = $request->get('end_date');
+
+    //     if (!$start || !$end) {
+    //         $start = now()->startOfMonth()->format('Y-m-d');
+    //         $end   = now()->endOfMonth()->format('Y-m-d');
+    //         $filters['start_date'] = $start;
+    //         $filters['end_date'] = $end;
+    //     }
+
+    //     // Ambil data Adjustment sesuai filter
+    //     $adjustments= Adjustment::with([
+    //         'contact',
+    //         'warehouse',
+    //         'user',
+    //         'items.item',
+    //         'items.unit',
+    //     ])
+    //     ->reportFilter($filters)
+    //     ->orderBy('id', 'asc')
+    //     ->get();
+
+    //     // Nama gudang (jika ada)
+    //     $warehouseName = $adjustments->first()->warehouse->name ?? '-';
+
+    //     // Generate PDF
+    //     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.adjustment_pdf', [
+    //         'adjustments' => $adjustments,
+    //         'filters'  => $filters,
+    //         'printedAt' => now()->format('d/m/Y H:i'),
+    //         'start_date' => $start,
+    //         'end_date'   => $end,
+    //         'warehouseName' => $warehouseName,
+    //     ])->setPaper('A4', 'landscape');
+
+    //     // Nama file
+    //     $filename = 'Adjustment-report-' . now()->format('Y-m-d') . '.pdf';
+
+    //     return $pdf->download($filename);
+    // }
+
+    public function exportAdjustmentPDF(Request $request)
+    {
+        $filters = $request->all(
+            'start_date', 'end_date', 'start_created_at', 'end_created_at', 
+            'reference', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id'
         );
 
         // Tentukan tanggal default (bulan berjalan) jika tidak diinput
@@ -404,56 +656,37 @@ class ReportController extends Controller
             $filters['end_date'] = $end;
         }
 
-        // Ambil data Transfer sesuai filter
-        $transfers = Transfer::with([
-            'fromWarehouse',
-            'toWarehouse',
+        // Ambil data Adjustment sesuai filter + relasi checkin/checkout
+        $adjustments = Adjustment::with([
+            'contact',
+            'warehouse',
             'user',
             'items.item',
-            'items.unit'
+            'items.unit',
+            'items.checkinItem',
+            'items.checkoutItem',
         ])
-            ->reportFilter($filters)
-            ->orderBy('id', 'asc')
-            ->get();
+        ->reportFilter($filters)
+        ->orderBy('id', 'asc')
+        ->get();        
 
-        // Nama gudang tujuan (jika ada)
-        $warehouseName = $transfers->isNotEmpty() && $transfers->first()->toWarehouse
-            ? $transfers->first()->toWarehouse->name
-            : '-';
+        // Nama gudang (jika ada)
+        $warehouseName = $adjustments->first()->warehouse->name ?? '-';
 
         // Generate PDF
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.transfer_pdf', [
-            'transfers' => $transfers,
-            'filters'  => $filters,
-            'printedAt' => now()->format('d/m/Y H:i'),
-            'warehouseName' => $warehouseName,
-            'start_date' => $start,
-            'end_date'   => $end,
-        ])->setPaper('A4', 'landscape');
-
-        // Nama file
-        $filename = 'Transfer-report-' . now()->format('Y-m-d') . '.pdf';
-
-        return $pdf->download($filename);
-    }
-
-
-    public function exportAdjustmentPDF(Request $request)
-    {
-        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'user_id', 'warehouse_id', 'draft', 'trashed', 'category_id');
-
-        $adjustments = Adjustment::with(['contact', 'warehouse', 'user'])
-            ->reportFilter($filters)
-            ->orderBy('id', 'asc')
-            ->get();
-
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.adjustment_pdf', [
             'adjustments' => $adjustments,
             'filters'  => $filters,
             'printedAt' => now()->format('d/m/Y H:i'),
-        ])->setPaper('A4', 'portrait');
+            'start_date' => $start,
+            'end_date'   => $end,
+            'warehouseName' => $warehouseName,
+        ])->setPaper('A4', 'landscape');
 
+        // Nama file
         $filename = 'Adjustment-report-' . now()->format('Y-m-d') . '.pdf';
+
         return $pdf->download($filename);
     }
+
 }

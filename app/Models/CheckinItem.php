@@ -64,4 +64,9 @@ class CheckinItem extends Model
         // return $this->hasMany(Variation::class);
         return $this->belongsToMany(Variation::class)->withPivot('weight', 'quantity', 'sender', 'owner', 'unit_id');
     }
+
+    public function adjustmentItem()
+    {
+        return $this->hasMany(adjustmentItem::class);
+    }
 }

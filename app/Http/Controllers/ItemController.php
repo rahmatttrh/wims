@@ -110,13 +110,39 @@ class ItemController extends Controller
         return back()->with('error', __('The record can not be deleted.'));
     }
 
+    // public function trail(Item $item)
+    // {
+    //     $item->load('stockTrails');
+
+    //     return Inertia::render('Item/Trail', [
+    //         'item'   => $item->only('id', 'code', 'name'),
+    //         'trails' => new Collection($item->stockTrails()->orderByDesc('id')->paginate()),
+    //     ]);
+    // }
+
     public function trail(Item $item)
     {
         $item->load('stockTrails');
 
+        // Ambil data stock trail + relasi
+        $trails = $item->stockTrails()
+            ->with(['warehouse', 'unit', 'variation'])
+            ->orderByDesc('id')
+            ->paginate()
+            ;
+
+        // Format tanggal menggunakan Carbon (locale Indonesia)
+        $trails->getCollection()->transform(function ($trail) {
+            $trail->formatted_created_at = \Carbon\Carbon::parse($trail->created_at)
+                ->locale('id')
+                ->translatedFormat('d F Y H:i');
+            return $trail;
+        });
+
         return Inertia::render('Item/Trail', [
             'item'   => $item->only('id', 'code', 'name'),
-            'trails' => new Collection($item->stockTrails()->orderByDesc('id')->paginate()),
+            'trails' => new \App\Http\Resources\Collection($trails),
         ]);
     }
+
 }

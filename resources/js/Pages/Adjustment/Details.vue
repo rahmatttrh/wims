@@ -32,7 +32,8 @@
           <div>{{ $t('Type') }}: {{ adjustment.type }}</div>
           <div>{{ $t('Date') }}: {{ $date(adjustment.date) }}</div>
           <div>{{ $t('Reference / No Aju') }}: {{ adjustment.reference }}</div>
-          <div>{{ $t('Created at') }}: {{ $datetime(adjustment.created_at) }}</div>
+          <!-- <div>{{ $t('Created at') }}: {{ $datetime(adjustment.created_at) }}</div> -->
+          <div>{{ $t('Created at') }}: {{ adjustment.formatted_created_at }}</div>
         </div>
       </div>
 

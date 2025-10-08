@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Imports\InboundImport;
 use App\Models\Checkin;
@@ -91,6 +92,10 @@ class CheckinController extends Controller
     public function show(Request $request, Checkin $checkin)
     {
         $checkin->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight,photo', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username', 'attachments']);
+
+        $checkin->formatted_created_at = Carbon::parse($checkin->created_at)
+            ->locale('id')
+            ->translatedFormat('d F Y H:i');
 
         return $request->json ? $checkin : Inertia::render('Checkin/Show', ['checkin' => $checkin]);
     }

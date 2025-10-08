@@ -289,9 +289,13 @@ export default {
     exportAdjustmentXLSX(){
       window.location.href = route('reports.adjustment.export.xlsx');
     },
-    exportAdjustmentPDF(){
-      window.location.href = route('reports.adjustment.export.pdf');
-    },
+    // exportAdjustmentPDF(){
+    //   window.location.href = route('reports.adjustment.export.pdf');
+    // },
+    exportAdjustmentPDF() {
+      const query = window.location.search;
+      window.location.href = route('reports.adjustment.export.pdf') + query;
+    }
   },
 };
 </script>

@@ -37,7 +37,8 @@
           <div>{{ $t('Tanggal Penerimaan') }}: {{ $date(checkin.date_receive) }}</div>
           <div>{{ $t('No Penerimaan') }}: {{ checkin.no_receive }}</div>
           
-          <div>{{ $t('Created at') }}: {{ $datetime(checkin.created_at) }}</div>
+          <!-- <div>{{ $t('Created at') }}: {{ $datetime(checkin.created_at) }}</div> -->
+          <div>{{ $t('Created at') }}: {{ checkin.formatted_created_at }}</div>
         </div>
         <div class="text-left w-full sm:w-1/2 leading-snug">
           <div class="text-sm font-bold">{{ $t('For') }}:</div>

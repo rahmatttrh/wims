@@ -81,4 +81,9 @@ class Adjustment extends Model
     {
         return $this->belongsTo(Warehouse::class);
     }
+
+    // public function item()
+    // {
+    //     return $this->belongsTo(Warehouse::class);
+    // }
 }

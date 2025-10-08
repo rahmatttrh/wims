@@ -57,10 +57,11 @@ class OutboundImport implements ToCollection, WithHeadingRow
             CheckoutItem::create([
                'checkout_id' => $outbound->id,
                'item_id' => $item->id,
-               'sender' => $row['pengirim'],
+               'buyer' => $row['pembeli'],
                'owner' => $row['pemilik'],
                'quantity' => $row['quantity'],
                'unit_id' => $unit->id,
+               'value' => $row['nilai'],
 
                'warehouse_id' => $outbound->warehouse_id,
                'account_id' => $outbound->account_id

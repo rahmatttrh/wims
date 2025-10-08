@@ -130,12 +130,12 @@
                     >
                       <icons name="doc"></icons>
                     </Link>
-                    <button
+                    <!-- <button
                       @click="sendEmail(adjustment.id)"
                       class="flex items-center p-3 md:p-2 bg-indigo-600 text-white hover:bg-indigo-700 focus:bg-indigo-700 z-0 focus:z-10 focus:outline-hidden focus:ring-3 focus:ring-gray-300 transition ease-in-out duration-150"
                     >
                       <icons name="email"></icons>
-                    </button>
+                    </button> -->
                     <Link
                       v-if="$can('update-adjustments')"
                       :href="route('adjustments.edit', adjustment.id)"

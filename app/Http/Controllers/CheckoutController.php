@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Contact;
 use App\Models\Checkout;
@@ -82,12 +83,42 @@ class CheckoutController extends Controller
         return redirect()->route('checkouts.index')->with('message', __choice('action_text', ['record' => 'Checkout', 'action' => 'created']));
     }
 
+    // public function show(Request $request, Checkout $checkout)
+    // {
+    //     $checkout->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight,photo', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username', 'attachments']);
+
+    //     return $request->json ? $checkout : Inertia::render('Checkout/Show', ['checkout' => $checkout]);
+    // }
+
     public function show(Request $request, Checkout $checkout)
     {
-        $checkout->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight,photo', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username', 'attachments']);
+        $checkout->load([
+            'items.variations',
+            'items.item:id,code,name,track_quantity,track_weight,photo',
+            'contact',
+            'warehouse',
+            'items.unit:id,code,name',
+            'user:id,name,username',
+            'attachments'
+        ]);
 
-        return $request->json ? $checkout : Inertia::render('Checkout/Show', ['checkout' => $checkout]);
+        // lokal Indonesia
+        $checkout->formatted_created_at = Carbon::parse($checkout->created_at)
+            ->locale('id')
+            ->translatedFormat('d F Y H:i');
+
+        // Default gudang kalau kosong (ambil gudang pertama aktif)
+        // if (!$checkout->warehouse_id) {
+        //     $checkout->warehouse = \App\Models\Warehouse::ofAccount()->active()->first();
+        // }
+
+        return $request->json
+            ? $checkout
+            : Inertia::render('Checkout/Show', [
+                'checkout' => $checkout,
+            ]);
     }
+
 
     public function edit(Checkout $checkout)
     {

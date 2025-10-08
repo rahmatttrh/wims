@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Transfer;
 use App\Models\Warehouse;
@@ -51,6 +52,10 @@ class TransferController extends Controller
     public function show(Request $request, Transfer $transfer)
     {
         $transfer->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight', 'fromWarehouse', 'toWarehouse', 'items.unit:id,code,name', 'user:id,name:username', 'attachments']);
+
+        $transfer->formatted_created_at = Carbon::parse($transfer->created_at)
+            ->locale('id')
+            ->translatedFormat('d F Y H:i');
 
         return $request->json ? $transfer : Inertia::render('Transfer/Show', ['transfer' => $transfer]);
     }

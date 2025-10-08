@@ -64,4 +64,16 @@ class AdjustmentItem extends Model
         // return $this->hasMany(Variation::class);
         return $this->belongsToMany(Variation::class)->withPivot('weight', 'quantity', 'unit_id');
     }
+
+    public function checkinItem()
+    {
+        return $this->belongsTo(CheckinItem::class, 'checkin_item_id');
+    }
+
+    public function checkoutItem()
+    {
+        return $this->belongsTo(CheckoutItem::class, 'checkout_item_id');
+    }
+
+
 }

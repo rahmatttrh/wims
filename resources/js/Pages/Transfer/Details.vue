@@ -32,7 +32,8 @@
           <div class="text-sm font-bold">&nbsp;</div>
           <div>{{ $t('Date') }}: {{ $date(transfer.date) }}</div>
           <div>{{ $t('Reference / No Aju') }}: {{ transfer.reference }}</div>
-          <div>{{ $t('Created at') }}: {{ $datetime(transfer.created_at) }}</div>
+          <!-- <div>{{ $t('Created at') }}: {{ $datetime(transfer.created_at) }}</div> -->
+          <div>{{ $t('Created at') }}: {{ transfer.formatted_created_at }}</div>
         </div>
         <div class="text-left w-full sm:w-1/2 leading-snug">
           <div class="text-sm font-bold">{{ $t('To') }}:</div>
