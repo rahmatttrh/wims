@@ -20,8 +20,8 @@
               <th class="px-6 pt-6 pb-4">{{ $t('Warehouse') }}</th>
               <th class="px-6 pt-6 pb-4">{{ $t('Variation') }}</th>
               <!-- <th class="px-6 pt-6 pb-4">{{ $t('Type') }}</th> -->
-              <th class="px-6 pt-6 pb-4">{{ $t('Quantity') }}</th>
-              <th class="px-6 pt-6 pb-4">{{ $t('Weight') }}</th>
+              <th class="pt-6 pb-4 px-6 py-4 text-center">{{ $t('Quantity') }}</th>
+              <th class="pt-6 pb-4 px-6 py-4 text-center">{{ $t('Weight') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -44,14 +44,15 @@
                 <span v-if="trail.weight">{{ $number(trail.weight) }} {{ $settings.weight_unit || '' }}</span>
               </td> -->
 
-              <td class="border-t px-6 py-4">
+              <td class="border-t px-6 py-4 text-center">
                 {{ Number.isInteger(Number(trail.quantity)) ? Number(trail.quantity) : Number(trail.quantity).toFixed(2) }}
               </td>
 
-              <td class="border-t px-6 py-4">
+              <td class="border-t px-6 py-4 text-center">
                 <span v-if="trail.weight">
                   {{ Number.isInteger(Number(trail.weight)) ? Number(trail.weight) : Number(trail.weight).toFixed(2) }}
                   {{ $settings.weight_unit || '' }}
+                  <!-- {{ trail.unit ? trail.unit.code : '' }} -->
                 </span>
               </td>
 
