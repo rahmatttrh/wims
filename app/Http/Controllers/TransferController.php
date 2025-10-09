@@ -50,69 +50,67 @@ class TransferController extends Controller
         return redirect()->route('transfers.index')->with('message', __choice('action_text', ['record' => 'Transfer', 'action' => 'created']));
     }
 
+    public function show(Request $request, Transfer $transfer)
+    {
+        $transfer->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight', 'fromWarehouse', 'toWarehouse', 'items.unit:id,code,name', 'user:id,name:username', 'attachments']);
+
+        $transfer->formatted_created_at = Carbon::parse($transfer->created_at)
+            ->locale('id')
+            ->translatedFormat('d F Y H:i');
+
+        return $request->json ? $transfer : Inertia::render('Transfer/Show', ['transfer' => $transfer]);
+    }
+
     // public function show(Request $request, Transfer $transfer)
     // {
-    //     $transfer->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight', 'fromWarehouse', 'toWarehouse', 'items.unit:id,code,name', 'user:id,name:username', 'attachments']);
+    //     // Ambil data relasi penting
+    //     $transfer->load([
+    //         'fromWarehouse',
+    //         'toWarehouse',
+    //         'user:id,name,username',
+    //         'attachments',
+    //     ]);
 
+    //     // Format tanggal
     //     $transfer->formatted_created_at = Carbon::parse($transfer->created_at)
     //         ->locale('id')
     //         ->translatedFormat('d F Y H:i');
 
-    //     return $request->json ? $transfer : Inertia::render('Transfer/Show', ['transfer' => $transfer]);
+    //     // Ambil semua item yang terlibat (berdasarkan transfer ini)
+    //     $items = Item::with(['unit', 'checkinItems', 'checkoutItems'])
+    //         ->whereHas('checkoutItems.checkout', fn($q) => $q->where('id', $transfer->id))
+    //         ->orWhereHas('checkinItems.checkin', fn($q) => $q->where('id', $transfer->id))
+    //         ->get();
+
+    //     // Mapping data item seperti di PDF export
+    //     $mappedItems = $items->map(function ($item) {
+    //         $saldoAwal   = 0; // placeholder jika belum ada histori stok
+    //         $pemasukan   = $item->checkinItems->sum('quantity');
+    //         $pengeluaran = $item->checkoutItems->sum('quantity');
+    //         $adjustment  = 0; // bisa dihubungkan nanti ke tabel adjustment_items
+    //         $saldoAkhir  = $saldoAwal + $pemasukan - $pengeluaran + $adjustment;
+
+    //         return [
+    //             'code'         => $item->code,
+    //             'name'         => $item->name,
+    //             'unit'         => $item->unit->code ?? '-',
+    //             'saldo_awal'   => $saldoAwal,
+    //             'pemasukan'    => $pemasukan,
+    //             'pengeluaran'  => $pengeluaran,
+    //             'adjustment'   => $adjustment,
+    //             'saldo_akhir'  => $saldoAkhir,
+    //             'cacah'        => $saldoAkhir, // placeholder
+    //             'selisih'      => $saldoAkhir - $saldoAwal,
+    //         ];
+    //     });
+
+    //     // Tambahkan hasil mapping ke model menggunakan setRelation
+    //     $transfer->setRelation('items', $mappedItems);
+
+    //     return Inertia::render('Transfer/Show', [
+    //         'transfer' => $transfer,
+    //     ]);
     // }
-
-    public function show(Request $request, Transfer $transfer)
-{
-    // Ambil data relasi penting
-    $transfer->load([
-        'fromWarehouse',
-        'toWarehouse',
-        'user:id,name,username',
-        'attachments',
-    ]);
-
-    // Format tanggal
-    $transfer->formatted_created_at = Carbon::parse($transfer->created_at)
-        ->locale('id')
-        ->translatedFormat('d F Y H:i');
-
-    // Ambil semua item yang terlibat (berdasarkan transfer ini)
-    $items = Item::with(['unit', 'checkinItems', 'checkoutItems'])
-        ->whereHas('checkoutItems.checkout', fn($q) => $q->where('id', $transfer->id))
-        ->orWhereHas('checkinItems.checkin', fn($q) => $q->where('id', $transfer->id))
-        ->get();
-
-    // Mapping data item seperti di PDF export
-    $mappedItems = $items->map(function ($item) {
-        $saldoAwal   = 0; // placeholder jika belum ada histori stok
-        $pemasukan   = $item->checkinItems->sum('quantity');
-        $pengeluaran = $item->checkoutItems->sum('quantity');
-        $adjustment  = 0; // bisa dihubungkan nanti ke tabel adjustment_items
-        $saldoAkhir  = $saldoAwal + $pemasukan - $pengeluaran + $adjustment;
-
-        return [
-            'code'         => $item->code,
-            'name'         => $item->name,
-            'unit'         => $item->unit->code ?? '-',
-            'saldo_awal'   => $saldoAwal,
-            'pemasukan'    => $pemasukan,
-            'pengeluaran'  => $pengeluaran,
-            'adjustment'   => $adjustment,
-            'saldo_akhir'  => $saldoAkhir,
-            'cacah'        => $saldoAkhir, // placeholder
-            'selisih'      => $saldoAkhir - $saldoAwal,
-        ];
-    });
-
-    // Tambahkan hasil mapping ke model menggunakan setRelation
-    $transfer->setRelation('items', $mappedItems);
-
-    return Inertia::render('Transfer/Show', [
-        'transfer' => $transfer,
-    ]);
-}
-
-
 
     public function edit(Transfer $transfer)
     {

@@ -139,6 +139,7 @@ export default {
     TecButton,
     ReportForm,
     AdminLayout,
+    // Pagination,
     TecSectionTitle
   },
 
