@@ -56,7 +56,10 @@ class CheckoutController extends Controller
             // 'contacts'   => ['BC 16', 'BC 28'],
             // 'contactbs'   => Contact::ofAccount()->get(),
             'contactbs'   => Contact::ofAccount()->get(),
-            'contacts'   => TypeBc::where('code', '!=', 'bc1.6')->get(),
+            // 'contacts'   => TypeBc::where('code', '!=', 'bc1.6', 'bc4.0')->get(),
+            'contacts'  => TypeBc::whereIn('code', ['bc2.7', 'bc2.8', 'bc3.0', 'bc4.1', 'bc2.6.1', 'p3bet'])
+                ->orderBy('code', 'asc')
+                ->get(),
             'warehouses' => Warehouse::ofAccount()->active()->get(),
         ]);
     }

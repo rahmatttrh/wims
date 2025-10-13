@@ -8,6 +8,7 @@
 
       <section class="-mt-4 mb-4 mx-auto">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card Checkin -->
           <div class="p-4 rounded-md shadow-sm bg-white">
             <div class="flex items-start justify-between">
               <h2 class="mb-2 text-xl font-semibold leading-none text-gray-900 truncate">{{ data.checkins }}</h2>
@@ -23,6 +24,7 @@
             </div>
             <p class="leading-none text-gray-600">{{ $t('Checkins') }}</p>
           </div>
+          <!-- Card Checkout -->
           <div class="p-4 rounded-md shadow-sm bg-white">
             <div class="flex items-start justify-between">
               <h2 class="mb-2 text-xl font-semibold leading-none text-gray-900 truncate">{{ data.checkouts }}</h2>
@@ -38,12 +40,14 @@
             </div>
             <p class="leading-none text-gray-600">{{ $t('Checkouts') }}</p>
           </div>
+          <!-- Card Items -->
           <div class="p-4 rounded-md shadow-sm bg-white">
             <div class="flex items-start justify-between">
               <h2 class="mb-2 text-xl font-semibold leading-none text-gray-900 truncate">{{ data.items }}</h2>
             </div>
             <p class="leading-none text-gray-600">{{ $t('Items') }}</p>
           </div>
+          <!-- Card Contact -->
           <div class="p-4 rounded-md shadow-sm bg-white">
             <div class="flex items-start justify-between">
               <h2 class="mb-2 text-xl font-semibold leading-none text-gray-900 truncate">{{ data.contacts }}</h2>
@@ -53,11 +57,11 @@
         </div>
       </section>
 
+      <!-- Grafik -->
       <div class="flex items-center gap-4 mb-2">
         <auto-complete json v-model="month" :suggestions="months" class="w-1/2" @update:modelValue="reload" />
         <auto-complete json v-model="year" :suggestions="years" class="w-1/2" @update:modelValue="reload" />
       </div>
-
       <div class="bg-white rounded-md shadow-sm overflow-x-auto">
         <vue-highcharts
           type="chart"
@@ -68,10 +72,15 @@
           style="min-width: 550px"
         />
       </div>
+
       <div class="mt-4 flex items-start flex-col md:flex-row gap-4">
+
+        <!-- Pie Chart Overview WMS -->
         <div class="w-full md:w-1/2 bg-white rounded-md shadow-sm overflow-x-auto">
           <vue-highcharts type="chart" :options="pieChartData" :redrawOnUpdate="true" :oneToOneUpdate="false" :animateOnUpdate="true" />
         </div>
+
+        <!-- Radial Chart Overview WMS -->
         <div class="w-full md:w-1/2 bg-white rounded-md shadow-sm overflow-x-auto">
           <vue-highcharts
             type="chart"
@@ -82,7 +91,69 @@
             style="min-width: 550px"
           />
         </div>
+
       </div>
+
+      <!-- Table Alert Inbound Barang yang mendekati tanggal expired atau mendekati expired -->
+        <section class="mt-6 bg-white rounded-md shadow-sm overflow-x-auto">
+          <h3 class="text-lg font-semibold text-gray-800 p-4 border-b">Long Stay Cargo</h3>
+
+          <table class="w-full text-sm text-left text-gray-700">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-4 py-3">No</th>
+                <th class="px-4 py-3">No Aju</th>
+                <th class="px-4 py-3">Pengirim</th>
+                <th class="px-4 py-3">Pemilik</th>
+                <th class="px-4 py-3">Tanggal Inbound</th>
+                <th class="px-4 py-3">Tanggal Expired</th>
+                <!-- <th class="px-4 py-3">Keterangan</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(item, index) in alert_inbound"
+                :key="item.id"
+                :class="{
+                  'bg-red-100 text-red-700': item.status_expired === 'expired',
+                  'bg-yellow-100 text-yellow-700': item.status_expired === 'warning',
+                }"
+                class="border-b hover:bg-gray-50"
+              >
+                <td class="px-4 py-2">{{ index + 1 }}</td>
+                <td class="px-4 py-2">{{ item.reference ?? '-' }}</td>
+                <!-- <td class="px-4 py-2">{{ item.user?.name }}</td> -->
+                <td class="px-4 py-2">{{ item.sender }}</td>
+                <td class="px-4 py-2">{{ item.owner }}</td>
+                <td class="px-4 py-2">{{ item.date_receive }}</td>
+                <td class="px-4 py-2">{{ item.date_expired }}</td>
+                <!-- <td class="px-4 py-2 font-semibold capitalize">{{ item.status_expired }}</td> -->
+                <!-- <td class="px-4 py-2 font-semibold capitalize">Expired 3 hari lagi</td> -->
+                <!-- <td class="px-4 py-2 text-sm font-semibold capitalize">{{ item.keterangan }}</td> -->
+              </tr>
+              <tr v-if="!alert_inbound.length">
+                <td colspan="6" class="px-4 py-4 text-center text-gray-500">
+                  Tidak ada barang yang melewati masa 6 bulan.
+                </td>
+              </tr>
+            </tbody>
+
+            <tfoot class="text-xs text-gray-600 bg-gray-50">
+              <tr>
+                <td colspan="6" class="px-4 pt-3">
+                  Barang > 6 bulan sejak inbound = <span class="text-yellow-600 font-medium">Alert Kuning</span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="6" class="px-4 pb-3">
+                  Barang 33–36 bulan sejak inbound = <span class="text-red-600 font-medium">Alert Merah</span>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </section>
+
+       
     </div>
   </admin-layout>
 </template>
@@ -92,11 +163,12 @@ import VueHighcharts from 'vue3-highcharts';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import AutoComplete from '@/Shared/AutoComplete.vue';
 import TecSectionTitle from '@/Jetstream/SectionTitle.vue';
+// import Pagination from '@/Shared/Pagination.vue';
 
 export default {
-  props: ['data', 'chart', 'top_products'],
+  props: ['data', 'chart', 'top_products', 'alert_inbound'],
 
-  components: { AdminLayout, AutoComplete, VueHighcharts, TecSectionTitle },
+  components: { AdminLayout, AutoComplete, VueHighcharts, TecSectionTitle},
 
   data() {
     return {

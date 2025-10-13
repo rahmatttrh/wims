@@ -344,9 +344,6 @@ import SearchFilter from '@/Shared/SearchFilter.vue';
 import TecDropdownLink from '@/Jetstream/DropdownLink.vue';
 import TecSectionTitle from '@/Jetstream/SectionTitle.vue';
 
-
-
-
 export default {
   components: {
     Modal,

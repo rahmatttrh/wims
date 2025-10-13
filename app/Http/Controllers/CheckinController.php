@@ -54,40 +54,113 @@ class CheckinController extends Controller
     {
         return Inertia::render('Checkin/Form', [
             'contactbs'   => Contact::ofAccount()->get(),
-            'contacts'   => TypeBc::where('code', 'bc1.6')->get(),
+            // 'contacts'   => TypeBc::where('code', 'bc1.6', 'bc2.7', 'bc4.0')->get(),
             // 'category_logistics'   => CategoryLogistics::where('code', '001')->get(),
             // 'contacts'   => ['BC 16', 'BC 28'],
+            'contacts'  => TypeBc::whereIn('code', ['bc1.6', 'bc2.7', 'bc3.3', 'bc4.0', 'bc2.6.2'])
+                ->orderBy('code', 'asc')
+                ->get(),
             'warehouses' => Warehouse::ofAccount()->active()->get(),
         ]);
     }
 
+    // public function store(CheckinRequest $request)
+    // {
+    //     // dd($request->type_bc_id['name']);
+    //     // dd($request->all());
+    //     $data = $request->validated();
+    //     $checkin = (new PrepareOrder($data, $request->file('attachments'), new Checkin()))->process()->save();
+    //     event(new \App\Events\CheckinEvent($checkin, 'created'));
+
+
+    //     $checkin->no_receive = $request->no_receive;
+    //     $checkin->date_receive = $request->date_receive;
+    //     $checkin->type_bc_id = $request->type_bc_id;
+    //     //  $checkin->category_logistic_id = $request->category_logistic_id;
+    //     // tambahkan manual kalau belum keisi
+    //     $checkin->save();
+
+    //     //   dd($checkin);
+    //     if ((get_settings('auto_email') ?? null) && $checkin->contact->email) {
+    //         $checkin->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username,email']);
+
+    //         // Mail::to($checkin->contact->email)->cc(auth()->user()->email)->queue(new EmailCheckin($checkin));
+    //     }
+
+    //     //   dd($checkin);
+
+    //     return redirect()->route('checkins.index')->with('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'created']));
+    // }
+
     public function store(CheckinRequest $request)
     {
-        // dd($request->type_bc_id['name']);
-        // dd($request->all());
         $data = $request->validated();
-        $checkin = (new PrepareOrder($data, $request->file('attachments'), new Checkin()))->process()->save();
+
+        $checkin = (new PrepareOrder($data, $request->file('attachments'), new Checkin()))
+            ->process()
+            ->save();
+
         event(new \App\Events\CheckinEvent($checkin, 'created'));
 
-
+        // isi data tambahan
         $checkin->no_receive = $request->no_receive;
         $checkin->date_receive = $request->date_receive;
         $checkin->type_bc_id = $request->type_bc_id;
-        //  $checkin->category_logistic_id = $request->category_logistic_id;
-        // tambahkan manual kalau belum keisi
-        $checkin->save();
 
-        //   dd($checkin);
-        if ((get_settings('auto_email') ?? null) && $checkin->contact->email) {
-            $checkin->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username,email']);
-
-            // Mail::to($checkin->contact->email)->cc(auth()->user()->email)->queue(new EmailCheckin($checkin));
+        // ✅ Tambahkan logika otomatis date_expired +6 bulan
+        if ($request->date_receive) {
+            $checkin->date_expired = Carbon::parse($request->date_receive)->addMonths(6)->format('Y-m-d');
         }
 
-        //   dd($checkin);
+        $checkin->save();
 
-        return redirect()->route('checkins.index')->with('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'created']));
+        // kirim email jika fitur aktif
+        if ((get_settings('auto_email') ?? null) && $checkin->contact->email) {
+            $checkin->load([
+                'items.variations',
+                'items.item:id,code,name,track_quantity,track_weight',
+                'contact',
+                'warehouse',
+                'items.unit:id,code,name',
+                'user:id,name:username,email'
+            ]);
+
+            // Mail::to($checkin->contact->email)
+            //     ->cc(auth()->user()->email)
+            //     ->queue(new EmailCheckin($checkin));
+        }
+
+        return redirect()
+            ->route('checkins.index')
+            ->with('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'created']));
     }
+
+    public function update(CheckinRequest $request, Checkin $checkin)
+    {
+        $this->authorize('update', $checkin);
+
+        $data = $request->validated();
+        $original = $checkin->load(['items.item', 'items.unit', 'items.variations'])->replicate();
+
+        $checkin = (new PrepareOrder($data, $request->file('attachments'), $checkin))
+            ->process()
+            ->save();
+
+        // ✅ Update otomatis date_expired +6 bulan juga di update
+        if ($request->date_receive) {
+            $checkin->date_expired = Carbon::parse($request->date_receive)->addMonths(6)->format('Y-m-d');
+            $checkin->save();
+        }
+
+        event(new \App\Events\CheckinEvent($checkin, 'updated', $original));
+        session()->flash('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'updated']));
+
+        return $request->listing == 'yes'
+            ? redirect()->route('checkins.index')
+            : back();
+    }
+
+
 
     public function show(Request $request, Checkin $checkin)
     {
@@ -112,17 +185,17 @@ class CheckinController extends Controller
         ]);
     }
 
-    public function update(CheckinRequest $request, Checkin $checkin)
-    {
-        $this->authorize('update', $checkin);
-        $data = $request->validated();
-        $original = $checkin->load(['items.item', 'items.unit', 'items.variations'])->replicate();
-        $checkin = (new PrepareOrder($data, $request->file('attachments'), $checkin))->process()->save();
-        event(new \App\Events\CheckinEvent($checkin, 'updated', $original));
-        session()->flash('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'updated']));
+    // public function update(CheckinRequest $request, Checkin $checkin)
+    // {
+    //     $this->authorize('update', $checkin);
+    //     $data = $request->validated();
+    //     $original = $checkin->load(['items.item', 'items.unit', 'items.variations'])->replicate();
+    //     $checkin = (new PrepareOrder($data, $request->file('attachments'), $checkin))->process()->save();
+    //     event(new \App\Events\CheckinEvent($checkin, 'updated', $original));
+    //     session()->flash('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'updated']));
 
-        return $request->listing == 'yes' ? redirect()->route('checkins.index') : back();
-    }
+    //     return $request->listing == 'yes' ? redirect()->route('checkins.index') : back();
+    // }
 
     public function destroy(Checkin $checkin)
     {

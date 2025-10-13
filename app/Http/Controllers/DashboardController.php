@@ -8,10 +8,13 @@ use App\Models\Checkin;
 use App\Models\Contact;
 use App\Models\Activity;
 use App\Models\Checkout;
+use App\Models\Warehouse;
 use App\Models\StockTrail;
 use Illuminate\Http\Request;
 use App\Actions\Tec\ChartData;
 use App\Http\Resources\Collection;
+use Carbon\Carbon;
+use App\Models\CheckinItem;
 
 class DashboardController extends Controller
 {
@@ -50,10 +53,37 @@ class DashboardController extends Controller
             ->addSelect(['contacts' => Contact::selectRaw('COUNT(*) as contacts')])->first();
         $chart = new ChartData($request->get('month'), $request->get('year'));
 
+        $alertInbound = Checkin::with([
+            'user',
+            'items' => function ($q) {
+                $q->select('id', 'checkin_id', 'sender', 'owner');
+            }
+        ])
+        ->select('id', 'reference', 'date_receive', 'no_receive', 'user_id')
+        ->whereNotNull('date_receive')
+        ->get()
+        ->map(function ($item) {
+            $receive = Carbon::parse($item->date_receive);
+            $expired = $receive->copy()->addMonths(33);
+            $diffMonths = $receive->diffInMonths(now());
+
+            $item->date_expired = $expired->format('Y-m-d');
+            $item->status_expired = $diffMonths >=33 ? 'expired' : ($diffMonths >= 6? 'warning' : 'normal');
+
+            $item->sender = $item->items->first()->sender ?? '-';
+            $item->owner  = $item->items->first()->owner ?? '-';
+
+            return $item;
+        })
+        ->filter(fn($i) => in_array($i->status_expired, ['warning', 'expired']))
+        ->values();
+
         return Inertia::render('Dashboard/Index', [
             'data'         => $data,
             'top_products' => $chart->topProducts(),
             'chart'        => ['year' => $chart->year(), 'month' => $chart->month()],
+            'alert_inbound' => $alertInbound,
         ]);
-    }
+    } 
+
 }
