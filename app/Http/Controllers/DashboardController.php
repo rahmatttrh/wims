@@ -56,7 +56,7 @@ class DashboardController extends Controller
         $alertInbound = Checkin::with([
             'user',
             'items' => function ($q) {
-                $q->select('id', 'checkin_id', 'sender', 'owner');
+                $q->select('id', 'checkin_id', 'item_id', 'sender', 'owner');
             }
         ])
         ->select('id', 'reference', 'date_receive', 'no_receive', 'user_id')
@@ -68,10 +68,12 @@ class DashboardController extends Controller
             $diffMonths = $receive->diffInMonths(now());
 
             $item->date_expired = $expired->format('Y-m-d');
-            $item->status_expired = $diffMonths >=33 ? 'expired' : ($diffMonths >= 6? 'warning' : 'normal');
+            $item->status_expired = $diffMonths >= 33 ? 'expired' : ($diffMonths >= 6 ? 'warning' : 'normal');
 
             $item->sender = $item->items->first()->sender ?? '-';
             $item->owner  = $item->items->first()->owner ?? '-';
+            $item->name   = $item->items->first()?->item?->name ?? '-';
+            $item->code   = $item->items->first()?->item?->code ?? '-';
 
             return $item;
         })
@@ -84,6 +86,7 @@ class DashboardController extends Controller
             'chart'        => ['year' => $chart->year(), 'month' => $chart->month()],
             'alert_inbound' => $alertInbound,
         ]);
-    } 
+    }
+ 
 
 }

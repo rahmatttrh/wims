@@ -123,13 +123,14 @@
             <tr class="text-left font-bold">
               <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Aju') }}</th>
               <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Penerimaan ') }}</th>
+              <th class="px-6 pt-6 pb-4">{{ $t('Lama Barang ') }}</th>
               <th class="px-6 pt-6 pb-4">{{ $t('Relations') }}</th>
               <th class="px-6 pt-6 pb-4" colspan="2">{{ $t('Details') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr :key="checkin.id" v-for="(checkin, ci) in checkins.data" class="hover:bg-gray-100 focus-within:bg-gray-100">
-              <td class="border-t" @click="goto(checkin.id)" :class="{ 'cursor-pointer': $can('read-checkins') }">
+              <td class="border-t" @click="goto(checkin.id)" :class="{ 'cursor-pointer': $can('read-checkins'), 'bg-yellow-100 text-yellow-700': checkin.status_expired === 'warning', 'bg-red-100 text-red-700': checkin.status_expired === 'expired' }">
                 <div class="px-6 py-4 flex items-center focus:text-indigo-500">
                   <div>
                     <!-- <div>{{ checkin.reference }}</div>
@@ -154,7 +155,7 @@
                   <icons v-if="checkin.deleted_at" name="trash" class="shrink-0 w-4 h-4 text-red-500 ml-2" />
                 </div>
               </td>
-              <td class="border-t" @click="goto(checkin.id)" :class="{ 'cursor-pointer': $can('read-checkins') }">
+              <td class="border-t" @click="goto(checkin.id)" :class="{ 'cursor-pointer': $can('read-checkins'), 'bg-yellow-100 text-yellow-700': checkin.status_expired === 'warning', 'bg-red-100 text-red-700': checkin.status_expired === 'expired' }">
                
                 <div class="px-6 py-4">
                   <div class="flex items-center">
@@ -171,7 +172,16 @@
                   </div>
                 </div>
               </td>
-              <td class="border-t" @click="goto(checkout.id)" :class="{ 'cursor-pointer': $can('read-checkouts') }">
+              <td class="border-t" @click="goto(checkin.id)" :class="{ 'cursor-pointer': $can('read-checkins'), 'bg-yellow-100 text-yellow-700': checkin.status_expired === 'warning', 'bg-red-100 text-red-700': checkin.status_expired === 'expired' }">
+               
+               <div class="px-6 py-4">
+                 <div class="flex items-center">
+                   <!-- <div class="text-gray-500 mr-1">{{ $t('Tahun/Bulan/Hari') }}:</div> -->
+                   {{ checkin.lama_total }}
+                 </div>
+               </div>
+              </td>
+              <td class="border-t" @click="goto(checkin.id)" :class="{ 'cursor-pointer': $can('read-checkins'), 'bg-yellow-100 text-yellow-700': checkin.status_expired === 'warning', 'bg-red-100 text-red-700': checkin.status_expired === 'expired' }">
                 <div class="px-6 py-4">
                   <div class="flex items-center">
                     <div class="text-gray-500 mr-1">{{ $t('Contact') }}:</div>
@@ -184,14 +194,14 @@
                  
                 </div>
               </td>
-              <td class="border-t max-w-lg min-w-56" @click="goto(checkin.id)" :class="{ 'cursor-pointer': $can('read-checkins') }">
+              <td class="border-t max-w-lg min-w-56" @click="goto(checkin.id)" :class="{ 'cursor-pointer': $can('read-checkins'), 'bg-yellow-100 text-yellow-700': checkin.status_expired === 'warning', 'bg-red-100 text-red-700': checkin.status_expired === 'expired' }">
                 <div class="px-6 py-4 flex items-center">
                   <div class="w-full whitespace-normal line-clamp-3">
                     {{ checkin.details }}
                   </div>
                 </div>
               </td>
-              <td class="border-t w-16">
+              <td class="border-t w-16" :class="{ 'cursor-pointer': $can('read-checkins'), 'bg-yellow-100 text-yellow-700': checkin.status_expired === 'warning', 'bg-red-100 text-red-700': checkin.status_expired === 'expired' }">
                 <div class="px-4 flex items-center print:hidden">
                   <div class="flex items-center" v-if="$can(['create-checkins', 'import-checkins', 'export-checkins'])">
                     <Link

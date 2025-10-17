@@ -103,6 +103,7 @@
               <tr>
                 <th class="px-4 py-3">No</th>
                 <th class="px-4 py-3">No Aju</th>
+                <th class="px-4 py-3">Cargo</th>
                 <th class="px-4 py-3">Pengirim</th>
                 <th class="px-4 py-3">Pemilik</th>
                 <th class="px-4 py-3">Tanggal Inbound</th>
@@ -122,17 +123,18 @@
               >
                 <td class="px-4 py-2">{{ index + 1 }}</td>
                 <td class="px-4 py-2">{{ item.reference ?? '-' }}</td>
+                <td class="px-4 py-2">{{ item.name ?? '-' }}</td>
                 <!-- <td class="px-4 py-2">{{ item.user?.name }}</td> -->
-                <td class="px-4 py-2">{{ item.sender }}</td>
-                <td class="px-4 py-2">{{ item.owner }}</td>
-                <td class="px-4 py-2">{{ item.date_receive }}</td>
-                <td class="px-4 py-2">{{ item.date_expired }}</td>
+                <td class="px-4 py-2">{{ item.sender ?? '-' }}</td>
+                <td class="px-4 py-2">{{ item.owner ?? '-' }}</td>
+                <td class="px-4 py-2">{{ item.date_receive ?? '-' }}</td>
+                <td class="px-4 py-2">{{ item.date_expired ?? '-' }}</td>
                 <!-- <td class="px-4 py-2 font-semibold capitalize">{{ item.status_expired }}</td> -->
                 <!-- <td class="px-4 py-2 font-semibold capitalize">Expired 3 hari lagi</td> -->
                 <!-- <td class="px-4 py-2 text-sm font-semibold capitalize">{{ item.keterangan }}</td> -->
               </tr>
               <tr v-if="!alert_inbound.length">
-                <td colspan="6" class="px-4 py-4 text-center text-gray-500">
+                <td colspan="7" class="px-4 py-4 text-center text-gray-500">
                   Tidak ada barang yang melewati masa 6 bulan.
                 </td>
               </tr>
@@ -141,12 +143,12 @@
             <tfoot class="text-xs text-gray-600 bg-gray-50">
               <tr>
                 <td colspan="6" class="px-4 pt-3">
-                  Barang > 6 bulan sejak inbound = <span class="text-yellow-600 font-medium">Alert Kuning</span>
+                  Cargo Barang > 6 bulan sejak inbound = <span class="text-yellow-600 font-medium">Alert Kuning</span>
                 </td>
               </tr>
               <tr>
                 <td colspan="6" class="px-4 pb-3">
-                  Barang 33–36 bulan sejak inbound = <span class="text-red-600 font-medium">Alert Merah</span>
+                  Cargo Barang 33-36 bulan sejak inbound = <span class="text-red-600 font-medium">Alert Merah</span>
                 </td>
               </tr>
             </tfoot>

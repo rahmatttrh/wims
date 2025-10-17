@@ -104,7 +104,6 @@
                 
                 
 
-
                 <td
                   :class="{ 'pb-2': vi + 1 == item.variations.length, 'w-32': $settings.track_weight && item.item.track_weight }"
                   class="group-hover:bg-gray-100 px-6 pt-2 text-right"

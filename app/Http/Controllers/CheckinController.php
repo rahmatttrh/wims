@@ -20,18 +20,117 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class CheckinController extends Controller
 {
+    // public function index(Request $request)
+    // {
+    //     $filters = $request->all('draft', 'search', 'trashed');
+
+    //     return Inertia::render('Checkin/Index', [
+    //         'filters'  => $filters,
+    //         'checkins' => new Collection(
+    //             Checkin::with(['contact', 'warehouse', 'user'])->filter($filters)->orderByDesc('id')->paginate()->withQueryString()
+    //         ),
+    //     ]);
+    // }
+
+    // public function index(Request $request)
+    // {
+    //     $filters = $request->all('draft', 'search', 'trashed');
+
+    //     // Ambil data checkin seperti biasa
+    //     $checkins = Checkin::with(['contact', 'warehouse', 'user', 'items.item'])
+    //         ->filter($filters)
+    //         ->orderByDesc('id')
+    //         ->paginate()
+    //         ->withQueryString();
+
+    //     // Proses alert warna untuk tiap baris
+    //     $checkins->getCollection()->transform(function ($item) {
+    //         if ($item->date_receive) {
+    //             $receive = Carbon::parse($item->date_receive);
+    //             $expired = $receive->copy()->addMonths(33);
+    //             $diffMonths = $receive->diffInMonths(now());
+
+    //             $item->date_expired = $expired->format('Y-m-d');
+    //             $item->status_expired = $diffMonths >= 33
+    //                 ? 'expired'
+    //                 : ($diffMonths >= 6
+    //                     ? 'warning'
+    //                     : 'normal');
+    //         } else {
+    //             $item->date_expired = '-';
+    //             $item->status_expired = 'normal';
+    //         }
+
+    //         // Ambil info tambahan dari item pertama (kalau ada)
+    //         $firstItem = $item->items->first();
+    //         $item->sender = $firstItem->sender ?? '-';
+    //         $item->owner = $firstItem->owner ?? '-';
+    //         $item->item_name = $firstItem?->item?->name ?? '-';
+    //         $item->item_code = $firstItem?->item?->code ?? '-';
+
+    //         return $item;
+    //     });
+
+    //     return Inertia::render('Checkin/Index', [
+    //         'filters'  => $filters,
+    //         'checkins' => new \App\Http\Resources\Collection($checkins),
+    //     ]);
+    // }
+
     public function index(Request $request)
     {
         $filters = $request->all('draft', 'search', 'trashed');
 
+        $checkins = Checkin::with(['contact', 'warehouse', 'user', 'items.item'])
+            ->filter($filters)
+            ->orderByDesc('id')
+            ->paginate()
+            ->withQueryString();
+
+        $checkins->getCollection()->transform(function ($item) {
+            if ($item->date_receive) {
+                $receive = Carbon::parse($item->date_receive);
+                $expired = $receive->copy()->addMonths(33);
+                $diffMonths = $receive->diffInMonths(now());
+            
+                // Status expired
+                $item->date_expired = $expired->format('Y-m-d');
+                $item->status_expired = $diffMonths >= 33
+                    ? 'expired'
+                    : ($diffMonths >= 6
+                        ? 'warning'
+                        : 'normal');
+            
+                // Hitung lama waktu (tahun/bulan/hari)
+                $diff = $receive->diff(now());
+            
+                $parts = [];
+                if ($diff->y > 0) $parts[] = "{$diff->y} Tahun";
+                if ($diff->m > 0) $parts[] = "{$diff->m} Bulan";
+                if ($diff->d > 0 || empty($parts)) $parts[] = "{$diff->d} Hari";
+            
+                $item->lama_total = implode(', ', $parts);
+            } else {
+                $item->date_expired = '-';
+                $item->status_expired = 'normal';
+                $item->lama_total = '-';
+            }            
+
+            // Ambil info tambahan dari item pertama (kalau ada)
+            $firstItem = $item->items->first();
+            $item->sender = $firstItem->sender ?? '-';
+            $item->owner = $firstItem->owner ?? '-';
+            $item->item_name = $firstItem?->item?->name ?? '-';
+            $item->item_code = $firstItem?->item?->code ?? '-';
+
+            return $item;
+        });
+
         return Inertia::render('Checkin/Index', [
             'filters'  => $filters,
-            'checkins' => new Collection(
-                Checkin::with(['contact', 'warehouse', 'user'])->filter($filters)->orderByDesc('id')->paginate()->withQueryString()
-            ),
+            'checkins' => new \App\Http\Resources\Collection($checkins),
         ]);
     }
-
 
     public function import()
     {
@@ -109,7 +208,7 @@ class CheckinController extends Controller
 
         // ✅ Tambahkan logika otomatis date_expired +6 bulan
         if ($request->date_receive) {
-            $checkin->date_expired = Carbon::parse($request->date_receive)->addMonths(6)->format('Y-m-d');
+            $checkin->date_expired = Carbon::parse($request->date_receive)->addMonths(33)->format('Y-m-d');
         }
 
         $checkin->save();
