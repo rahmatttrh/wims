@@ -1,5 +1,5 @@
 <template>
-  <admin-layout :title="$t('Checkin Details')">
+  <admin-layout :title="$t('Resi Checkin')">
     <div class="px-4 md:px-0">
       <div class="flex items-start justify-between print:hidden">
         <tec-section-title class="-mx-4 md:mx-0 mb-6">
@@ -10,7 +10,7 @@
               {{ checkin.reference }}
             </div>
           </template>
-          <template #description>{{ $t('Please review the checkin details below') }}</template>
+          <template #description>{{ $t('Please review the inbound receipt below') }}</template>
         </tec-section-title>
         <div class="flex">
           <button

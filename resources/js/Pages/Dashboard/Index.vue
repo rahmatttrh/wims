@@ -108,6 +108,7 @@
                 <th class="px-4 py-3">Pemilik</th>
                 <th class="px-4 py-3">Tanggal Inbound</th>
                 <th class="px-4 py-3">Tanggal Expired</th>
+                <th class="px-4 py-3">Lama Timbun</th>
                 <!-- <th class="px-4 py-3">Keterangan</th> -->
               </tr>
             </thead>
@@ -129,6 +130,7 @@
                 <td class="px-4 py-2">{{ item.owner ?? '-' }}</td>
                 <td class="px-4 py-2">{{ item.date_receive ?? '-' }}</td>
                 <td class="px-4 py-2">{{ item.date_expired ?? '-' }}</td>
+                <td class="px-4 py-2">{{ item.lama_total ?? '-' }}</td>
                 <!-- <td class="px-4 py-2 font-semibold capitalize">{{ item.status_expired }}</td> -->
                 <!-- <td class="px-4 py-2 font-semibold capitalize">Expired 3 hari lagi</td> -->
                 <!-- <td class="px-4 py-2 text-sm font-semibold capitalize">{{ item.keterangan }}</td> -->

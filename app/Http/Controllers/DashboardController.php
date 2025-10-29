@@ -70,6 +70,13 @@ class DashboardController extends Controller
             $item->date_expired = $expired->format('Y-m-d');
             $item->status_expired = $diffMonths >= 33 ? 'expired' : ($diffMonths >= 6 ? 'warning' : 'normal');
 
+            $diff = $receive->diff(now());
+            $parts = [];
+            if ($diff->y > 0) $parts[] = "{$diff->y} Tahun";
+            if ($diff->m > 0) $parts[] = "{$diff->m} Bulan";
+            if ($diff->d > 0 || empty($parts)) $parts[] = "{$diff->d} Hari";
+            $item->lama_total = implode(', ', $parts);
+
             $item->sender = $item->items->first()->sender ?? '-';
             $item->owner  = $item->items->first()->owner ?? '-';
             $item->name   = $item->items->first()?->item?->name ?? '-';

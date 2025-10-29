@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
@@ -47,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'transfers'   => Controllers\TransferController::class,
         'warehouses'  => Controllers\WarehouseController::class,
         'adjustments' => Controllers\AdjustmentController::class,
+        'longstaycargo' => Controllers\LongStayCargoController::class,
     ]);
 
     Route::portResources([
@@ -57,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'checkouts'  => Controllers\CheckoutPortController::class,
         'categories' => Controllers\CategoryPortController::class,
         'warehouses' => Controllers\WarehousePortController::class,
+        'longstaycargo' => Controllers\LongStayCargoController::class,
     ]);
 
     // Notifications

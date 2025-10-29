@@ -123,7 +123,7 @@
             <tr class="text-left font-bold">
               <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Aju') }}</th>
               <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Penerimaan ') }}</th>
-              <th class="px-6 pt-6 pb-4">{{ $t('Lama Barang ') }}</th>
+              <th class="px-6 pt-6 pb-4">{{ $t('Lama Cargo ') }}</th>
               <th class="px-6 pt-6 pb-4">{{ $t('Relations') }}</th>
               <th class="px-6 pt-6 pb-4" colspan="2">{{ $t('Details') }}</th>
             </tr>
@@ -266,7 +266,7 @@
       <div class="px-6 py-4 print:px-0">
         <div v-if="details && checkin" class="flex items-center justify-between print:hidden">
           <div class="text-lg">
-            {{ $t('Checkin Details') }} <span class="hidden sm:inline">({{ checkin.reference }})</span>
+            {{ $t('Resi Inbound') }} <span class="hidden sm:inline">({{ checkin.reference }})</span>
           </div>
           <div class="-mr-2 flex items-center">
             <!-- <button

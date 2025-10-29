@@ -650,7 +650,7 @@ class ReportController extends Controller
                 ->where('created_at', '<', $start)
                 ->sum('quantity');
 
-            $saldoAkhir = $saldoAwal + $checkinQty - $checkoutQty + $adjustmentQty;
+            $saldoAkhir = $saldoAwal + $checkinQty - $checkoutQty - $adjustmentQty;
 
             // Tambahan: jumlah barang (stok awal + pemasukan)
             $jumlahBarang = $saldoAwal + $checkinQty;

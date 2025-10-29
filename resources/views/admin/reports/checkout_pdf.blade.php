@@ -105,9 +105,11 @@
             <td>{{ $no++ }}</td>
             {{-- <td>{{ $c->type_bc == null ? '-' : $c->type_bc->name }}</td> --}}
             <td>{{ $c->type_bc->name ?? '-' }}</td>
-            <td>{{ $c->transaction_number ?? '-' }}</td>
-            <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('d/m/Y') : '-' }}</td>
+            {{-- <td>{{ $c->transaction_number ?? '-' }}</td> --}}
             <td>{{ $c->reference ?? '-' }}</td>
+            <td>{{ $c->date ? \Carbon\Carbon::parse($c->date)->format('d/m/Y') : '-' }}</td>
+            {{-- <td>{{ $c->reference ?? '-' }}</td> --}}
+            <td>{{ $c->transaction_number ?? '-' }}</td>
             <td>{{ $c->date_receive ? \Carbon\Carbon::parse($c->date_receive)->format('d/m/Y') : '-' }}</td>
             <td>{{ $ci->buyer ?? '-' }}</td>
             <td>{{ $ci->owner ?? '-' }}</td>

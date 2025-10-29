@@ -1,4 +1,5 @@
 const menus = [
+  // Dashboard
   {
     name: 'dashboard',
     route: 'dashboard',
@@ -9,6 +10,7 @@ const menus = [
     permissions: ['all'],
     lang: { helper: null, main: 'Dashboard' },
   },
+  // Checkins/Inbounds
   {
     name: 'checkins',
     route: null,
@@ -41,6 +43,7 @@ const menus = [
       },
     ],
   },
+  // Checkouts/Outbounds
   {
     name: 'checkouts',
     route: null,
@@ -73,6 +76,7 @@ const menus = [
       },
     ],
   },
+  // Adjustments
   {
     name: 'adjustments',
     route: null,
@@ -104,6 +108,7 @@ const menus = [
       },
     ],
   },
+  // Transfers
   {
     name: 'transfers',
     route: null,
@@ -135,6 +140,33 @@ const menus = [
       },
     ],
   },
+
+  // Long Stay Cargo
+  // {
+  //   name: 'longstaycargo',
+  //   route: null,
+  //   icon: 'in',
+  //   hidden: false,
+  //   heading: null,
+  //   children: ['longstaycargo'],
+  //   lang: { helper: null, main: 'Long Stay Cargo' },
+  //   permissions: ['read-checkins'], // bisa pakai permission checkins biar sama
+  //   sub_menu: [
+  //     {
+  //       name: 'longstaycargo.list',
+  //       route: 'longstaycargo.index',
+  //       icon: null,
+  //       hidden: false,
+  //       sub_menu: false,
+  //       target: 'longstaycargo',
+  //       permissions: ['read-checkins'],
+  //       lang: { helper: 'list_x', main: 'Long Stay Cargo' },
+  //     },
+  //   ],
+  // },
+  
+
+  // Items
   {
     name: 'items',
     route: null,
@@ -177,6 +209,7 @@ const menus = [
       },
     ],
   },
+  // Contacts
   {
     name: 'contacts',
     route: null,
@@ -219,6 +252,7 @@ const menus = [
       },
     ],
   },
+  // Categories
   {
     name: 'categories',
     route: null,
@@ -261,6 +295,7 @@ const menus = [
       },
     ],
   },
+  // Units
   {
     name: 'units',
     route: null,
@@ -303,6 +338,7 @@ const menus = [
       },
     ],
   },
+  // Warehouses
   {
     name: 'warehouses',
     route: null,
@@ -345,6 +381,7 @@ const menus = [
       },
     ],
   },
+  // Users
   {
     name: 'users',
     route: null,
@@ -393,6 +430,7 @@ const menus = [
       },
     ],
   },
+  // Reports
   {
     name: 'reports',
     route: null,
@@ -450,6 +488,7 @@ const menus = [
       },
     ],
   },
+  // Activity
   {
     name: 'activity',
     route: 'activity',

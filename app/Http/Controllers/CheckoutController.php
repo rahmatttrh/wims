@@ -38,26 +38,27 @@ class CheckoutController extends Controller
 
     public function importStore(Request $req)
     {
-      // dd('import inbound');
-      $file = $req->file('file');
-      $fileName = $file->getClientOriginalName();
-      $file->move('InboundData', $fileName);
-      Excel::import(new OutboundImport, public_path('OutboundData/' . $fileName));
-      
-      return redirect()->route('checkouts.index')->with('message', __choice('action_text', ['record' => 'Checkout', 'action' => 'imported']));
-      //   return view('import.inbounds');
+        // dd('import inbound');
+        $file = $req->file('file');
+        $fileName = $file->getClientOriginalName();
+        $file->move('InboundData', $fileName);
+        Excel::import(new OutboundImport, public_path('OutboundData/' . $fileName));
+
+        return redirect()->route('checkouts.index')->with('message', __choice('action_text', ['record' => 'Checkout', 'action' => 'imported']));
+        //   return view('import.inbounds');
     }
 
     public function create()
     {
         return Inertia::render('Checkout/Form', [
-         
+
             // 'contacts'   => Contact::ofAccount()->get(),
             // 'contacts'   => ['BC 16', 'BC 28'],
             // 'contactbs'   => Contact::ofAccount()->get(),
             'contactbs'   => Contact::ofAccount()->get(),
             // 'contacts'   => TypeBc::where('code', '!=', 'bc1.6', 'bc4.0')->get(),
-            'contacts'  => TypeBc::whereIn('code', ['bc2.7', 'bc2.8', 'bc3.0', 'bc4.1', 'bc2.6.1', 'p3bet'])
+            // 'contacts'  => TypeBc::whereIn('code', ['bc2.7', 'bc2.8', 'bc3.0', 'bc4.1', 'bc2.6.1', 'p3bet'])
+            'contacts'  => TypeBc::whereIn('code', ['bc2.7', 'bc2.8', 'bc3.0', 'bc3.3', 'bc4.1'])
                 ->orderBy('code', 'asc')
                 ->get(),
             'warehouses' => Warehouse::ofAccount()->active()->get(),
@@ -66,13 +67,13 @@ class CheckoutController extends Controller
 
     public function store(CheckoutRequest $request)
     {
-      // dd($request->all());
+        // dd($request->all());
         $data = $request->validated();
         $checkout = (new PrepareOrder($data, $request->file('attachments'), new Checkout()))->process()->save();
         event(new \App\Events\CheckoutEvent($checkout, 'created'));
 
         $checkout->no_receive = $request->no_receive;
-        $checkout->date_receive = $request->date_receive; 
+        $checkout->date_receive = $request->date_receive;
         $checkout->type_bc_id = $request->type_bc_id;
         // tambahkan manual kalau belum keisi
         $checkout->save();

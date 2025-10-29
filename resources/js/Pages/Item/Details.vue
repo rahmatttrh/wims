@@ -100,7 +100,7 @@
                     </td>
                     <td class="border-t pr-4 pl-2 py-2 text-right">
                       {{ $number(stock.quantity) }} {{ item.unit ? item.unit.code : '' }}
-                      <span v-if="item.track_weight">({{ $number(stock.weight) }} {{ $settings.weight_unit }})</span>
+                      <!-- <span v-if="item.track_weight">({{ $number(stock.weight) }} {{ $settings.weight_unit }})</span> -->
                     </td>
                   </tr>
                 </tbody>

@@ -223,7 +223,7 @@
       <div class="px-6 py-4 print:px-0">
         <div v-if="details && checkout" class="flex items-center justify-between print:hidden">
           <div class="text-lg">
-            {{ $t('Checkout Details') }} <span class="hidden sm:inline">({{ checkout.reference }})</span>
+            {{ $t('Resi Outbound') }} <span class="hidden sm:inline">({{ checkout.reference }})</span>
           </div>
           <div class="-mr-2 flex items-center">
             <!-- <button
