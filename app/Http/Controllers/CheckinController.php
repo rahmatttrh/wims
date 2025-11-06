@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Imports\InboundImport;
 use App\Models\Checkin;
+use App\Models\Checkout;
 use App\Models\Contact;
 use App\Models\Warehouse;
 use App\Models\TypeBc;
@@ -20,24 +21,20 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class CheckinController extends Controller
 {
-    // public function index(Request $request)
-    // {
-    //     $filters = $request->all('draft', 'search', 'trashed');
-
-    //     return Inertia::render('Checkin/Index', [
-    //         'filters'  => $filters,
-    //         'checkins' => new Collection(
-    //             Checkin::with(['contact', 'warehouse', 'user'])->filter($filters)->orderByDesc('id')->paginate()->withQueryString()
-    //         ),
-    //     ]);
-    // }
 
     public function index(Request $request)
     {
         $filters = $request->all('draft', 'search', 'trashed');
 
-        $checkins = Checkin::with(['contact', 'warehouse', 'user', 'items.item'])
+        // ✅ Ambil semua no_receive yang sudah outbound
+        // $outboundNoReceive = Checkout::pluck('no_receive')
+        //     ->filter()
+        //     ->unique()
+        //     ->toArray();
+
+        $checkins = Checkin::with(['contact', 'warehouse', 'user', 'items.item', 'type_bc'])
             ->filter($filters)
+            // ->whereNotIn('no_receive', $outboundNoReceive)
             ->orderByDesc('id')
             ->paginate()
             ->withQueryString();
@@ -77,6 +74,8 @@ class CheckinController extends Controller
             $item->owner = $firstItem->owner ?? '-';
             $item->item_name = $firstItem?->item?->name ?? '-';
             $item->item_code = $firstItem?->item?->code ?? '-';
+            $item->type_bc_name = $item->type_bc->name ?? '-';
+            $item->type_bc_code = $item->type_bc->code ?? '-';
 
             return $item;
         });
@@ -94,14 +93,12 @@ class CheckinController extends Controller
 
     public function importStore(Request $req)
     {
-      // dd('import inbound');
       $file = $req->file('file');
       $fileName = $file->getClientOriginalName();
       $file->move('InboundData', $fileName);
       Excel::import(new InboundImport, public_path('InboundData/' . $fileName));
       
       return redirect()->route('checkins.index')->with('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'imported']));
-      //   return view('import.inbounds');
     }
 
     public function create()
@@ -119,37 +116,14 @@ class CheckinController extends Controller
         ]);
     }
 
-    // public function store(CheckinRequest $request)
-    // {
-    //     // dd($request->type_bc_id['name']);
-    //     // dd($request->all());
-    //     $data = $request->validated();
-    //     $checkin = (new PrepareOrder($data, $request->file('attachments'), new Checkin()))->process()->save();
-    //     event(new \App\Events\CheckinEvent($checkin, 'created'));
-
-
-    //     $checkin->no_receive = $request->no_receive;
-    //     $checkin->date_receive = $request->date_receive;
-    //     $checkin->type_bc_id = $request->type_bc_id;
-    //     //  $checkin->category_logistic_id = $request->category_logistic_id;
-    //     // tambahkan manual kalau belum keisi
-    //     $checkin->save();
-
-    //     //   dd($checkin);
-    //     if ((get_settings('auto_email') ?? null) && $checkin->contact->email) {
-    //         $checkin->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username,email']);
-
-    //         // Mail::to($checkin->contact->email)->cc(auth()->user()->email)->queue(new EmailCheckin($checkin));
-    //     }
-
-    //     //   dd($checkin);
-
-    //     return redirect()->route('checkins.index')->with('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'created']));
-    // }
-
     public function store(CheckinRequest $request)
     {
         $data = $request->validated();
+
+        // ✅ Cegah inbound jika no_receive sudah outbound
+        if (Checkout::where('no_receive', $request->no_receive)->exists()) {
+            return back()->with('error', 'Barang dengan nomor ini sudah keluar (Outbound). Tidak dapat melakukan Inbound lagi.');
+        }
 
         $checkin = (new PrepareOrder($data, $request->file('attachments'), new Checkin()))
             ->process()
@@ -180,10 +154,11 @@ class CheckinController extends Controller
                 'user:id,name:username,email'
             ]);
 
-            // Mail::to($checkin->contact->email)
-            //     ->cc(auth()->user()->email)
-            //     ->queue(new EmailCheckin($checkin));
+            Mail::to($checkin->contact->email)
+                ->cc(auth()->user()->email)
+                ->queue(new EmailCheckin($checkin));
         }
+        // dd(get_settings('auto_email'), $checkin->contact->email);
 
         return redirect()
             ->route('checkins.index')
@@ -216,8 +191,6 @@ class CheckinController extends Controller
             : back();
     }
 
-
-
     public function show(Request $request, Checkin $checkin)
     {
         $checkin->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight,photo', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username', 'attachments']);
@@ -240,18 +213,6 @@ class CheckinController extends Controller
             'edit'       => $checkin->load(['items.variations', 'items.item.variations', 'attachments']),
         ]);
     }
-
-    // public function update(CheckinRequest $request, Checkin $checkin)
-    // {
-    //     $this->authorize('update', $checkin);
-    //     $data = $request->validated();
-    //     $original = $checkin->load(['items.item', 'items.unit', 'items.variations'])->replicate();
-    //     $checkin = (new PrepareOrder($data, $request->file('attachments'), $checkin))->process()->save();
-    //     event(new \App\Events\CheckinEvent($checkin, 'updated', $original));
-    //     session()->flash('message', __choice('action_text', ['record' => 'Checkin', 'action' => 'updated']));
-
-    //     return $request->listing == 'yes' ? redirect()->route('checkins.index') : back();
-    // }
 
     public function destroy(Checkin $checkin)
     {

@@ -1,6 +1,12 @@
 <template>
   <admin-layout :title="$t('Checkins')">
     <div class="px-4 md:px-0">
+
+      <div v-if="alert" 
+        :class="`p-4 mb-4 rounded-lg ${alert.type === 'info' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`">
+        {{ alert.message }}
+      </div>
+
       <tec-section-title class="-mx-4 md:mx-0 mb-6">
         <template #title>{{ $t('Inbound') }}</template>
         <template #description>{{ $t('Please review the data in the table below') }}</template>
@@ -122,8 +128,8 @@
           <thead>
             <tr class="text-left font-bold">
               <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Aju') }}</th>
-              <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Penerimaan ') }}</th>
-              <th class="px-6 pt-6 pb-4">{{ $t('Lama Cargo ') }}</th>
+              <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Penerimaan') }}</th>
+              <th class="px-6 pt-6 pb-4">{{ $t('Lama Timbun') }}</th>
               <th class="px-6 pt-6 pb-4">{{ $t('Relations') }}</th>
               <th class="px-6 pt-6 pb-4" colspan="2">{{ $t('Details') }}</th>
             </tr>
@@ -135,6 +141,10 @@
                   <div>
                     <!-- <div>{{ checkin.reference }}</div>
                     <div>{{ $date(checkin.date) }}</div> -->
+                      <div class="flex items-center">
+                        <div class="text-gray-500 mr-1">{{ $t('Type BC') }}:</div>
+                        {{ checkin.type_bc_name }}
+                      </div>
                      <div class="flex items-center">
                         <div class="text-gray-500 mr-1">{{ $t('No Aju') }}:</div>
                         {{ checkin.reference }}
@@ -159,7 +169,7 @@
                
                 <div class="px-6 py-4">
                   <div class="flex items-center">
-                    <div class="text-gray-500 mr-1">{{ $t('No Penerimaan') }}:</div>
+                    <div class="text-gray-500 mr-1">{{ $t('No Bukti Barang') }}:</div>
                     {{ checkin.no_receive }}
                   </div>
                   <div class="flex items-center">
@@ -373,6 +383,7 @@ export default {
   props: {
     filters: Object,
     checkins: Object,
+    alert: Object,
   },
 
   data() {

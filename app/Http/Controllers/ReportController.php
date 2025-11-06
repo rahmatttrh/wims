@@ -231,11 +231,29 @@ class ReportController extends Controller
 
     public function exportTransferXLSX(Request $request)
     {
-        $filters = $request->all('start_date', 'end_date', 'start_created_at', 'end_created_at', 'reference', 'from_warehouse_id', 'user_id', 'to_warehouse_id', 'draft', 'trashed', 'category_id');
+        $filters = $request->only([
+            'start_date', 
+            'end_date', 
+            'start_created_at', 
+            'end_created_at', 
+            'reference', 
+            'from_warehouse_id', 
+            'user_id', 
+            'to_warehouse_id', 
+            'draft', 
+            'trashed', 
+            'category_id'
+        ]);
 
-        $filename = 'Transfer-report-' . now()->format('Y-m-d') . '.xlsx';
+        // Ganti nilai kosong dengan 0
+        foreach ($filters as $key => $value) {
+            $filters[$key] = $value ?: 0;
+        }
+
+        $filename = 'Mutasi-Report-' . now()->format('Y-m-d') . '.xlsx';
         return Excel::download(new TransferExport($filters), $filename);
     }
+
 
     public function exportAdjustmentXLSX(Request $request)
     {

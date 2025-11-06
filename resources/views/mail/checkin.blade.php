@@ -91,9 +91,11 @@
                       @endif
                     </td>
                   @endif
-                  <td style="padding:0 1rem 0.5rem 1rem;text-align:right">
+                  {{-- <td style="padding:0 1rem 0.5rem 1rem;text-align:right">
                     {{ formatNumber($variation->pivot->quantity, $settings->fraction) }}
-                    {{ $item->unit ? $item->unit->code : '' }}</td>
+                    {{ $item->unit ? $item->unit->code : '' }}</td> --}}
+                    <td style="padding:0 1rem 0.5rem 1rem;text-align:right">
+                      {{ formatNumber($variation->pivot->quantity, $settings->fraction) }}</td>
                 </tr>
               @endforeach
             </tbody>
@@ -111,7 +113,7 @@
               @endif
               <td style="padding:0.5rem 1rem;border-top:1px solid #E5E7EB;text-align:right">
                 {{ formatNumber($item->quantity, $settings->fraction) }}
-                {{ $item->unit ? $item->unit->code : '' }}
+                {{-- {{ $item->unit ? $item->unit->code : '' }} --}}
               </td>
             </tr>
           @endif

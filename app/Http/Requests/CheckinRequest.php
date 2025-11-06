@@ -20,9 +20,13 @@ class CheckinRequest extends FormRequest
             'attachments.*' => 'mimes:' . env('ATTACHMENT_EXTS', 'jpg,png,pdf,docx,xlsx,zip'),
 
             'date'         => 'required|date',
+            'date_receive' => 'required|date',
+            'type_bc_id'   => 'required|exists:type_bc,id',
             'contact_id'   => 'required|exists:contacts,id',
             'warehouse_id' => 'required|exists:warehouses,id',
-            'reference'    => 'nullable|max:50|unique:checkins,reference,' . optional($this->route('checkin'))->id,
+            'reference'    => 'required|max:50|unique:checkins,reference,' . optional($this->route('checkin'))->id,
+            'no_receive'    => 'required|max:50|unique:checkins,no_receive,' . optional($this->route('checkin'))->id,
+            // 'date_receive'    => 'required|max:50|unique:checkins,date_receive,' . optional($this->route('checkin'))->id,
 
             'items'                   => 'required|array|min:1',
             'items.*.id'              => 'nullable',

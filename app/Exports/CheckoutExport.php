@@ -31,21 +31,17 @@ class CheckoutExport implements FromCollection, WithEvents, WithDrawings, WithSt
 
     public function drawings()
     {
-        $drawingLeft = new Drawing();
-        $drawingLeft->setName('Logo Left');
-        $drawingLeft->setDescription('Company Logo Left');
-        $drawingLeft->setPath(public_path('logos/icon.jpg'));
-        $drawingLeft->setHeight(60);
-        $drawingLeft->setCoordinates('A1');
+        $left = new Drawing();
+        $left->setPath(public_path('logos/icon.jpg'));
+        $left->setHeight(60);
+        $left->setCoordinates('A1');
 
-        $drawingRight = new Drawing();
-        $drawingRight->setName('Logo Right');
-        $drawingRight->setDescription('Company Logo Right');
-        $drawingRight->setPath(public_path('logos/icon2.jpg'));
-        $drawingRight->setHeight(60);
-        $drawingRight->setCoordinates('J1');
+        $right = new Drawing();
+        $right->setPath(public_path('logos/icon2.jpg'));
+        $right->setHeight(60);
+        $right->setCoordinates('K1');
 
-        return [$drawingLeft, $drawingRight];
+        return [$left, $right];
     }
 
     public function registerEvents(): array
@@ -54,65 +50,66 @@ class CheckoutExport implements FromCollection, WithEvents, WithDrawings, WithSt
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
 
-                // Insert baris kosong untuk header/logo
+                // Tambahkan ruang untuk logo dan judul
                 $sheet->insertNewRowBefore(1, 4);
 
-                // Judul
+                // Judul laporan
                 $sheet->mergeCells('C2:H2');
-                $sheet->setCellValue('C2', 'INBOUND REPORT');
-                $sheet->getStyle('C2')->getFont()->setSize(14)->setBold(true);
-                $sheet->getStyle('C2')->getAlignment()
-                    ->setHorizontal('center')
-                    ->setVertical('center');
+                $sheet->setCellValue('C2', 'LAPORAN PENGELUARAN BARANG');
+                $sheet->getStyle('C2')->getFont()->setBold(true)->setSize(14);
+                $sheet->getStyle('C2')->getAlignment()->setHorizontal('center');
 
-                // Tanggal Generate
-                $sheet->mergeCells('I2:J2');
-                $sheet->setCellValue('I2', 'Tanggal Generate : ' . now()->format('d-M-Y H:i'));
+                $sheet->mergeCells('I2:L2');
+                $sheet->setCellValue('I2', 'Tanggal Cetak: ' . now()->format('d-m-Y H:i'));
                 $sheet->getStyle('I2')->getAlignment()->setHorizontal('right');
 
-                // ==========================
-                // HEADER MULTI-BARIS
-                // ==========================
                 $headerRow = 5;
 
-                // Merge untuk kolom A–G agar konsisten 2 baris
-                $sheet->mergeCells('A' . $headerRow . ':A' . ($headerRow + 1));
-                $sheet->setCellValue('A' . $headerRow, 'No');
+                // === Header baris pertama ===
+                $sheet->mergeCells("A{$headerRow}:A" . ($headerRow + 1));
+                $sheet->setCellValue("A{$headerRow}", 'No');
 
-                $sheet->mergeCells('B' . $headerRow . ':B' . ($headerRow + 1));
-                $sheet->setCellValue('B' . $headerRow, 'Transaction Number');
+                $sheet->mergeCells("B{$headerRow}:D{$headerRow}");
+                $sheet->setCellValue("B{$headerRow}", 'Data dok pabean');
 
-                $sheet->mergeCells('C' . $headerRow . ':C' . ($headerRow + 1));
-                $sheet->setCellValue('C' . $headerRow, 'Reference / No Aju');
+                $sheet->mergeCells("E{$headerRow}:F{$headerRow}");
+                $sheet->setCellValue("E{$headerRow}", 'Bukti Pengeluaran Barang / dok lain yang sejenis');
 
-                $sheet->mergeCells('D' . $headerRow . ':D' . ($headerRow + 1));
-                $sheet->setCellValue('D' . $headerRow, 'Tanggal');
+                $sheet->mergeCells("G{$headerRow}:G" . ($headerRow + 1));
+                $sheet->setCellValue("G{$headerRow}", 'Pembeli/Penerima atau pemasok barang');
 
-                $sheet->mergeCells('E' . $headerRow . ':E' . ($headerRow + 1));
-                $sheet->setCellValue('E' . $headerRow, 'Jumlah Qty');
+                $sheet->mergeCells("H{$headerRow}:H" . ($headerRow + 1));
+                $sheet->setCellValue("H{$headerRow}", 'Nama Pemilik Barang');
 
-                $sheet->mergeCells('F' . $headerRow . ':F' . ($headerRow + 1));
-                $sheet->setCellValue('F' . $headerRow, 'Contact');
+                $sheet->mergeCells("I{$headerRow}:I" . ($headerRow + 1));
+                $sheet->setCellValue("I{$headerRow}", 'Kode barang');
 
-                $sheet->mergeCells('G' . $headerRow . ':G' . ($headerRow + 1));
-                $sheet->setCellValue('G' . $headerRow, 'Warehouse');
+                $sheet->mergeCells("J{$headerRow}:J" . ($headerRow + 1));
+                $sheet->setCellValue("J{$headerRow}", 'Nama barang');
 
-                // Merge untuk grup "Item"
-                $sheet->mergeCells('H' . $headerRow . ':J' . $headerRow);
-                $sheet->setCellValue('H' . $headerRow, 'Item');
+                $sheet->mergeCells("K{$headerRow}:K" . ($headerRow + 1));
+                $sheet->setCellValue("K{$headerRow}", 'Satuan barang');
 
-                // Sub-header untuk kolom H–J
-                $sheet->setCellValue('H' . ($headerRow + 1), 'Description');
-                $sheet->setCellValue('I' . ($headerRow + 1), 'Weight');
-                $sheet->setCellValue('J' . ($headerRow + 1), 'Qty');
+                $sheet->mergeCells("L{$headerRow}:L" . ($headerRow + 1));
+                $sheet->setCellValue("L{$headerRow}", 'Jumlah barang');
 
-                // Style heading
-                $sheet->getStyle("A{$headerRow}:J" . ($headerRow + 1))->applyFromArray([
+                $sheet->mergeCells("M{$headerRow}:M" . ($headerRow + 1));
+                $sheet->setCellValue("M{$headerRow}", 'Nilai barang');
+
+                // === Header baris kedua ===
+                $sheet->setCellValue("B" . ($headerRow + 1), 'Jenis');
+                $sheet->setCellValue("C" . ($headerRow + 1), 'No. Daftar');
+                $sheet->setCellValue("D" . ($headerRow + 1), 'Tgl. Daftar');
+                $sheet->setCellValue("E" . ($headerRow + 1), 'No');
+                $sheet->setCellValue("F" . ($headerRow + 1), 'Tanggal');
+
+                // Style untuk header
+                $sheet->getStyle("A{$headerRow}:M" . ($headerRow + 1))->applyFromArray([
                     'font' => ['bold' => true],
                     'alignment' => [
                         'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                        'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                        'wrapText'   => true,
+                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                        'wrapText' => true,
                     ],
                     'borders' => [
                         'allBorders' => [
@@ -121,62 +118,36 @@ class CheckoutExport implements FromCollection, WithEvents, WithDrawings, WithSt
                     ],
                 ]);
 
-                // ==========================
-                // ISI DATA
-                // ==========================
+                // === Data rows ===
                 $row = $headerRow + 2;
                 $no = 1;
 
                 foreach ($this->collection() as $checkout) {
-                    // baris utama
-                    $sheet->setCellValue("A{$row}", $no++);
-                    $sheet->setCellValue("B{$row}", $checkout->transaction_number ?? '-');
-                    $sheet->setCellValue("C{$row}", $checkout->reference ?? '-');
-                    $sheet->setCellValue("D{$row}", $checkout->date ? Carbon::parse($checkout->date)->format('Y-m-d') : '-');
-                    $sheet->setCellValue("E{$row}", $checkout->items->sum('quantity') ?? 0);
-                    $sheet->setCellValue("F{$row}", $checkout->contact->name ?? '-');
-                    $sheet->setCellValue("G{$row}", $checkout->warehouse->name ?? '-');
-                    $sheet->mergeCells("H{$row}:J{$row}");
-                    $sheet->setCellValue("H{$row}", 'Packaging List');
-
-                    // style border + alignment center
-                    $sheet->getStyle("A{$row}:J{$row}")->applyFromArray([
-                        'alignment' => [
-                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                            'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                            'wrapText'   => true,
-                        ],
-                        'borders' => [
-                            'allBorders' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                            ],
-                        ],
-                    ]);
-
-                    $row++;
-
-                    // detail item
                     foreach ($checkout->items as $item) {
-                        $sheet->setCellValue("H{$row}", $item->item->name ?? '-');
-                        $sheet->setCellValue("I{$row}", number_format($item->weight ?? 0, 2) . ' kg');
-                        $sheet->setCellValue("J{$row}", number_format($item->quantity ?? 0, 2) . ' ' . ($item->unit->code ?? '-'));
+                        $sheet->setCellValue("A{$row}", $no++);
+                        $sheet->setCellValue("B{$row}", $checkout->type ?? 'BC 2.7');
+                        $sheet->setCellValue("C{$row}", $checkout->reference ?? '-');
+                        $sheet->setCellValue("D{$row}", $checkout->date ? Carbon::parse($checkout->date)->format('d/m/Y') : '-');
+                        $sheet->setCellValue("E{$row}", $checkout->transaction_number ?? '-');
+                        $sheet->setCellValue("F{$row}", $checkout->date_receive ? Carbon::parse($checkout->date_receive)->format('d/m/Y') : '-');
+                        $sheet->setCellValue("G{$row}", $checkout->contact->name ?? '-');
+                        $sheet->setCellValue("H{$row}", $checkout->warehouse->name ?? '-');
+                        $sheet->setCellValue("I{$row}", $item->item->code ?? '-');
+                        $sheet->setCellValue("J{$row}", $item->item->name ?? '-');
+                        $sheet->setCellValue("K{$row}", $item->unit->code ?? '-');
+                        $sheet->setCellValue("L{$row}", $item->quantity ?? 0);
+                        $sheet->setCellValue("M{$row}", $item->price ? 'Rp. ' . number_format($item->price, 0, ',', '.') : '-');
 
-                        // kosongkan kolom lain
-                        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G'] as $col) {
-                            $sheet->setCellValue("{$col}{$row}", '');
-                        }
-
-                        // style border + alignment center
-                        $sheet->getStyle("A{$row}:J{$row}")->applyFromArray([
-                            'alignment' => [
-                                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                                'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                                'wrapText'   => true,
-                            ],
+                        $sheet->getStyle("A{$row}:M{$row}")->applyFromArray([
                             'borders' => [
                                 'allBorders' => [
                                     'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                                 ],
+                            ],
+                            'alignment' => [
+                                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                                'wrapText' => true,
                             ],
                         ]);
 
@@ -184,8 +155,8 @@ class CheckoutExport implements FromCollection, WithEvents, WithDrawings, WithSt
                     }
                 }
 
-                // Auto-size kolom
-                foreach (range('A', 'J') as $col) {
+                // Auto width kolom
+                foreach (range('A', 'M') as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }
             }

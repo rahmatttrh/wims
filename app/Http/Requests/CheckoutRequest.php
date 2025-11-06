@@ -22,9 +22,13 @@ class CheckoutRequest extends FormRequest
             'attachments.*' => 'mimes:' . env('ATTACHMENT_EXTS', 'jpg,png,pdf,docx,xlsx,zip'),
 
             'date'         => 'required|date',
-            'contact_id'   => 'nullable|exists:contacts,id',
-            'warehouse_id' => 'nullable|exists:warehouses,id',
-            'reference'    => 'nullable|max:50|unique:checkouts,reference,' . optional($this->route('checkout'))->id,
+            'date_receive' => 'required|date',
+            'type_bc_id'   => 'required|exists:type_bc,id',
+            'contact_id'   => 'required|exists:contacts,id',
+            'warehouse_id' => 'required|exists:warehouses,id',
+            'reference'    => 'required|max:50|unique:checkouts,reference,' . optional($this->route('checkout'))->id,
+            'no_receive'   => 'required|max:50|unique:checkouts,no_receive,' . optional($this->route('checkout'))->id,
+            // 'date_receive' => 'required|max:50|unique:checkouts,date_receive,' . optional($this->route('checkout'))->id,
 
             'items'                    => 'required|array|min:1',
             'items.*.id'               => 'nullable',

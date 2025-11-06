@@ -30,11 +30,11 @@
       <div class="block sm:flex justify-between print:flex">
         <div class="w-full sm:w-1/2 leading-snug mb-6 sm:mb-0">
           <div class="text-sm font-bold">&nbsp;</div>
-          <div>{{ $t('Tanggal Aju') }}: {{ $date(checkout.date) }}</div>
+          <div>{{ $t('Tanggal Aju Outbound') }}: {{ $date(checkout.date) }}</div>
           <div>{{ $t('No Aju') }}: {{ checkout.reference }}</div>
           <br>
           <div>{{ $t('Tanggal Penerimaan') }}: {{ $date(checkout.date_receive) }}</div>
-          <div>{{ $t('No Penerimaan') }}: {{ checkout.no_receive }}</div>
+          <div>{{ $t('No Bukti Barang') }}: {{ checkout.no_receive }}</div>
           <!-- <div>{{ $t('Created at') }}: {{ $datetime(checkout.created_at) }}</div> -->
           <div>{{ $t('Created at') }}: {{ checkout.formatted_created_at }}</div>
         </div>

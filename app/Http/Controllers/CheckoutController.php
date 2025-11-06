@@ -23,11 +23,42 @@ class CheckoutController extends Controller
     {
         $filters = $request->all('draft', 'search', 'trashed');
 
+        // $checkouts = Checkout::with(['contact', 'warehouse', 'user', 'typeBc'])
+        //     ->filter($filters)
+        //     ->orderByDesc('id')
+        //     ->paginate()
+        //     ->withQueryString();
+
+        // // Transform data agar menambahkan type_bc_name dan type_bc_code
+        // $checkouts->getCollection()->transform(function ($item) {
+        //     $item->type_bc_name = $item->typeBc->name ?? '-';
+        //     $item->type_bc_code = $item->typeBc->code ?? '-';
+        //     return $item;
+        // });
+
+        $checkouts = Checkout::with(['contact', 'warehouse', 'user', 'type_bc'])
+            ->filter($filters)
+            ->orderByDesc('id')
+            ->paginate()
+            ->withQueryString();
+
+        // Transform data agar menambahkan type_bc_name dan type_bc_code
+        $checkouts->getCollection()->transform(function ($item) {
+            $item->type_bc_name = $item->type_bc->name ?? '-';
+            $item->type_bc_code = $item->type_bc->code ?? '-';
+            return $item;
+        });
+
+        // return Inertia::render('Checkout/Index', [
+        //     'filters'   => $filters,
+        //     'checkouts' => new Collection(
+        //         Checkout::with(['contact', 'warehouse', 'user', 'type_bc'])->filter($filters)->orderByDesc('id')->paginate()->withQueryString()
+        //     ),
+        // ]);
+
         return Inertia::render('Checkout/Index', [
             'filters'   => $filters,
-            'checkouts' => new Collection(
-                Checkout::with(['contact', 'warehouse', 'user'])->filter($filters)->orderByDesc('id')->paginate()->withQueryString()
-            ),
+            'checkouts' => new Collection($checkouts),
         ]);
     }
 
@@ -38,14 +69,12 @@ class CheckoutController extends Controller
 
     public function importStore(Request $req)
     {
-        // dd('import inbound');
         $file = $req->file('file');
         $fileName = $file->getClientOriginalName();
         $file->move('InboundData', $fileName);
         Excel::import(new OutboundImport, public_path('OutboundData/' . $fileName));
 
         return redirect()->route('checkouts.index')->with('message', __choice('action_text', ['record' => 'Checkout', 'action' => 'imported']));
-        //   return view('import.inbounds');
     }
 
     public function create()
@@ -69,14 +98,27 @@ class CheckoutController extends Controller
     {
         // dd($request->all());
         $data = $request->validated();
+
         $checkout = (new PrepareOrder($data, $request->file('attachments'), new Checkout()))->process()->save();
         event(new \App\Events\CheckoutEvent($checkout, 'created'));
 
+        // Tambah Manual
         $checkout->no_receive = $request->no_receive;
         $checkout->date_receive = $request->date_receive;
         $checkout->type_bc_id = $request->type_bc_id;
-        // tambahkan manual kalau belum keisi
         $checkout->save();
+
+        // ✅ Tandai data inbound terkait (hidden)
+        $relatedCheckin = \App\Models\Checkin::where('no_receive', $checkout->no_receive)->first();
+        if ($relatedCheckin) {
+            $relatedCheckin->update(['status' => 'outbound']);
+        }
+
+        // ✅ Flash alert agar muncul di halaman checkin
+        session()->flash('alert', [
+            'type' => 'info',
+            'message' => 'Barang dengan nomor aju ' . $checkout->reference . ' telah keluar dari gudang.',
+        ]);
 
         if ((get_settings('auto_email') ?? null) && $checkout->contact->email) {
             $checkout->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight,photo', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username', 'attachments']);
@@ -86,13 +128,6 @@ class CheckoutController extends Controller
 
         return redirect()->route('checkouts.index')->with('message', __choice('action_text', ['record' => 'Checkout', 'action' => 'created']));
     }
-
-    // public function show(Request $request, Checkout $checkout)
-    // {
-    //     $checkout->load(['items.variations', 'items.item:id,code,name,track_quantity,track_weight,photo', 'contact', 'warehouse', 'items.unit:id,code,name', 'user:id,name:username', 'attachments']);
-
-    //     return $request->json ? $checkout : Inertia::render('Checkout/Show', ['checkout' => $checkout]);
-    // }
 
     public function show(Request $request, Checkout $checkout)
     {
@@ -122,7 +157,6 @@ class CheckoutController extends Controller
                 'checkout' => $checkout,
             ]);
     }
-
 
     public function edit(Checkout $checkout)
     {

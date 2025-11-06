@@ -102,7 +102,8 @@
             <thead class="bg-gray-100">
               <tr>
                 <th class="px-4 py-3">No</th>
-                <th class="px-4 py-3">No Aju</th>
+                <th class="px-4 py-3">No Aju Inbound</th>
+                <th class="px-4 py-3">No Bukti Barang</th>
                 <th class="px-4 py-3">Cargo</th>
                 <th class="px-4 py-3">Pengirim</th>
                 <th class="px-4 py-3">Pemilik</th>
@@ -123,7 +124,8 @@
                 class="border-b hover:bg-gray-50"
               >
                 <td class="px-4 py-2">{{ index + 1 }}</td>
-                <td class="px-4 py-2">{{ item.reference ?? '-' }}</td>
+                <td class="px-4 py-2"><a :href="route('checkins.show', item.id)" class="hover:underline">{{ item.reference ?? '-' }}</a></td>
+                <td class="px-4 py-2">{{ item.no_receive ?? '-' }}</td>
                 <td class="px-4 py-2">{{ item.name ?? '-' }}</td>
                 <!-- <td class="px-4 py-2">{{ item.user?.name }}</td> -->
                 <td class="px-4 py-2">{{ item.sender ?? '-' }}</td>

@@ -110,16 +110,6 @@ class ItemController extends Controller
         return back()->with('error', __('The record can not be deleted.'));
     }
 
-    // public function trail(Item $item)
-    // {
-    //     $item->load('stockTrails');
-
-    //     return Inertia::render('Item/Trail', [
-    //         'item'   => $item->only('id', 'code', 'name'),
-    //         'trails' => new Collection($item->stockTrails()->orderByDesc('id')->paginate()),
-    //     ]);
-    // }
-
     public function trail(Item $item)
     {
         $item->load('stockTrails');

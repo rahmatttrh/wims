@@ -75,5 +75,8 @@ class AdjustmentItem extends Model
         return $this->belongsTo(CheckoutItem::class, 'checkout_item_id');
     }
 
-
+    // public function adjustment()
+    // {
+    //     return $this->belongsTo(Adjustment::class);
+    // }
 }

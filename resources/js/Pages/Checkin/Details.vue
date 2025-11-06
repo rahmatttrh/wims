@@ -31,11 +31,11 @@
       <div class="block sm:flex justify-between print:flex">
         <div class="w-full sm:w-1/2 leading-snug mb-6 sm:mb-0">
           <div class="text-sm font-bold">&nbsp;</div>
-          <div>{{ $t('Tanggal Aju') }}: {{ $date(checkin.date) }}</div>
+          <div>{{ $t('Tanggal Aju Inbound') }}: {{ $date(checkin.date) }}</div>
           <div>{{ $t('No Aju') }}: {{ checkin.reference }}</div>
          <br>
           <div>{{ $t('Tanggal Penerimaan') }}: {{ $date(checkin.date_receive) }}</div>
-          <div>{{ $t('No Penerimaan') }}: {{ checkin.no_receive }}</div>
+          <div>{{ $t('No Bukti Barang') }}: {{ checkin.no_receive }}</div>
           
           <!-- <div>{{ $t('Created at') }}: {{ $datetime(checkin.created_at) }}</div> -->
           <div>{{ $t('Created at') }}: {{ checkin.formatted_created_at }}</div>

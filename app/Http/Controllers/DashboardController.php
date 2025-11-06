@@ -61,10 +61,12 @@ class DashboardController extends Controller
         ])
         ->select('id', 'reference', 'date_receive', 'no_receive', 'user_id')
         ->whereNotNull('date_receive')
+        // Hanya tampilkan checkin yang belum pernah outbound
+        ->whereNotIn('no_receive', Checkout::select('no_receive')->whereNotNull('no_receive'))
         ->get()
         ->map(function ($item) {
             $receive = Carbon::parse($item->date_receive);
-            $expired = $receive->copy()->addMonths(33);
+            $expired = $receive->copy()->addMonths(36);
             $diffMonths = $receive->diffInMonths(now());
 
             $item->date_expired = $expired->format('Y-m-d');
@@ -94,6 +96,5 @@ class DashboardController extends Controller
             'alert_inbound' => $alertInbound,
         ]);
     }
- 
 
 }

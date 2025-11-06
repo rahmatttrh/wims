@@ -88,7 +88,7 @@
           <thead>
             <tr class="text-left font-bold">
               <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Aju') }}</th>
-              <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Penerimaan') }}</th>
+              <th class="px-6 pt-6 pb-4">{{ $t('No / Tanggal Pengeluaran') }}</th>
               <th class="px-6 pt-6 pb-4">{{ $t('Relations') }}</th>
               <th class="px-6 pt-6 pb-4" colspan="2">{{ $t('Details') }}</th>
             </tr>
@@ -99,6 +99,10 @@
                 <div class="px-6 py-4 flex items-center focus:text-indigo-500">
                   <div>
                     <!-- <div>{{ checkout.reference }}</div> -->
+                    <div class="flex items-center">
+                     <div class="text-gray-500 mr-1">{{ $t('Type BC') }}:</div>
+                     {{ checkout.type_bc_name }}
+                    </div>  
                     <div class="flex items-center">
                      <div class="text-gray-500 mr-1">{{ $t('No Aju') }}:</div>
                      {{ checkout.reference }}
@@ -122,11 +126,11 @@
                
                <div class="px-6 py-4">
                  <div class="flex items-center">
-                   <div class="text-gray-500 mr-1">{{ $t('No Penerimaan') }}:</div>
+                   <div class="text-gray-500 mr-1">{{ $t('No Bukti Barang') }}:</div>
                    {{ checkout.no_receive }}
                  </div>
                  <div class="flex items-center">
-                   <div class="text-gray-500 mr-1">{{ $t('Tgl Penerimaan') }}:</div>
+                   <div class="text-gray-500 mr-1">{{ $t('Tgl Pengeluaran') }}:</div>
                    {{ checkout.date_receive }}
                  </div>
                  <div class="flex items-center">

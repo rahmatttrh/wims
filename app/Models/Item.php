@@ -108,4 +108,9 @@ class Item extends Model
     {
         return $this->hasMany(Variation::class);
     }
+
+        public function adjustmentItems()
+    {
+        return $this->hasMany(AdjustmentItem::class);
+    }
 }

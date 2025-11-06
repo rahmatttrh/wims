@@ -35,6 +35,7 @@
                 
                 id="type_bc_id"
                 :label="$t('Jenis')"
+                :required="true"
                 :suggestions="contacts"
                 v-model="form.type_bc_id"
                 :error="$page.props.errors.type_bc_id"
@@ -82,7 +83,7 @@
         <div class="flex flex-col gap-6">
           <div class="flex flex-col lg:flex-row gap-6">
             <div class="flex flex-col gap-6 w-full lg:w-1/2">
-              <text-input type="date" v-model="form.date" :error="$page.props.errors.date" :label="$t('Tanggal Aju')" />
+              <text-input type="date" v-model="form.date" :error="$page.props.errors.date" :label="$t('Tanggal Aju Inbound')" />
               <text-input type="date" v-model="form.date_receive" :error="$page.props.errors.date_receive" :label="$t('Tanggal Penerimaan Barang')" />
               <auto-complete
                 json
@@ -95,8 +96,8 @@
                />
             </div>
             <div class="flex flex-col gap-6 w-full lg:w-1/2">
-               <text-input v-model="form.reference" :error="$page.props.errors.reference" :label="$t('No. Aju')" />
-               <text-input v-model="form.no_receive" :error="$page.props.errors.no_receive" :label="$t('No. Bukti Penerimaan Barang')" />
+               <text-input v-model="form.reference" :required="true" :error="$page.props.errors.reference" :label="$t('No. Aju Inbound')" />
+               <text-input v-model="form.no_receive" :error="$page.props.errors.no_receive" :label="$t('No. Bukti Barang')" />
               <!-- <auto-complete
                 json
                 id="contact"
