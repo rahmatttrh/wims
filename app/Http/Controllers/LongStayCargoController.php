@@ -16,6 +16,7 @@ use App\Http\Resources\Collection;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\CheckinRequest;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class LongStayCargoController extends Controller
 {
@@ -23,30 +24,27 @@ class LongStayCargoController extends Controller
     {
         $filters = $request->all('draft', 'search', 'trashed');
 
-        // Ambil semua checkin
-        $longstaycargo = Checkin::with(['contact', 'warehouse', 'user', 'items.item'])
+        // 🔹 Ambil semua data terlebih dahulu (tanpa pagination dulu)
+        $data = Checkin::with(['contact', 'warehouse', 'user', 'items.item'])
             ->filter($filters)
             ->whereNotNull('date_receive')
             ->orderByDesc('id')
-            ->paginate()
-            ->withQueryString();
+            ->get();
 
-        // Transformasi data: hitung status expired & lama waktu
-        $longstaycargo->getCollection()->transform(function ($item) {
+        // 🔹 Transformasi data (tambahkan status_expired & lama_total)
+        $data = $data->map(function ($item) {
             if ($item->date_receive) {
                 $receive = Carbon::parse($item->date_receive);
                 $expired = $receive->copy()->addMonths(33);
                 $diffMonths = $receive->diffInMonths(now());
-            
-                // Status expired
+
+                // Tentukan status expired
                 $item->date_expired = $expired->format('Y-m-d');
                 $item->status_expired = $diffMonths >= 33
                     ? 'expired'
-                    : ($diffMonths >= 6
-                        ? 'warning'
-                        : 'normal');
-            
-                // Lama waktu (tahun/bulan/hari)
+                    : ($diffMonths >= 6 ? 'warning' : 'normal');
+
+                // Hitung lama waktu (tahun, bulan, hari)
                 $diff = $receive->diff(now());
                 $parts = [];
                 if ($diff->y > 0) $parts[] = "{$diff->y} Tahun";
@@ -59,7 +57,7 @@ class LongStayCargoController extends Controller
                 $item->lama_total = '-';
             }
 
-            // Ambil info tambahan dari item pertama
+            // Ambil item pertama sebagai referensi
             $firstItem = $item->items->first();
             $item->sender = $firstItem->sender ?? '-';
             $item->owner = $firstItem->owner ?? '-';
@@ -69,17 +67,29 @@ class LongStayCargoController extends Controller
             return $item;
         });
 
-        // Filter hasil hanya yang status warning / expired
-        $filteredData = $longstaycargo->getCollection()->filter(function ($item) {
-            return in_array($item->status_expired, ['warning', 'expired']);
-        })->values();
+        // 🔹 Filter hanya data warning / expired
+        $filtered = $data->filter(fn ($i) => in_array($i->status_expired, ['warning', 'expired']))->values();
 
-        // Replace collection di pagination dengan hasil filter
-        $longstaycargo->setCollection($filteredData);
+        // 🔹 Pagination manual (karena kita sudah filter di Collection)
+        $page = (int) $request->input('page', 1);
+        $perPage = 5;
+        $offset = ($page - 1) * $perPage;
 
+        $paginated = new LengthAwarePaginator(
+            $filtered->slice($offset, $perPage)->values(),
+            $filtered->count(),
+            $perPage,
+            $page,
+            [
+                'path' => request()->url(),
+                'query' => request()->query(),
+            ]
+        );
+
+        // 🔹 Kirim ke Vue via Inertia
         return Inertia::render('LongStayCargo/Index', [
             'filters' => $filters,
-            'longstaycargo' => new Collection($longstaycargo),
+            'checkins' => new Collection($paginated),
         ]);
     }
 }

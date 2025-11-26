@@ -59,7 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'checkouts'  => Controllers\CheckoutPortController::class,
         'categories' => Controllers\CategoryPortController::class,
         'warehouses' => Controllers\WarehousePortController::class,
-        'longstaycargo' => Controllers\LongStayCargoController::class,
+        // 'longstaycargo' => Controllers\LongStayCargoController::class,
     ]);
 
     // Notifications

@@ -142,28 +142,28 @@ const menus = [
   },
 
   // Long Stay Cargo
-  // {
-  //   name: 'longstaycargo',
-  //   route: null,
-  //   icon: 'in',
-  //   hidden: false,
-  //   heading: null,
-  //   children: ['longstaycargo'],
-  //   lang: { helper: null, main: 'Long Stay Cargo' },
-  //   permissions: ['read-checkins'], // bisa pakai permission checkins biar sama
-  //   sub_menu: [
-  //     {
-  //       name: 'longstaycargo.list',
-  //       route: 'longstaycargo.index',
-  //       icon: null,
-  //       hidden: false,
-  //       sub_menu: false,
-  //       target: 'longstaycargo',
-  //       permissions: ['read-checkins'],
-  //       lang: { helper: 'list_x', main: 'Long Stay Cargo' },
-  //     },
-  //   ],
-  // },
+  {
+    name: 'longstaycargo',
+    route: null,
+    icon: 'in',
+    hidden: false,
+    heading: null,
+    children: ['longstaycargo'],
+    lang: { helper: null, main: 'Long Stay Cargo' },
+    permissions: ['read-longstaycargo'], // bisa pakai permission checkins biar sama
+    sub_menu: [
+      {
+        name: 'longstaycargo.list',
+        route: 'longstaycargo.index',
+        icon: null,
+        hidden: false,
+        sub_menu: false,
+        target: 'longstaycargo',
+        permissions: ['read-longstaycargo'],
+        lang: { helper: 'list_x', main: 'Long Stay Cargo' },
+      },
+    ],
+  },
   
 
   // Items
